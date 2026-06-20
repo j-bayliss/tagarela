@@ -1,0 +1,94 @@
+import { useState } from "react";
+import { getApiKey, getAzureSettings, saveApiKey, saveAzureSettings } from "../services/storage";
+import { testAnthropicKey } from "../services/anthropic";
+
+const linkBtn = { border: "none", background: "transparent", color: "var(--green-d, #13573F)", fontWeight: 700, fontSize: 12, cursor: "pointer", padding: "4px 2px" };
+
+export default function SettingsSheet({ onboarding, setOnboarding, onClose }) {
+  const [apiKey, setApiKey] = useState(() => getApiKey());
+  const [azure, setAzure] = useState(() => getAzureSettings());
+  const [dailyTarget, setDailyTarget] = useState(onboarding?.dailyTarget || 10);
+  const [theme, setTheme] = useState(onboarding?.theme || "system");
+  const [status, setStatus] = useState("");
+  const [showAnthropic, setShowAnthropic] = useState(false);
+  const [showAzure, setShowAzure] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [testMsg, setTestMsg] = useState("");
+
+  const save = () => {
+    saveApiKey(apiKey);
+    saveAzureSettings({ ...azure, locale: "pt-BR" });
+    setOnboarding((cur) => ({ ...(cur || {}), dailyTarget, theme, variant: "pt-BR" }));
+    setStatus("Settings saved.");
+  };
+
+  const testKey = async () => {
+    setTesting(true);
+    setTestMsg("");
+    try { await testAnthropicKey(apiKey); setTestMsg("✓ Anthropic key works."); }
+    catch (err) { setTestMsg(err.message || "Key check failed."); }
+    finally { setTesting(false); }
+  };
+
+  const clearKeys = () => {
+    setApiKey("");
+    setAzure((s) => ({ ...s, key: "" }));
+    saveApiKey("");
+    saveAzureSettings({ ...azure, key: "" });
+    setTestMsg("");
+    setStatus("Keys cleared from this device.");
+  };
+
+  return (
+    <div className="tg-sheet-backdrop" role="dialog" aria-modal="true">
+      <div className="tg-sheet">
+        <div className="tg-sheet-head"><div><b>Settings</b><small>Brazilian Portuguese only for now</small></div><button onClick={onClose}>×</button></div>
+
+        <div className="tg-card">
+          <div className="tg-label">Daily target</div>
+          <div className="tg-choice-grid">
+            {[5, 10, 15].map((n) => <button key={n} className={`tg-choice compact ${dailyTarget === n ? "selected" : ""}`} onClick={() => setDailyTarget(n)}><b>{n} min</b><small>{n === 5 ? "tiny habit" : n === 10 ? "balanced" : "faster"}</small></button>)}
+          </div>
+        </div>
+
+        <div className="tg-card">
+          <div className="tg-label">Theme</div>
+          <div className="tg-choice-grid">
+            {["system", "light", "dark"].map((t) => (
+              <button key={t} className={`tg-choice compact ${theme === t ? "selected" : ""}`} onClick={() => setTheme(t)}>
+                <b>{t === "system" ? "System" : t === "light" ? "Light" : "Dark"}</b>
+                <small>{t === "system" ? "match device" : t === "light" ? "always light" : "always dark"}</small>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="tg-card">
+          <div className="tg-label">Anthropic API key</div>
+          <input className="tg-input full" type={showAnthropic ? "text" : "password"} autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="sk-ant-..." />
+          <div style={{ display: "flex", gap: 14, marginTop: 6 }}>
+            <button style={linkBtn} type="button" onClick={() => setShowAnthropic((s) => !s)}>{showAnthropic ? "Hide" : "Show"}</button>
+            <button style={linkBtn} type="button" onClick={testKey} disabled={testing || !apiKey.trim()}>{testing ? "Testing…" : "Test key"}</button>
+          </div>
+          {testMsg ? <div className="tg-status">{testMsg}</div> : null}
+          <p className="tg-small-note">Optional. Powers AI conversation, role-play, grammar and translation. Stored only on this device. Set a monthly spend cap on the key at console.anthropic.com.</p>
+        </div>
+
+        <div className="tg-card">
+          <div className="tg-label">Azure Speech (pronunciation + voice input)</div>
+          <input className="tg-input full" type={showAzure ? "text" : "password"} autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" value={azure.key} onChange={(e) => setAzure((s) => ({ ...s, key: e.target.value }))} placeholder="Azure Speech key" />
+          <input className="tg-input full" value={azure.region} onChange={(e) => setAzure((s) => ({ ...s, region: e.target.value }))} placeholder="Region, e.g. uksouth" />
+          <div style={{ display: "flex", gap: 14, marginTop: 6 }}>
+            <button style={linkBtn} type="button" onClick={() => setShowAzure((s) => !s)}>{showAzure ? "Hide key" : "Show key"}</button>
+          </div>
+          <p className="tg-small-note">Optional. Powers pronunciation scoring and reliable speech-to-text in chat. The free F0 tier covers about 5 audio hours/month. Stored only on this device.</p>
+        </div>
+
+        <button className="tg-btn tg-btn-primary" onClick={save}>Save settings</button>
+        <button className="tg-btn tg-btn-ghost" onClick={clearKeys}>Clear keys from device</button>
+        {status ? <div className="tg-status">{status}</div> : null}
+        <p className="tg-footnote">Keys live in this browser only. For a shared or public app, move them behind a backend — local storage suits a private prototype.</p>
+      </div>
+    </div>
+  );
+}
