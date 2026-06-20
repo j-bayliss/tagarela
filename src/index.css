@@ -336,3 +336,39 @@ html[data-theme="dark"] .tg-gear { background:rgba(63,178,147,.18); }
   .tg-flash.is-flipped, .tg-flash-back, .tg-pop, .tg-confetti span { animation: none; }
   .tg-ring svg circle:last-child { transition: none; }
 }
+
+/* ---------- feedback, streak, xp, breakdown (batch 4) ---------- */
+.tg-feedback { position: relative; }
+
+/* streak badge in the lesson progress header */
+.tg-streak-badge { display:inline-block; margin-right:8px; background:rgba(232,85,58,.14); color:var(--coral); font-weight:800; font-size:12px; padding:2px 8px; border-radius:999px; animation: tg-pop .4s cubic-bezier(.2,.8,.2,1); }
+
+/* floating +XP on a correct answer */
+.tg-xp-pop { position:absolute; top:8px; right:14px; font-family:var(--font-display); font-weight:900; font-size:18px; color:var(--green-d); pointer-events:none; animation: tg-xp-rise 1s ease-out forwards; }
+@keyframes tg-xp-rise { 0% { opacity:0; transform: translateY(6px) scale(.8); } 25% { opacity:1; transform: translateY(0) scale(1.1); } 100% { opacity:0; transform: translateY(-26px) scale(1); } }
+
+/* choice retry */
+.tg-options button.eliminated { opacity:.4; text-decoration:line-through; border-style:dashed; cursor:not-allowed; }
+.tg-retry-hint { color:var(--coral); font-size:13px; font-weight:700; margin:8px 0 4px; }
+
+/* recovered (right on retry) feedback tint */
+.tg-feedback.recovered { background:rgba(242,169,60,.12); border-color:rgba(242,169,60,.22); color:#8a5a08; }
+
+/* end-of-lesson breakdown */
+.tg-breakdown { display:flex; flex-direction:column; gap:8px; margin-top:6px; }
+.tg-breakdown-row { display:flex; align-items:flex-start; gap:10px; padding:10px; border-radius:13px; background:var(--cloud); border:1px solid var(--line); }
+.tg-breakdown-mark { font-weight:900; font-size:16px; line-height:1.4; flex:none; }
+.tg-breakdown-row.ok .tg-breakdown-mark { color:var(--green); }
+.tg-breakdown-row.miss .tg-breakdown-mark { color:var(--coral); }
+.tg-breakdown-body { flex:1; min-width:0; }
+.tg-breakdown-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--soft); }
+.tg-breakdown-pt { font-weight:800; color:var(--ink); margin-top:1px; }
+.tg-breakdown-en { font-size:13px; color:var(--soft); }
+
+/* per-word pronunciation buttons (now tappable) */
+.tg-word-scores .tg-word { border:none; cursor:pointer; font-family:inherit; }
+.tg-word-scores .tg-word:active { transform: scale(.94); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tg-xp-pop, .tg-streak-badge { animation: none; }
+}

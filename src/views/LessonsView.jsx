@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { COURSE_UNITS, LESSONS, skillLabel } from "../data/lessons";
 import { normaliseAnswer, speak } from "../utils/language";
-import { ProgressBar } from "../components/Common";
+import { ProgressBar, XpPop } from "../components/Common";
 import { Icons } from "../components/Icons";
 import { buzz } from "../utils/haptics";
 
@@ -29,6 +29,8 @@ function makeExercises(lesson) {
       answer: p1.en,
       choices: shuffle([p1.en, ...shuffle(allEnglish.filter((x) => x !== p1.en)).slice(0, 3)]),
       tags: lesson.skillTags,
+      say: p1.pt,
+      review: { pt: p1.pt, en: p1.en },
     },
     {
       type: "order",
@@ -37,6 +39,8 @@ function makeExercises(lesson) {
       answer: p2.pt,
       words: shuffle(p2.pt.split(/\s+/)),
       tags: lesson.skillTags,
+      say: p2.pt,
+      review: { pt: p2.pt, en: p2.en },
     },
     {
       type: "blank",
@@ -46,6 +50,8 @@ function makeExercises(lesson) {
       full: p3.pt,
       translation: p3.en,
       tags: lesson.skillTags,
+      say: p3.pt,
+      review: { pt: p3.pt, en: p3.en },
     },
     {
       type: "dictation",
@@ -54,6 +60,8 @@ function makeExercises(lesson) {
       answer: p4.pt,
       translation: p4.en,
       tags: [...lesson.skillTags, "listening"],
+      say: p4.pt,
+      review: { pt: p4.pt, en: p4.en },
     },
   ];
 }
@@ -63,25 +71,48 @@ function Exercise({ exercise, onAnswer }) {
   const [typed, setTyped] = useState("");
   const [built, setBuilt] = useState([]);
   const [pool, setPool] = useState(exercise.words || []);
+  const [eliminated, setEliminated] = useState([]);
+  const [hadMistake, setHadMistake] = useState(false);
+
+  const meta = { tags: exercise.tags, title: exercise.title, say: exercise.say, review: exercise.review };
 
   const submit = (value) => {
     const answer = value ?? selected ?? typed;
     const correct = normaliseAnswer(answer) === normaliseAnswer(exercise.answer);
-    onAnswer({ correct, userAnswer: answer, expected: exercise.answer, tags: exercise.tags });
+    onAnswer({ correct, userAnswer: answer, expected: exercise.answer, ...meta });
   };
 
   if (exercise.type === "choice") {
+    const checkChoice = () => {
+      if (selected === exercise.answer) {
+        onAnswer({ correct: !hadMistake, recovered: hadMistake, userAnswer: selected, expected: exercise.answer, ...meta });
+      } else {
+        buzz([0, 18, 80, 18]);
+        setEliminated((e) => e.concat(selected));
+        setHadMistake(true);
+        setSelected("");
+      }
+    };
     return (
       <div className="tg-card lesson-exercise">
         <div className="tg-label">{exercise.title}</div>
         <div className="tg-big-pt">{exercise.prompt}</div>
         <button className="tg-mini" onClick={() => speak(exercise.prompt)}>{Icons.speaker} Hear it</button>
         <div className="tg-options">
-          {exercise.choices.map((choice) => (
-            <button key={choice} className={selected === choice ? "selected" : ""} onClick={() => setSelected(choice)}>{choice}</button>
-          ))}
+          {exercise.choices.map((choice) => {
+            const out = eliminated.includes(choice);
+            return (
+              <button
+                key={choice}
+                className={`${selected === choice ? "selected" : ""} ${out ? "eliminated" : ""}`}
+                disabled={out}
+                onClick={() => { if (!out) { buzz(6); setSelected(choice); } }}
+              >{choice}</button>
+            );
+          })}
         </div>
-        <button className="tg-btn tg-btn-primary" disabled={!selected} onClick={() => submit(selected)}>Check</button>
+        {hadMistake ? <div className="tg-retry-hint">Not quite — pick another answer.</div> : null}
+        <button className="tg-btn tg-btn-primary" disabled={!selected} onClick={checkChoice}>Check</button>
       </div>
     );
   }
@@ -148,18 +179,22 @@ function Exercise({ exercise, onAnswer }) {
   );
 }
 
+const XP_PER_CORRECT = 10;
+
 function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
   const exercises = useRef(makeExercises(lesson)).current;
   const [started, setStarted] = useState(false);
   const [idx, setIdx] = useState(0);
   const [results, setResults] = useState([]);
   const [feedback, setFeedback] = useState(null);
+  const [streak, setStreak] = useState(0);
 
   const handleAnswer = (result) => {
     // distinct patterns: single soft pulse = correct, double knock = wrong
     buzz(result.correct ? 10 : [0, 18, 80, 18]);
-    // Speak the correct answer aloud when the user gets it wrong
-    if (!result.correct && result.expected) speak(result.expected);
+    // Speak the correct phrase aloud when the user gets it wrong (skip choice recoveries)
+    if (!result.correct && !result.recovered && result.say) speak(result.say);
+    setStreak((s) => (result.correct ? s + 1 : 0));
     setFeedback(result);
     if (onActivity) onActivity();
   };
@@ -210,27 +245,41 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
     <div className="tg-screen">
       <button className="tg-back" onClick={onBack}>← Exit lesson</button>
       <div className="tg-progress-card compact">
-        <div className="tg-progress-top"><b>{lesson.emoji} {lesson.title}</b><span>{idx + 1}/{exercises.length}</span></div>
+        <div className="tg-progress-top">
+          <b>{lesson.emoji} {lesson.title}</b>
+          <span>{streak >= 3 ? <span className="tg-streak-badge">🔥 {streak} in a row!</span> : null}{idx + 1}/{exercises.length}</span>
+        </div>
         <ProgressBar value={((idx + 1) / exercises.length) * 100} />
       </div>
       <Exercise key={idx} exercise={exercises[idx]} onAnswer={handleAnswer} />
       {feedback ? (
-        <div className={`tg-feedback ${feedback.correct ? "correct" : "incorrect"}`}>
-          <b>{feedback.correct ? "Boa! 🎉" : "Almost — here's the answer:"}</b>
+        <div className={`tg-feedback ${feedback.correct ? "correct" : feedback.recovered ? "recovered" : "incorrect"}`}>
+          {feedback.correct && <XpPop key={`xp-${idx}`} amount={XP_PER_CORRECT} />}
           {feedback.correct ? (
-            <span>That one goes into your confidence bank.</span>
+            <>
+              <b>Boa! 🎉</b>
+              <span>{streak >= 3 ? `🔥 ${streak} in a row — you're on fire!` : "That one goes into your confidence bank."}</span>
+            </>
+          ) : feedback.recovered ? (
+            <>
+              <b>Got there! 🎯</b>
+              <span>Right answer on the retry. I'll bring this one back for a quick review.</span>
+            </>
           ) : (
-            <div className="tg-feedback-compare">
-              <div className="tg-feedback-row wrong">
-                <span className="tg-feedback-lbl">You:</span>
-                <span>{feedback.userAnswer}</span>
+            <>
+              <b>Almost — here's the answer:</b>
+              <div className="tg-feedback-compare">
+                <div className="tg-feedback-row wrong">
+                  <span className="tg-feedback-lbl">You:</span>
+                  <span>{feedback.userAnswer}</span>
+                </div>
+                <div className="tg-feedback-row correct-ans">
+                  <span className="tg-feedback-lbl">Answer:</span>
+                  <span>{feedback.expected}</span>
+                </div>
+                <button className="tg-mini" onClick={() => speak(feedback.say || feedback.expected)}>{Icons.speaker} Hear it again</button>
               </div>
-              <div className="tg-feedback-row correct-ans">
-                <span className="tg-feedback-lbl">Answer:</span>
-                <span>{feedback.expected}</span>
-              </div>
-              <button className="tg-mini" onClick={() => speak(feedback.expected)}>{Icons.speaker} Hear it again</button>
-            </div>
+            </>
           )}
           <button className="tg-btn tg-btn-primary" onClick={() => { buzz(10); next(); }}>{idx >= exercises.length - 1 ? "See result" : "Next"}</button>
         </div>
@@ -241,6 +290,7 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
 
 function LessonResult({ result, onContinue, onReview }) {
   const score = result.score;
+  const results = result.results || [];
   return (
     <div className="tg-screen">
       <div className="tg-result-card">
@@ -249,6 +299,26 @@ function LessonResult({ result, onContinue, onReview }) {
         <div className="tg-score">{score}<small>%</small></div>
         <p>{score >= 80 ? "You’re ready for the next small step." : "I saved the key phrases for review so they come back at the right time."}</p>
       </div>
+
+      {results.length ? (
+        <div className="tg-card">
+          <div className="tg-label">Your answers</div>
+          <div className="tg-breakdown">
+            {results.map((r, i) => (
+              <div key={i} className={`tg-breakdown-row ${r.correct ? "ok" : "miss"}`}>
+                <span className="tg-breakdown-mark">{r.correct ? "✓" : "✗"}</span>
+                <div className="tg-breakdown-body">
+                  <div className="tg-breakdown-title">{r.title}</div>
+                  <div className="tg-breakdown-pt">{r.review?.pt || r.say}</div>
+                  <div className="tg-breakdown-en">{r.review?.en}</div>
+                </div>
+                <button className="tg-mini round" aria-label="Hear phrase" onClick={() => speak(r.say || r.review?.pt)}>{Icons.speaker}</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
       <div className="tg-card">
         <div className="tg-label">What was saved</div>
         <p className="tg-expl">Lesson phrases were added to your review deck. Lower scores mark them as difficult so they appear sooner.</p>
@@ -301,7 +371,7 @@ export default function LessonsView({ progress, setProgress, onSave, onGoReview,
     });
     lesson.phrases.forEach((phrase) => onSave(phrase.pt, phrase.en, score < 70 ? "difficult" : "learning", lesson.skillTags));
     setActiveLesson(null);
-    setLastResult({ lesson, score });
+    setLastResult({ lesson, score, results: outcome.results });
   };
 
   if (activeLesson) {

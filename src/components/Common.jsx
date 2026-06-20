@@ -17,6 +17,11 @@ export function Dots() {
   return <div className="tg-dots" aria-label="Typing"><i/><i/><i/></div>;
 }
 
+export function XpPop({ amount = 10 }) {
+  if (prefersReduced()) return null;
+  return <div className="tg-xp-pop" aria-hidden="true">+{amount} XP</div>;
+}
+
 export function CountUp({ value, duration = 600 }) {
   const [n, setN] = useState(value);
   const prev = useRef(value);

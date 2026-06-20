@@ -29,7 +29,11 @@ export async function recognizeOnceWithAzure(settings) {
       (result) => {
         const text = result && result.reason === SpeechSDK.ResultReason.RecognizedSpeech ? (result.text || "") : "";
         recognizer.close();
-        if (!text) { reject(new Error(result?.errorDetails || "I couldn't catch that — try again.")); return; }
+        if (!text) {
+          const noSpeech = result?.reason === SpeechSDK.ResultReason.NoMatch;
+          reject(new Error(result?.errorDetails || (noSpeech ? "I didn't hear anything — tap the mic and speak straight away." : "I couldn't catch that — try again.")));
+          return;
+        }
         resolve(text);
       },
       (err) => { recognizer.close(); reject(new Error(String(err || "Azure Speech failed."))); },
@@ -67,7 +71,11 @@ export async function assessPronunciationWithAzure(referenceText, settings) {
       (result) => {
         try {
           if (result?.reason !== SpeechSDK.ResultReason.RecognizedSpeech) {
-            const detail = result?.errorDetails || "I could not recognise that attempt. Try speaking clearly and close to the mic.";
+            let detail = result?.errorDetails;
+            if (result?.reason === SpeechSDK.ResultReason.NoMatch) {
+              detail = "I didn't hear anything. Check your mic is on, then tap Record and speak straight away.";
+            }
+            detail = detail || "I could not recognise that attempt. Try speaking clearly and close to the mic.";
             recognizer.close();
             reject(new Error(detail));
             return;
