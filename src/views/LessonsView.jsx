@@ -40,20 +40,24 @@ function makeExercises(lesson) {
     tags: [...tags, "listening"], say: p.pt, review: { pt: p.pt, en: p.en },
   });
 
-  // One exercise per phrase, cycling through types so longer lessons = more
-  // questions. Single-word phrases skip word-order / fill-in-the-blank.
+  // Two complementary exercises per phrase — a recognition step then a
+  // production / listening step — so each phrase is practised more deeply and
+  // longer lessons naturally yield more questions. Single-word phrases skip
+  // word-order / fill-in-the-blank.
   const ex = [];
   phrases.forEach((p, i) => {
-    const cycle = i % 4;
-    if (cycle === 0) ex.push(choice(p));
-    else if (cycle === 1) ex.push(multiWord(p) ? order(p) : choice(p, "Listen & choose", true));
-    else if (cycle === 2) ex.push(multiWord(p) ? blank(p) : dictation(p));
+    // 1) recognition: read the Portuguese, or listen and choose the meaning
+    ex.push(i % 2 === 0 ? choice(p) : choice(p, "Listen & choose", true));
+    // 2) production / recall: rebuild it, fill the gap, or type what you hear
+    if (multiWord(p)) ex.push(i % 2 === 0 ? order(p) : blank(p));
     else ex.push(dictation(p));
   });
 
-  // Mixed extras for variety: a listening-choice and a dictation recall.
-  if (phrases[0]) ex.push(choice(phrases[0], "Listen & choose", true));
-  if (phrases[1]) ex.push(dictation(phrases[1]));
+  // Shorter lessons get a couple of mixed recall extras for closure.
+  if (phrases.length <= 4) {
+    if (phrases[1]) ex.push(dictation(phrases[1]));
+    if (phrases[0]) ex.push(choice(phrases[0], "Listen & choose", true));
+  }
 
   return ex.length ? ex : [choice(phrases[0] || { pt: "Oi", en: "Hi" })];
 }
