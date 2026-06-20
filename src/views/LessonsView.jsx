@@ -190,7 +190,7 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
         <div className="tg-progress-top"><b>{lesson.emoji} {lesson.title}</b><span>{idx + 1}/{exercises.length}</span></div>
         <ProgressBar value={((idx + 1) / exercises.length) * 100} />
       </div>
-      <Exercise exercise={exercises[idx]} onAnswer={handleAnswer} />
+      <Exercise key={idx} exercise={exercises[idx]} onAnswer={handleAnswer} />
       {feedback ? (
         <div className={`tg-feedback ${feedback.correct ? "correct" : "incorrect"}`}>
           <b>{feedback.correct ? "Boa!" : "Almost."}</b>

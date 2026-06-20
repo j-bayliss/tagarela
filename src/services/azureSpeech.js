@@ -17,7 +17,7 @@ export async function recognizeOnceWithAzure(settings) {
   if (!window.isSecureContext && !location.hostname.includes("localhost")) {
     throw new Error("Microphone access needs HTTPS or localhost.");
   }
-  const SpeechSDK = Promise.resolve(window.SpeechSDK);
+  const SpeechSDK = window.SpeechSDK;
   const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(settings.key, settings.region);
   speechConfig.speechRecognitionLanguage = "pt-BR";
   const audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
@@ -41,7 +41,7 @@ export async function assessPronunciationWithAzure(referenceText, settings) {
     throw new Error("Microphone access needs HTTPS or localhost.");
   }
 
-  const SpeechSDK = Promise.resolve(window.SpeechSDK);
+  const SpeechSDK = window.SpeechSDK;
   const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(settings.key, settings.region);
   speechConfig.speechRecognitionLanguage = "pt-BR";
   const audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
@@ -96,7 +96,7 @@ export async function assessPronunciationWithAzure(referenceText, settings) {
 let activeSynth = null;
 export async function synthesizeWithAzure(text, settings) {
   if (!settings?.key || !settings?.region) throw new Error("Azure Speech not configured.");
-  const SpeechSDK = Promise.resolve(window.SpeechSDK);
+  const SpeechSDK = window.SpeechSDK;
   const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(settings.key, settings.region);
   speechConfig.speechSynthesisVoiceName = settings.voice || "pt-BR-FranciscaNeural";
   if (activeSynth) { try { activeSynth.close(); } catch {} activeSynth = null; }
