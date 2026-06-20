@@ -26,10 +26,10 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      # npm install (not npm ci) because the committed lockfile may predate
-      # recent dependency additions. Switch to `npm ci` once you commit a
-      # refreshed package-lock.json.
-      - run: npm install
+      - run: npm ci
+        env:
+          # Prevent the huge speech SDK from stalling npm
+          ADBLOCK: "true"
       - run: npm test
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
