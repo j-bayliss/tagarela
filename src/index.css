@@ -372,3 +372,20 @@ html[data-theme="dark"] .tg-gear { background:rgba(63,178,147,.18); }
 @media (prefers-reduced-motion: reduce) {
   .tg-xp-pop, .tg-streak-badge { animation: none; }
 }
+
+/* ---------- conversa word lookup (batch 5) ---------- */
+.tg-chat-tools { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+.tg-tool-btn { border:1.5px solid var(--line); background:#fff; color:var(--ink); border-radius:999px; padding:6px 12px; font-size:13px; font-weight:700; cursor:pointer; }
+.tg-tool-btn.on { border-color:var(--green); background:rgba(30,122,94,.08); color:var(--green-d); }
+.tg-tool-btn.accent { border-color:rgba(242,169,60,.5); background:rgba(242,169,60,.14); color:#8a5a08; }
+.tg-tool-btn:disabled { opacity:.55; cursor:default; }
+html[data-theme="dark"] .tg-tool-btn { background:var(--cloud); }
+
+.tg-word-helper { background:var(--cloud); border:1px solid var(--line); border-radius:15px; padding:11px; margin-bottom:10px; }
+.tg-word-helper-row { display:flex; gap:8px; align-items:center; }
+.tg-word-helper-row .tg-input { flex:1; }
+.tg-btn.compact { width:auto; flex:none; padding:10px 14px; margin:0; border-radius:13px; }
+.tg-word-helper-result { display:flex; align-items:center; gap:8px; margin-top:10px; }
+.tg-word-chip { display:inline-flex; align-items:baseline; gap:8px; border:none; cursor:pointer; background:rgba(30,122,94,.12); color:var(--green-d); border-radius:999px; padding:8px 14px; font-weight:800; font-size:16px; }
+.tg-word-chip span { font-size:11px; font-weight:700; opacity:.7; text-transform:uppercase; letter-spacing:.04em; }
+.tg-word-chip:active { transform: scale(.96); }

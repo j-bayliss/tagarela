@@ -31,7 +31,13 @@ function ChatMode({ scenario, onSave, onMistake, onActivity }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [listening, setListening] = useState(false);
+  const [helperOpen, setHelperOpen] = useState(false);
+  const [lookupTerm, setLookupTerm] = useState("");
+  const [lookupResult, setLookupResult] = useState(null);
+  const [lookingUp, setLookingUp] = useState(false);
+  const [translatingBrackets, setTranslatingBrackets] = useState(false);
   const endRef = useRef(null);
+  const hasBrackets = /\[[^\]]+\]/.test(input);
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, busy]);
 
@@ -82,6 +88,63 @@ function ChatMode({ scenario, onSave, onMistake, onActivity }) {
     } catch {
       setMessages((cur) => cur.map((m, i) => i === idx ? { ...m, translating: false } : m));
     }
+  };
+
+  // Swap any [english] brackets in the message for Brazilian Portuguese, in place.
+  const translateBrackets = async () => {
+    const matches = input.match(/\[[^\]]+\]/g) || [];
+    const terms = [...new Set(matches.map((m) => m.slice(1, -1).trim()).filter(Boolean))];
+    if (!terms.length) return;
+    buzz(10);
+    setTranslatingBrackets(true);
+    setError("");
+    try {
+      const raw = await askClaude(
+        "You translate English words or short phrases into natural Brazilian Portuguese for an A1-A2 learner. Use the sentence as context to pick the right sense. Reply ONLY with a compact JSON object mapping each given English term (exactly as written) to its Brazilian Portuguese translation. No notes.",
+        [{ role: "user", content: `Sentence: ${input}\nTerms: ${JSON.stringify(terms)}` }],
+      );
+      const map = parseJSON(raw) || {};
+      let next = input;
+      matches.forEach((m) => {
+        const term = m.slice(1, -1).trim();
+        const pt = (map[term] || "").trim();
+        if (pt) next = next.replace(m, pt);
+      });
+      setInput(next);
+      if (onActivity) onActivity();
+    } catch (err) {
+      setError(err.message || "Could not translate those words.");
+    } finally {
+      setTranslatingBrackets(false);
+    }
+  };
+
+  // Quick single-word lookup in the helper bar.
+  const lookupWord = async () => {
+    const term = lookupTerm.trim();
+    if (!term || lookingUp) return;
+    buzz(8);
+    setLookingUp(true);
+    setError("");
+    setLookupResult(null);
+    try {
+      const raw = await askClaude(
+        "Translate this English word or short phrase into natural Brazilian Portuguese for an A1-A2 learner. Reply with ONLY the Portuguese translation — no quotes, no notes.",
+        [{ role: "user", content: term }],
+      );
+      setLookupResult((raw || "").trim());
+    } catch (err) {
+      setError(err.message || "Lookup failed.");
+    } finally {
+      setLookingUp(false);
+    }
+  };
+
+  const insertWord = (word) => {
+    buzz(6);
+    setInput((prev) => `${prev ? `${prev.trimEnd()} ` : ""}${word} `);
+    setLookupResult(null);
+    setLookupTerm("");
   };
 
   const send = async () => {
@@ -136,8 +199,31 @@ function ChatMode({ scenario, onSave, onMistake, onActivity }) {
         <div ref={endRef} />
       </div>
       {error ? <div className="tg-error">{error}</div> : null}
+      {hasKey ? (
+        <div className="tg-chat-tools">
+          <button type="button" className={`tg-tool-btn ${helperOpen ? "on" : ""}`} onClick={() => { buzz(6); setHelperOpen((o) => !o); }}>🔤 Need a word?</button>
+          {hasBrackets ? (
+            <button type="button" className="tg-tool-btn accent" disabled={translatingBrackets} onClick={translateBrackets}>{translatingBrackets ? "Translating…" : "🔍 Translate [words]"}</button>
+          ) : null}
+        </div>
+      ) : null}
+      {helperOpen && hasKey ? (
+        <div className="tg-word-helper">
+          <div className="tg-word-helper-row">
+            <input className="tg-input" value={lookupTerm} placeholder="English word…" autoCapitalize="none" autoCorrect="off" onChange={(e) => setLookupTerm(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); lookupWord(); } }} />
+            <button className="tg-btn tg-btn-primary compact" disabled={!lookupTerm.trim() || lookingUp} onClick={lookupWord}>{lookingUp ? "…" : "Look up"}</button>
+          </div>
+          {lookupResult ? (
+            <div className="tg-word-helper-result">
+              <button type="button" className="tg-word-chip" onClick={() => insertWord(lookupResult)}>{lookupResult}<span>tap to insert</span></button>
+              <button className="tg-mini round" aria-label="Hear word" onClick={() => speak(lookupResult)}>{Icons.speaker}</button>
+            </div>
+          ) : null}
+          <div className="tg-small-note">Tip: inside your message, wrap an English word in [brackets] then tap “Translate [words]”.</div>
+        </div>
+      ) : null}
       <div className="tg-composer inline">
-        <textarea className="tg-input" value={input} onChange={(e) => setInput(e.target.value)} placeholder={hasKey ? "Type in Portuguese..." : "Add an Anthropic key in settings to chat"} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} />
+        <textarea className="tg-input" value={input} onChange={(e) => setInput(e.target.value)} placeholder={hasKey ? "Type in Portuguese… use [brackets] for words you don't know" : "Add an Anthropic key in settings to chat"} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} />
         <button className={`tg-mic ${listening ? "on" : ""}`} onClick={useMic}>{Icons.mic}</button>
         <button className="tg-send" onClick={send} disabled={!hasKey || !input.trim() || busy}>➤</button>
       </div>
