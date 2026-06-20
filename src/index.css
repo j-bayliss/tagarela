@@ -168,6 +168,11 @@ button, input, textarea, select { font: inherit; }
 .tg-feedback span { margin-top:4px; font-size:14px; line-height:1.35; }
 .tg-feedback.correct { background:rgba(30,122,94,.11); border-color:rgba(30,122,94,.18); color:var(--green-d); }
 .tg-feedback.incorrect { background:rgba(232,92,63,.10); border-color:rgba(232,92,63,.18); color:var(--coral); }
+.tg-feedback-compare { display:flex; flex-direction:column; gap:6px; margin:8px 0 4px; }
+.tg-feedback-row { display:flex; align-items:baseline; gap:8px; font-size:15px; }
+.tg-feedback-lbl { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; opacity:.65; min-width:52px; }
+.tg-feedback-row.wrong span:last-child { text-decoration:line-through; opacity:.7; }
+.tg-feedback-row.correct-ans span:last-child { font-weight:800; font-size:17px; color:var(--green-d); }
 .tg-result-card { text-align:center; }
 .tg-score { font-family:var(--font-display); font-size:58px; line-height:1; color:var(--green-d); font-weight:900; margin:8px 0; }
 .tg-score.small { font-size:42px; }

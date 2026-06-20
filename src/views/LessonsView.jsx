@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { COURSE_UNITS, LESSONS, skillLabel } from "../data/lessons";
 import { normaliseAnswer, speak } from "../utils/language";
 import { ProgressBar } from "../components/Common";
@@ -158,6 +158,8 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
   const handleAnswer = (result) => {
     // distinct patterns: single soft pulse = correct, double knock = wrong
     buzz(result.correct ? 10 : [0, 18, 80, 18]);
+    // Speak the correct answer aloud when the user gets it wrong
+    if (!result.correct && result.expected) speak(result.expected);
     setFeedback(result);
     if (onActivity) onActivity();
   };
@@ -214,8 +216,22 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
       <Exercise key={idx} exercise={exercises[idx]} onAnswer={handleAnswer} />
       {feedback ? (
         <div className={`tg-feedback ${feedback.correct ? "correct" : "incorrect"}`}>
-          <b>{feedback.correct ? "Boa!" : "Almost."}</b>
-          <span>{feedback.correct ? "That one goes into your confidence bank." : `Expected: ${feedback.expected}`}</span>
+          <b>{feedback.correct ? "Boa! 🎉" : "Almost — here's the answer:"}</b>
+          {feedback.correct ? (
+            <span>That one goes into your confidence bank.</span>
+          ) : (
+            <div className="tg-feedback-compare">
+              <div className="tg-feedback-row wrong">
+                <span className="tg-feedback-lbl">You:</span>
+                <span>{feedback.userAnswer}</span>
+              </div>
+              <div className="tg-feedback-row correct-ans">
+                <span className="tg-feedback-lbl">Answer:</span>
+                <span>{feedback.expected}</span>
+              </div>
+              <button className="tg-mini" onClick={() => speak(feedback.expected)}>{Icons.speaker} Hear it again</button>
+            </div>
+          )}
           <button className="tg-btn tg-btn-primary" onClick={() => { buzz(10); next(); }}>{idx >= exercises.length - 1 ? "See result" : "Next"}</button>
         </div>
       ) : null}

@@ -20,6 +20,8 @@ export async function recognizeOnceWithAzure(settings) {
   const SpeechSDK = window.SpeechSDK;
   const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(settings.key, settings.region);
   speechConfig.speechRecognitionLanguage = "pt-BR";
+  // Stop listening 1.2 s after the user goes quiet (default is ~5 s)
+  speechConfig.setProperty("Speech_SegmentationSilenceTimeoutMs", "1200");
   const audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
   const recognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
   return new Promise((resolve, reject) => {
@@ -44,6 +46,8 @@ export async function assessPronunciationWithAzure(referenceText, settings) {
   const SpeechSDK = window.SpeechSDK;
   const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(settings.key, settings.region);
   speechConfig.speechRecognitionLanguage = "pt-BR";
+  // Stop listening 1.2 s after the user goes quiet (default is ~5 s)
+  speechConfig.setProperty("Speech_SegmentationSilenceTimeoutMs", "1200");
   const audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
   const recognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
   const pronConfig = new SpeechSDK.PronunciationAssessmentConfig(
