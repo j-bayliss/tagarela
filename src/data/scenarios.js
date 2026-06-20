@@ -98,4 +98,38 @@ export const SCENARIOS = [
     introPt: "Então me conta: no que você trabalha? Como é o seu dia a dia?",
     introEn: "So tell me: what do you do for work? What is your daily routine like?",
   },
+
+  // --- advanced (B1) ---
+  {
+    id: "interview",
+    emoji: "🧑‍💼",
+    title: "Entrevista de emprego",
+    description: "Talk about your experience and goals.",
+    introPt: "Obrigado por vir. Para começar, me fala um pouco sobre você e sua experiência.",
+    introEn: "Thanks for coming. To start, tell me a bit about yourself and your experience.",
+  },
+  {
+    id: "debate",
+    emoji: "💭",
+    title: "Bate-papo de opiniões",
+    description: "Share and defend an opinion.",
+    introPt: "Tô curioso: você acha que é melhor morar na cidade ou no interior? Por quê?",
+    introEn: "I'm curious: do you think it's better to live in the city or the countryside? Why?",
+  },
+  {
+    id: "complaint",
+    emoji: "🛠️",
+    title: "Resolvendo um problema",
+    description: "Return a product and sort out an issue.",
+    introPt: "Boa tarde, em que posso ajudar? Aconteceu alguma coisa com o produto?",
+    introEn: "Good afternoon, how can I help? Did something happen with the product?",
+  },
+  {
+    id: "catchup",
+    emoji: "🫂",
+    title: "Colocando o papo em dia",
+    description: "Catch up with an old friend.",
+    introPt: "Quanto tempo! Sumiu, hein? Me conta, o que andou fazendo da vida?",
+    introEn: "Long time! You disappeared, huh? Tell me, what have you been up to?",
+  },
 ];

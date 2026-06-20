@@ -5,6 +5,8 @@ export const COURSE_UNITS = [
   { id: "people", title: "Pessoas e planos", subtitle: "Talk about yourself, family and daily life.", emoji: "💬" },
   { id: "a2-past", title: "Histórias e passado", subtitle: "A2 · Talk about what happened.", emoji: "📖" },
   { id: "a2-future", title: "Opiniões e futuro", subtitle: "A2 · Plans, opinions and richer chat.", emoji: "🔮" },
+  { id: "b1-core", title: "Nuance e fluência", subtitle: "B1 · Hypotheticals, nuance and flow.", emoji: "🧠" },
+  { id: "b1-real", title: "Português de verdade", subtitle: "B1 · Real conversations with range.", emoji: "🗣️" },
 ];
 
 // `teach` is a longer grammar/learning note shown on the lesson intro and result.
@@ -322,6 +324,104 @@ export const LESSONS = [
     { pt: "No futuro, eu quero visitar o Brasil.", en: "In the future, I want to visit Brazil." },
     { pt: "Eu acho que estou melhorando.", en: "I think I'm getting better." },
   ], "This mission moves across time: past (comecei, foi), present (consigo, estou melhorando) and future (quero visitar). Being able to shift between time frames in one short story is the heart of A2 — well done."),
+
+  // ===================== B1 · Nuance e fluência =====================
+  mk("b1-01", "b1-core", "🙏", "Espero que dê certo", "Express wishes, hopes and doubts.", "Present subjunctive", "After hopes, wishes and doubt, Portuguese switches to the subjunctive: espero que você esteja bem.", "The subjunctive feels strange at first — learn it through fixed openers like 'espero que' and 'tomara que'.", ["subjunctive", "conversation"], [
+    { pt: "Espero que você esteja bem.", en: "I hope you're well." },
+    { pt: "Tomara que dê tudo certo.", en: "Hopefully everything works out." },
+    { pt: "É importante que a gente pratique.", en: "It's important that we practise." },
+    { pt: "Quero que você venha comigo.", en: "I want you to come with me." },
+    { pt: "Talvez ele não saiba.", en: "Maybe he doesn't know." },
+  ], "The present subjunctive appears after wishes, doubt and emotion: espero que, tomara que, é importante que, quero que, talvez. Form it from the eu-present stem with the 'opposite' vowel: -ar → e (fale), -er/-ir → a (coma, parta). Memorise the irregulars: seja, esteja, vá, dê, venha, saiba."),
+
+  mk("b1-02", "b1-core", "🌈", "Se eu pudesse", "Talk about hypotheticals and dreams.", "Conditional + se", "Hypotheticals: Se + imperfect subjunctive (tivesse, fosse), main verb in the conditional (-ria).", "This pattern lets you talk about dreams, advice and 'what ifs'.", ["conditional", "subjunctive"], [
+    { pt: "Se eu tivesse tempo, eu viajaria mais.", en: "If I had time, I would travel more." },
+    { pt: "Se eu fosse você, eu aceitaria.", en: "If I were you, I would accept." },
+    { pt: "Eu gostaria de morar perto da praia.", en: "I would like to live near the beach." },
+    { pt: "Seria ótimo te ver de novo.", en: "It would be great to see you again." },
+    { pt: "Se pudesse, eu mudaria isso.", en: "If I could, I would change this." },
+  ], "Unreal conditions use two pieces: 'Se' + the imperfect subjunctive (tivesse, fosse, pudesse, fizesse) and a main clause in the conditional, formed with -ria (viajaria, aceitaria, gostaria). 'Se eu fosse você…' (if I were you) is the classic way to give advice."),
+
+  mk("b1-03", "b1-core", "💬", "Me liga depois", "Use object pronouns like a Brazilian.", "Object pronouns", "In spoken Brazil, object pronouns come before the verb: me, te, lhe, nos.", "Don't overthink placement — copy the natural spoken order: 'me dá', 'te ligo'.", ["pronouns", "conversation"], [
+    { pt: "Eu te ligo mais tarde.", en: "I'll call you later." },
+    { pt: "Me passa o sal, por favor.", en: "Pass me the salt, please." },
+    { pt: "Eu já te falei isso.", en: "I already told you that." },
+    { pt: "Posso te ajudar?", en: "Can I help you?" },
+    { pt: "Ela me convidou para a festa.", en: "She invited me to the party." },
+  ], "Brazilians place object pronouns before the verb in speech: me, te, lhe, nos. They even start sentences with them — 'Me passa…', 'Te amo' — which textbooks call wrong but everyone says. 'Te' is the everyday informal 'you', matching 'você' in practice."),
+
+  mk("b1-04", "b1-core", "⏳", "Faz tempo que...", "Talk about duration and recent habits.", "há / faz + time", "'Há' and 'faz' + a time period = 'for' or 'ago'. 'Tenho + particípio' = a recent, ongoing pattern.", "These structures express things English does with 'have been …-ing'.", ["fluency", "time"], [
+    { pt: "Eu moro aqui há cinco anos.", en: "I've lived here for five years." },
+    { pt: "Faz tempo que não te vejo.", en: "It's been a while since I saw you." },
+    { pt: "Ultimamente, eu tenho dormido mal.", en: "Lately, I've been sleeping badly." },
+    { pt: "Eu tenho estudado bastante.", en: "I've been studying a lot." },
+    { pt: "Há quanto tempo você espera?", en: "How long have you been waiting?" },
+  ], "'Há' (formal) and 'faz' (spoken) + a period mean 'for' or 'ago': moro aqui há cinco anos. The compound 'tenho + past participle' (tenho estudado, tenho dormido) describes something repeated and ongoing up to now — close to English 'have been -ing'."),
+
+  mk("b1-05", "b1-core", "🗨️", "Ele disse que...", "Report what other people said.", "Reported speech", "Report with 'disse que…', ask with 'perguntou se…', and shift the tense back.", "Reported speech is essential for telling stories about other people.", ["storytelling", "conversation"], [
+    { pt: "Ele disse que ia chegar tarde.", en: "He said he was going to arrive late." },
+    { pt: "Ela me perguntou se eu estava bem.", en: "She asked me if I was okay." },
+    { pt: "Eles falaram que o restaurante é ótimo.", en: "They said the restaurant is great." },
+    { pt: "Eu pensei que fosse mais caro.", en: "I thought it would be more expensive." },
+    { pt: "O médico disse para eu descansar.", en: "The doctor told me to rest." },
+  ], "Report statements with 'disse/falou que…' and questions with 'perguntou se…'. The tense usually shifts back: vai → ia, é → era. For relayed instructions use 'disse para + eu + infinitive' (disse para eu descansar = told me to rest)."),
+
+  mk("b1-06", "b1-core", "⚖️", "Por um lado...", "Build a balanced opinion.", "Structuring opinions", "Frame two sides with 'por um lado… por outro', and hedge with 'na verdade', 'depende'.", "Sounding thoughtful is about structure, not big words.", ["opinions", "connectors"], [
+    { pt: "Por um lado é caro, por outro vale a pena.", en: "On one hand it's expensive, on the other it's worth it." },
+    { pt: "Na verdade, eu discordo um pouco.", en: "Actually, I disagree a little." },
+    { pt: "Faz sentido, mas tenho minhas dúvidas.", en: "It makes sense, but I have my doubts." },
+    { pt: "Depende do ponto de vista.", en: "It depends on the point of view." },
+    { pt: "De modo geral, eu concordo.", en: "Generally speaking, I agree." },
+  ], "Structure an opinion to sound fluent: 'por um lado… por outro (lado)' weighs two sides; 'na verdade' = actually; 'de modo geral' = generally speaking. Hedge politely with 'tenho minhas dúvidas' and 'depende' instead of flat disagreement."),
+
+  // ===================== B1 · Português de verdade =====================
+  mk("b1-07", "b1-real", "💼", "No trabalho", "Handle work conversations.", "Professional language", "Workplace chunks: ficar responsável por, remarcar, prazo, resolver.", "Work Portuguese is full of fixed expressions — learn them as blocks.", ["professional", "verbs"], [
+    { pt: "Eu fiquei responsável pelo projeto.", en: "I became responsible for the project." },
+    { pt: "A gente precisa resolver isso logo.", en: "We need to sort this out soon." },
+    { pt: "Vou te mandar um e-mail com os detalhes.", en: "I'll send you an email with the details." },
+    { pt: "Podemos remarcar a reunião?", en: "Can we reschedule the meeting?" },
+    { pt: "Estou um pouco atrasado com o prazo.", en: "I'm a little behind on the deadline." },
+  ], "Useful work vocabulary: ficar responsável por (to be in charge of), resolver (to sort out), remarcar (to reschedule), prazo (deadline), reunião (meeting). Note the contraction 'pelo' = por + o (responsável pelo projeto)."),
+
+  mk("b1-08", "b1-real", "❤️", "Saudade e sentimentos", "Express feelings with nuance.", "Feelings + ficar", "'Ficar + adjective' = to become/feel; 'deixar alguém + adjective' = to make someone feel.", "'Saudade' is the famous Brazilian feeling — learn to use it naturally.", ["relationships", "feelings"], [
+    { pt: "Eu fico feliz quando te vejo.", en: "I feel happy when I see you." },
+    { pt: "Isso me deixa um pouco nervoso.", en: "That makes me a little nervous." },
+    { pt: "Eu estava com saudade de você.", en: "I missed you." },
+    { pt: "Não leva a mal, mas eu discordo.", en: "Don't take it the wrong way, but I disagree." },
+    { pt: "Fica tranquilo, vai dar tudo certo.", en: "Relax, it's all going to work out." },
+  ], "'Ficar + adjective' means to become/feel (fico feliz, fica nervoso). 'Deixar alguém + adjective' = to make someone feel (me deixa nervoso). 'Saudade' (estar com saudade de) is the longing for someone or something — there's no single English word. Soften hard things with 'não leva a mal'."),
+
+  mk("b1-09", "b1-real", "🎬", "De repente...", "Tell a vivid story.", "Past tenses combined", "Background uses the imperfect; the interrupting action uses the simple past; 'tinha + particípio' = had done.", "Great stories layer description, action and earlier events.", ["storytelling", "past"], [
+    { pt: "Eu estava saindo quando começou a chover.", en: "I was leaving when it started to rain." },
+    { pt: "Enquanto eu cozinhava, ele assistia TV.", en: "While I was cooking, he was watching TV." },
+    { pt: "De repente, o telefone tocou.", en: "Suddenly, the phone rang." },
+    { pt: "Eu nem tinha percebido que era tarde.", en: "I hadn't even noticed it was late." },
+    { pt: "No fim das contas, deu tudo certo.", en: "In the end, everything worked out." },
+  ], "Layer your past tenses: the imperfect sets the scene (estava saindo, cozinhava), the pretérito perfeito drops in the key event (começou, tocou), and the pluperfect 'tinha + particípio' (tinha percebido) refers to something that had happened even earlier. 'De repente' = suddenly."),
+
+  mk("b1-10", "b1-real", "🤝", "Mal-entendidos", "Smooth over a misunderstanding.", "Repair + apology", "Useful: 'houve um mal-entendido', 'deixa eu explicar', 'não foi minha intenção'.", "Repairing communication politely is a true sign of fluency.", ["professional", "survival"], [
+    { pt: "Acho que houve um mal-entendido.", en: "I think there was a misunderstanding." },
+    { pt: "Não foi minha intenção.", en: "It wasn't my intention." },
+    { pt: "Deixa eu explicar melhor.", en: "Let me explain better." },
+    { pt: "Desculpa se eu não fui claro.", en: "Sorry if I wasn't clear." },
+    { pt: "Tudo certo, sem ressentimentos.", en: "It's all good, no hard feelings." },
+  ], "'Houve' is the past of 'haver' (there was): houve um mal-entendido. 'Deixa eu + infinitive' is the spoken way to say 'let me…' (deixa eu explicar). These phrases let you de-escalate and clarify without switching to English."),
+
+  mk("b1-11", "b1-real", "🔮", "Quando eu tiver tempo", "Talk about open-ended future plans.", "Future subjunctive", "After quando, se, assim que about the future, use the future subjunctive (tiver, chegar, der).", "This tense is extremely common in Brazil and marks real fluency.", ["subjunctive", "future"], [
+    { pt: "Quando eu tiver tempo, eu viajo.", en: "When I have time, I'll travel." },
+    { pt: "Assim que eu chegar, eu te aviso.", en: "As soon as I arrive, I'll let you know." },
+    { pt: "Se tudo der certo, eu mudo no ano que vem.", en: "If all goes well, I'll move next year." },
+    { pt: "Faça o que você achar melhor.", en: "Do whatever you think is best." },
+    { pt: "Vou esperar até que ele responda.", en: "I'll wait until he replies." },
+  ], "The future subjunctive points to an uncertain future after quando, se, assim que, enquanto and 'o que': quando eu tiver, se der, o que você achar. Build it from the 'eles' simple-past stem (tiveram → tiver, fizeram → fizer, foram → for). Brazilians use it constantly."),
+
+  mk("b1-12", "b1-real", "🏆", "Missão Tagarela B1", "Tell your story with full range.", "Final B1 mini mission", "Combine subjunctive, conditional and future subjunctive in one reflection.", "If you can move between these moods, you're genuinely conversational.", ["conversation", "review"], [
+    { pt: "Se eu pudesse dar um conselho, seria: não desista.", en: "If I could give one piece of advice, it'd be: don't give up." },
+    { pt: "Faz um tempo que eu estudo português todo dia.", en: "I've been studying Portuguese every day for a while." },
+    { pt: "Espero que um dia eu seja fluente.", en: "I hope that one day I'll be fluent." },
+    { pt: "Quando eu for ao Brasil, vou falar com todo mundo.", en: "When I go to Brazil, I'll talk to everyone." },
+    { pt: "No fim das contas, o esforço vale a pena.", en: "In the end, the effort is worth it." },
+  ], "This mission blends the B1 toolkit: conditional (seria), 'faz + tempo' for duration, present subjunctive (espero que… seja), and future subjunctive (quando eu for). Switching smoothly between these moods in one short reflection is exactly what conversational B1 sounds like."),
 ];
 
 export const SKILL_LABELS = {
@@ -357,6 +457,13 @@ export const SKILL_LABELS = {
   connectors: "connectors",
   health: "health",
   requests: "polite requests",
+  subjunctive: "subjunctive",
+  conditional: "conditional",
+  pronouns: "pronouns",
+  fluency: "fluency",
+  professional: "work & professional",
+  relationships: "relationships",
+  storytelling: "storytelling",
 };
 
 export function skillLabel(tag) {

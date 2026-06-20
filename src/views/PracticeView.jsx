@@ -315,6 +315,15 @@ const TRANSLATE_PROMPTS = [
   "The more I practise, the better I get.",
   "When I was a child, I lived in the countryside.",
   "I think I am getting better at Portuguese.",
+  // B1
+  "If I had more time, I would travel more.",
+  "I hope everything works out for you.",
+  "I've been studying Portuguese every day.",
+  "When I arrive, I'll let you know.",
+  "He said he was going to arrive late.",
+  "On one hand it's expensive, on the other it's worth it.",
+  "If I were you, I would accept the offer.",
+  "It's been a while since I saw you.",
 ];
 function TranslateMode({ onSave, onActivity }) {
   const [idx, go] = usePersistedIndex("tagarela:pos:translate", TRANSLATE_PROMPTS.length);

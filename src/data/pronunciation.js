@@ -28,4 +28,12 @@ export const PRONUNCIATION_DRILLS = [
   { pt: "Apesar da chuva, foi um dia ótimo.", en: "Despite the rain, it was a great day.", skill: "connectors", note: "“Apesar de” = despite. Connectors make speech sound natural." },
   { pt: "Quanto mais eu pratico, melhor eu fico.", en: "The more I practise, the better I get.", skill: "comparison", note: "Pattern: “quanto mais… melhor” = the more… the better." },
   { pt: "Foi um prazer falar com você.", en: "It was a pleasure talking to you.", skill: "conversation", note: "A warm way to close a good conversation." },
+
+  // --- B1: nuance & flow ---
+  { pt: "Se eu tivesse mais tempo, eu viajaria pelo Brasil.", en: "If I had more time, I'd travel around Brazil.", skill: "conditional", note: "Hypothetical: Se + imperfect subjunctive (tivesse) + conditional (viajaria)." },
+  { pt: "Espero que dê tudo certo para você.", en: "I hope everything works out for you.", skill: "subjunctive", note: "“Espero que” triggers the subjunctive — here “dê” (from dar)." },
+  { pt: "Faz anos que eu não falo com ele.", en: "I haven't spoken to him in years.", skill: "fluency", note: "“Faz + time + que” expresses duration: it's been (years) since…" },
+  { pt: "Quando eu chegar, eu te aviso.", en: "When I arrive, I'll let you know.", skill: "future", note: "Future subjunctive after “quando”: chegar (not chego)." },
+  { pt: "Por um lado é caro, por outro vale a pena.", en: "On one hand it's expensive, on the other it's worth it.", skill: "opinions", note: "“Por um lado… por outro” frames two sides of an argument." },
+  { pt: "No fim das contas, o que importa é tentar.", en: "In the end, what matters is trying.", skill: "conversation", note: "“No fim das contas” = when all's said and done." },
 ];

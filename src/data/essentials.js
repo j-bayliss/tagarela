@@ -62,4 +62,22 @@ export const ESSENTIAL_GROUPS = [
       { pt: "Chame uma ambulância!", en: "Call an ambulance!", example: "Rápido, chame uma ambulância!" },
     ],
   },
+  {
+    title: "Opinions & nuance (B1)",
+    items: [
+      { pt: "Na minha opinião…", en: "In my opinion…", example: "Na minha opinião, vale a pena." },
+      { pt: "Eu concordo, mas…", en: "I agree, but…", example: "Eu concordo, mas tenho minhas dúvidas." },
+      { pt: "Por um lado… por outro…", en: "On one hand… on the other…", example: "Por um lado é caro, por outro é bom." },
+      { pt: "Depende do ponto de vista.", en: "It depends on the point of view.", example: "Sei lá, depende do ponto de vista." },
+    ],
+  },
+  {
+    title: "Connectors & flow (B1)",
+    items: [
+      { pt: "No fim das contas…", en: "In the end / when all's said and done…", example: "No fim das contas, deu tudo certo." },
+      { pt: "Ou seja…", en: "In other words / that is…", example: "Ele faltou, ou seja, vou ter que ir sozinho." },
+      { pt: "Apesar de…", en: "Despite / although…", example: "Apesar do cansaço, eu fui." },
+      { pt: "De qualquer forma…", en: "Anyway / in any case…", example: "De qualquer forma, obrigado pela ajuda." },
+    ],
+  },
 ];
