@@ -389,3 +389,10 @@ html[data-theme="dark"] .tg-tool-btn { background:var(--cloud); }
 .tg-word-chip { display:inline-flex; align-items:baseline; gap:8px; border:none; cursor:pointer; background:rgba(30,122,94,.12); color:var(--green-d); border-radius:999px; padding:8px 14px; font-weight:800; font-size:16px; }
 .tg-word-chip span { font-size:11px; font-weight:700; opacity:.7; text-transform:uppercase; letter-spacing:.04em; }
 .tg-word-chip:active { transform: scale(.96); }
+
+/* ---------- step navigation (batch 6) ---------- */
+.tg-stepnav { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:12px; padding-top:12px; border-top:1px solid var(--line); }
+.tg-stepbtn { border:1.5px solid var(--line); background:#fff; color:var(--ink); border-radius:999px; padding:7px 14px; font-size:13px; font-weight:700; cursor:pointer; }
+.tg-stepbtn:active { transform: scale(.96); }
+.tg-stepcount { font-size:13px; font-weight:800; color:var(--soft); font-variant-numeric: tabular-nums; }
+html[data-theme="dark"] .tg-stepbtn { background:var(--cloud); }

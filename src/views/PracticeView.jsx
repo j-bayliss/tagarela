@@ -4,7 +4,7 @@ import { SCENARIOS } from "../data/scenarios";
 import { PRONUNCIATION_DRILLS } from "../data/pronunciation";
 import { askClaude, askClaudeStream, parseJSON } from "../services/anthropic";
 import { assessPronunciationWithAzure, recognizeOnceWithAzure } from "../services/azureSpeech";
-import { getApiKey, getAzureSettings } from "../services/storage";
+import { getApiKey, getAzureSettings, readJSON, writeJSON } from "../services/storage";
 import { buzz } from "../utils/haptics";
 import { friendlyPronunciationFeedback, getSpeechRecognition, normaliseAnswer, scoreClass, speak } from "../utils/language";
 import { Icons } from "../components/Icons";
@@ -20,6 +20,27 @@ const GRADE_SYS = `You grade an A1-A2 learner's translation into Brazilian Portu
 
 function ApiNudge({ text = "Add your Anthropic API key in settings to unlock this AI practice mode." }) {
   return <div className="tg-card api-nudge"><div className="tg-label">Optional AI mode</div><p className="tg-expl">{text}</p></div>;
+}
+
+// Remembers your position in a stepping mode across app reloads.
+function usePersistedIndex(storeKey, length) {
+  const [idx, setIdx] = useState(() => {
+    const v = Number(readJSON(storeKey, 0)) || 0;
+    return length > 0 ? ((v % length) + length) % length : 0;
+  });
+  useEffect(() => { writeJSON(storeKey, idx); }, [storeKey, idx]);
+  const go = (delta) => setIdx((n) => (length > 0 ? (((n + delta) % length) + length) % length : 0));
+  return [idx, go];
+}
+
+function StepNav({ idx, total, onPrev, onNext, nextLabel = "Skip" }) {
+  return (
+    <div className="tg-stepnav">
+      <button type="button" className="tg-stepbtn" onClick={onPrev} aria-label="Previous">‹ Prev</button>
+      <span className="tg-stepcount">{(idx % total) + 1} / {total}</span>
+      <button type="button" className="tg-stepbtn" onClick={onNext} aria-label="Next">{nextLabel} ›</button>
+    </div>
+  );
 }
 
 function ChatMode({ scenario, onSave, onMistake, onActivity }) {
@@ -270,13 +291,14 @@ function GrammarMode({ onSave, onMistake, onActivity }) {
 
 const TRANSLATE_PROMPTS = ["I want a coffee, please.", "Where is the station?", "Can you repeat more slowly?", "I have a reservation.", "I am learning Portuguese.", "How much does it cost?", "I like the beach."];
 function TranslateMode({ onSave, onActivity }) {
-  const [prompt, setPrompt] = useState(() => TRANSLATE_PROMPTS[0]);
+  const [idx, go] = usePersistedIndex("tagarela:pos:translate", TRANSLATE_PROMPTS.length);
   const [answer, setAnswer] = useState("");
   const [result, setResult] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const hasKey = Boolean(getApiKey());
-  const nextPrompt = () => { setPrompt(TRANSLATE_PROMPTS[Math.floor(Math.random() * TRANSLATE_PROMPTS.length)]); setAnswer(""); setResult(null); };
+  const prompt = TRANSLATE_PROMPTS[idx % TRANSLATE_PROMPTS.length];
+  const move = (delta) => { buzz(6); go(delta); setAnswer(""); setResult(null); setError(""); };
   const grade = async () => {
     setBusy(true); setError("");
     if (onActivity) onActivity();
@@ -286,11 +308,11 @@ function TranslateMode({ onSave, onActivity }) {
     } catch (err) { setError(err.message || "Translation grading failed."); }
     finally { setBusy(false); }
   };
-  return <div>{!hasKey ? <ApiNudge/> : null}<div className="tg-card"><div className="tg-label">Translate into Brazilian Portuguese</div><div className="tg-prompt-en">{prompt}</div><textarea className="tg-ta" value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="Portuguese answer..."/><button className="tg-btn tg-btn-primary" disabled={!hasKey || !answer.trim() || busy} onClick={grade}>{busy ? "Grading..." : "Grade"}</button><button className="tg-btn tg-btn-ghost" onClick={nextPrompt}>New prompt</button></div>{error ? <div className="tg-error">{error}</div> : null}{result ? <div className="tg-card"><div className="tg-score small">{result.score || 0}<small>%</small></div><div className="tg-corrected">{result.model_answer}</div><p className="tg-expl">{result.feedback}</p><button className="tg-btn tg-btn-ghost" onClick={() => onSave(result.model_answer, prompt, Number(result.score || 0) < 70 ? "difficult" : "learning")}>Save model answer</button></div> : null}</div>;
+  return <div>{!hasKey ? <ApiNudge/> : null}<div className="tg-card"><div className="tg-label">Translate into Brazilian Portuguese</div><div className="tg-prompt-en">{prompt}</div><textarea className="tg-ta" value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="Portuguese answer..."/><button className="tg-btn tg-btn-primary" disabled={!hasKey || !answer.trim() || busy} onClick={grade}>{busy ? "Grading..." : "Grade"}</button><StepNav idx={idx} total={TRANSLATE_PROMPTS.length} onPrev={() => move(-1)} onNext={() => move(1)} nextLabel="Next" /></div>{error ? <div className="tg-error">{error}</div> : null}{result ? <div className="tg-card"><div className="tg-score small">{result.score || 0}<small>%</small></div><div className="tg-corrected">{result.model_answer}</div><p className="tg-expl">{result.feedback}</p><button className="tg-btn tg-btn-ghost" onClick={() => onSave(result.model_answer, prompt, Number(result.score || 0) < 70 ? "difficult" : "learning")}>Save model answer</button><button className="tg-btn tg-btn-primary" onClick={() => move(1)}>Next prompt</button></div> : null}</div>;
 }
 
 function DictationMode({ onSave, onActivity }) {
-  const [idx, setIdx] = useState(0);
+  const [idx, go] = usePersistedIndex("tagarela:pos:dictation", PRONUNCIATION_DRILLS.length);
   const [typed, setTyped] = useState("");
   const [result, setResult] = useState(null);
   const cur = PRONUNCIATION_DRILLS[idx % PRONUNCIATION_DRILLS.length];
@@ -300,18 +322,19 @@ function DictationMode({ onSave, onActivity }) {
     if (onActivity) onActivity();
     if (!correct) onSave(cur.pt, cur.en, "difficult", [cur.skill, "listening"]);
   };
-  const next = () => { setIdx((n) => n + 1); setTyped(""); setResult(null); };
-  return <div><div className="tg-card"><div className="tg-label">Listen and type</div><button className="tg-listen" onClick={() => speak(cur.pt)}>{Icons.speaker} Play phrase</button><div className="tg-meaning">{cur.en}</div><textarea className="tg-ta" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="Type what you hear..."/><button className="tg-btn tg-btn-primary" disabled={!typed.trim()} onClick={check}>Check</button></div>{result ? <div className={`tg-feedback ${result.correct ? "correct" : "incorrect"}`}><b>{result.correct ? "Boa!" : "Not quite."}</b><span>{result.correct ? "You heard it clearly." : `Correct phrase: ${cur.pt}`}</span><button className="tg-btn tg-btn-primary" onClick={next}>Next phrase</button></div> : null}</div>;
+  const move = (delta) => { buzz(6); go(delta); setTyped(""); setResult(null); };
+  return <div><div className="tg-card"><div className="tg-label">Listen and type</div><button className="tg-listen" onClick={() => speak(cur.pt)}>{Icons.speaker} Play phrase</button><div className="tg-meaning">{cur.en}</div><textarea className="tg-ta" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="Type what you hear..."/><button className="tg-btn tg-btn-primary" disabled={!typed.trim()} onClick={check}>Check</button><StepNav idx={idx} total={PRONUNCIATION_DRILLS.length} onPrev={() => move(-1)} onNext={() => move(1)} /></div>{result ? <div className={`tg-feedback ${result.correct ? "correct" : "incorrect"}`}><b>{result.correct ? "Boa!" : "Not quite."}</b><span>{result.correct ? "You heard it clearly." : `Correct phrase: ${cur.pt}`}</span><button className="tg-btn tg-btn-primary" onClick={() => move(1)}>Next phrase</button></div> : null}</div>;
 }
 
 function PronunciationMode({ onSave, onActivity }) {
   const [settings] = useState(() => getAzureSettings());
-  const [idx, setIdx] = useState(0);
+  const [idx, go] = usePersistedIndex("tagarela:pos:speak", PRONUNCIATION_DRILLS.length);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const cur = PRONUNCIATION_DRILLS[idx % PRONUNCIATION_DRILLS.length];
   const hasAzure = Boolean(settings.key && settings.region);
+  const move = (delta) => { buzz(6); go(delta); setResult(null); setError(""); };
   const record = async () => {
     buzz(10);
     setBusy(true); setError(""); setResult(null);
@@ -323,7 +346,7 @@ function PronunciationMode({ onSave, onActivity }) {
     } catch (err) { setError(err.message || "Pronunciation assessment failed."); }
     finally { setBusy(false); }
   };
-  return <div>{!hasAzure ? <div className="tg-card api-nudge"><div className="tg-label">Azure pronunciation</div><p className="tg-expl">Add your Azure Speech key and region in settings to unlock pronunciation scoring. This app is locked to Brazilian Portuguese: pt-BR.</p></div> : null}<div className="tg-card"><div className="tg-label">Repeat after me</div><div className="tg-big-pt">{cur.pt}</div><div className="tg-meaning">{cur.en}</div><button className="tg-btn tg-btn-ghost" onClick={() => speak(cur.pt)}>Hear phrase</button><button className="tg-btn tg-btn-primary" disabled={!hasAzure || busy} onClick={record}>{busy ? "Listening..." : "Record and score"}</button></div>{error ? <div className="tg-error">{error}</div> : null}{result ? <div className="tg-card"><div className={`tg-score small ${scoreClass(result.pronunciationScore)}`}>{result.pronunciationScore}<small>%</small></div><p className="tg-expl">{friendlyPronunciationFeedback(result.pronunciationScore)}</p><div className="tg-score-grid"><span>Accuracy <b>{result.accuracyScore}%</b></span><span>Fluency <b>{result.fluencyScore}%</b></span><span>Completeness <b>{result.completenessScore}%</b></span><span>Prosody <b>{result.prosodyScore || "—"}%</b></span></div><div className="tg-meaning">Heard: {result.text || "—"}</div>{result.words?.length ? <><div className="tg-word-scores">{result.words.map((w, i) => <button type="button" key={w.word + i} className={`tg-word ${w.errorType === "Omission" ? "miss" : w.accuracy >= 80 ? "good" : w.accuracy >= 60 ? "ok" : "bad"}`} onClick={() => { buzz(6); speak(w.word); }}>{w.word}<small>{w.errorType === "Omission" ? "missed" : `${w.accuracy}%`}</small></button>)}</div><div className="tg-small-note">Tap a word to hear it on its own.</div></> : null}<button className="tg-btn tg-btn-primary" onClick={() => { setIdx((n) => n + 1); setResult(null); }}>Next phrase</button></div> : null}</div>;
+  return <div>{!hasAzure ? <div className="tg-card api-nudge"><div className="tg-label">Azure pronunciation</div><p className="tg-expl">Add your Azure Speech key and region in settings to unlock pronunciation scoring. This app is locked to Brazilian Portuguese: pt-BR.</p></div> : null}<div className="tg-card"><div className="tg-label">Repeat after me</div><div className="tg-big-pt">{cur.pt}</div><div className="tg-meaning">{cur.en}</div><button className="tg-btn tg-btn-ghost" onClick={() => speak(cur.pt)}>Hear phrase</button><button className="tg-btn tg-btn-primary" disabled={!hasAzure || busy} onClick={record}>{busy ? "Listening..." : "Record and score"}</button><StepNav idx={idx} total={PRONUNCIATION_DRILLS.length} onPrev={() => move(-1)} onNext={() => move(1)} /></div>{error ? <div className="tg-error">{error}</div> : null}{result ? <div className="tg-card"><div className={`tg-score small ${scoreClass(result.pronunciationScore)}`}>{result.pronunciationScore}<small>%</small></div><p className="tg-expl">{friendlyPronunciationFeedback(result.pronunciationScore)}</p><div className="tg-score-grid"><span>Accuracy <b>{result.accuracyScore}%</b></span><span>Fluency <b>{result.fluencyScore}%</b></span><span>Completeness <b>{result.completenessScore}%</b></span><span>Prosody <b>{result.prosodyScore || "—"}%</b></span></div><div className="tg-meaning">Heard: {result.text || "—"}</div>{result.words?.length ? <><div className="tg-word-scores">{result.words.map((w, i) => <button type="button" key={w.word + i} className={`tg-word ${w.errorType === "Omission" ? "miss" : w.accuracy >= 80 ? "good" : w.accuracy >= 60 ? "ok" : "bad"}`} onClick={() => { buzz(6); speak(w.word); }}>{w.word}<small>{w.errorType === "Omission" ? "missed" : `${w.accuracy}%`}</small></button>)}</div><div className="tg-small-note">Tap a word to hear it on its own.</div></> : null}<button className="tg-btn tg-btn-primary" onClick={() => move(1)}>Next phrase</button></div> : null}</div>;
 }
 
 export default function PracticeView({ onSave, onMistake, initialMode, onActivity, onOpenSettings, online = true }) {
