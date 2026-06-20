@@ -44,6 +44,7 @@ function makeExercises(lesson) {
       prompt: blankPrompt,
       answer: answerWord,
       full: p3.pt,
+      translation: p3.en,
       tags: lesson.skillTags,
     },
     {
@@ -121,11 +122,27 @@ function Exercise({ exercise, onAnswer }) {
     );
   }
 
+  // blank / missing-word exercise
+  const parts = exercise.prompt.split("____");
   return (
     <div className="tg-card lesson-exercise">
       <div className="tg-label">{exercise.title}</div>
-      <div className="tg-big-pt">{exercise.prompt}</div>
-      <input className="tg-input full" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="Missing word" />
+      {exercise.translation ? <div className="tg-meaning">"{exercise.translation}"</div> : null}
+      <div className="tg-blank-line">
+        <span className="tg-blank-ctx">{parts[0]}</span>
+        <input
+          className="tg-blank-input"
+          value={typed}
+          onChange={(e) => setTyped(e.target.value)}
+          placeholder="?"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck="false"
+          size={Math.max(4, exercise.answer.length + 1)}
+        />
+        <span className="tg-blank-ctx">{parts[1]}</span>
+      </div>
+      <button className="tg-mini" onClick={() => speak(exercise.full)}>{Icons.speaker} Hear full phrase</button>
       <button className="tg-btn tg-btn-primary" disabled={!typed.trim()} onClick={() => submit(typed)}>Check</button>
     </div>
   );

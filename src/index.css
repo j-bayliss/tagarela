@@ -160,6 +160,9 @@ button, input, textarea, select { font: inherit; }
 .tg-build-line { background:rgba(30,122,94,.08); border-radius:15px; min-height:48px; padding:14px; font-weight:800; color:var(--green-d); margin-bottom:12px; }
 .tg-word-pool { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
 .tg-word-pool button { text-align:center; }
+.tg-blank-line { display:flex; align-items:baseline; flex-wrap:wrap; gap:4px; font-family:var(--font-display); font-size:22px; font-weight:800; color:var(--green-d); margin:12px 0 16px; line-height:1.6; }
+.tg-blank-ctx { white-space:pre-wrap; }
+.tg-blank-input { border:none; border-bottom:3px solid var(--green-d); background:transparent; font-family:var(--font-display); font-size:22px; font-weight:800; color:var(--ink); text-align:center; min-width:52px; outline:none; padding:0 4px 2px; }
 .tg-feedback { border-radius:17px; padding:14px; margin-bottom:14px; border:1px solid transparent; }
 .tg-feedback b, .tg-feedback span { display:block; }
 .tg-feedback span { margin-top:4px; font-size:14px; line-height:1.35; }
