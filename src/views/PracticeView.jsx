@@ -5,6 +5,7 @@ import { PRONUNCIATION_DRILLS } from "../data/pronunciation";
 import { askClaude, askClaudeStream, parseJSON } from "../services/anthropic";
 import { assessPronunciationWithAzure, recognizeOnceWithAzure } from "../services/azureSpeech";
 import { getApiKey, getAzureSettings } from "../services/storage";
+import { buzz } from "../utils/haptics";
 import { friendlyPronunciationFeedback, getSpeechRecognition, normaliseAnswer, scoreClass, speak } from "../utils/language";
 import { Icons } from "../components/Icons";
 import { Dots } from "../components/Common";
@@ -35,6 +36,7 @@ function ChatMode({ scenario, onSave, onMistake, onActivity }) {
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, busy]);
 
   const useMic = async () => {
+    buzz(10);
     const azure = getAzureSettings();
     if (azure.key && azure.region) {
       setListening(true);
@@ -85,6 +87,7 @@ function ChatMode({ scenario, onSave, onMistake, onActivity }) {
   const send = async () => {
     const text = input.trim();
     if (!text || busy) return;
+    buzz(12);
     setInput("");
     setError("");
     const base = messages.concat([{ who: "me", pt: text }]);
@@ -224,6 +227,7 @@ function PronunciationMode({ onSave, onActivity }) {
   const cur = PRONUNCIATION_DRILLS[idx % PRONUNCIATION_DRILLS.length];
   const hasAzure = Boolean(settings.key && settings.region);
   const record = async () => {
+    buzz(10);
     setBusy(true); setError(""); setResult(null);
     if (onActivity) onActivity();
     try {

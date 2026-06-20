@@ -3,6 +3,7 @@ import { COURSE_UNITS, LESSONS, skillLabel } from "../data/lessons";
 import { normaliseAnswer, speak } from "../utils/language";
 import { ProgressBar } from "../components/Common";
 import { Icons } from "../components/Icons";
+import { buzz } from "../utils/haptics";
 
 function shuffle(items) {
   return [...items].sort(() => Math.random() - 0.5);
@@ -86,6 +87,7 @@ function Exercise({ exercise, onAnswer }) {
 
   if (exercise.type === "order") {
     const add = (word, idx) => {
+      buzz(6);
       setBuilt((b) => b.concat(word));
       setPool((p) => p.filter((_, i) => i !== idx));
     };
@@ -137,6 +139,8 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
   const [feedback, setFeedback] = useState(null);
 
   const handleAnswer = (result) => {
+    // distinct patterns: single soft pulse = correct, double knock = wrong
+    buzz(result.correct ? 10 : [0, 18, 80, 18]);
     setFeedback(result);
     if (onActivity) onActivity();
   };
@@ -178,7 +182,7 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
           ))}
           <button className="tg-btn tg-btn-ghost" onClick={() => lesson.phrases.forEach((p) => onSave(p.pt, p.en, "learning", lesson.skillTags))}>Save phrase pack</button>
         </div>
-        <button className="tg-btn tg-btn-primary" onClick={() => setStarted(true)}>Start playful challenge</button>
+        <button className="tg-btn tg-btn-primary" onClick={() => { buzz(12); setStarted(true); }}>Start playful challenge</button>
       </div>
     );
   }
@@ -195,7 +199,7 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
         <div className={`tg-feedback ${feedback.correct ? "correct" : "incorrect"}`}>
           <b>{feedback.correct ? "Boa!" : "Almost."}</b>
           <span>{feedback.correct ? "That one goes into your confidence bank." : `Expected: ${feedback.expected}`}</span>
-          <button className="tg-btn tg-btn-primary" onClick={next}>{idx >= exercises.length - 1 ? "See result" : "Next"}</button>
+          <button className="tg-btn tg-btn-primary" onClick={() => { buzz(10); next(); }}>{idx >= exercises.length - 1 ? "See result" : "Next"}</button>
         </div>
       ) : null}
     </div>
