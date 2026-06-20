@@ -390,6 +390,12 @@ html[data-theme="dark"] .tg-tool-btn { background:var(--cloud); }
 .tg-word-chip span { font-size:11px; font-weight:700; opacity:.7; text-transform:uppercase; letter-spacing:.04em; }
 .tg-word-chip:active { transform: scale(.96); }
 
+/* ---------- in-lesson learning tip (batch 6) ---------- */
+.tg-learn-tip { background:var(--cloud); border:1px solid var(--line); border-radius:13px; padding:10px 13px; margin-bottom:12px; }
+.tg-learn-tip summary { cursor:pointer; font-weight:800; font-size:13px; color:var(--green-d); list-style:none; }
+.tg-learn-tip summary::-webkit-details-marker { display:none; }
+.tg-learn-tip p { margin:8px 0 2px; font-size:14px; line-height:1.5; color:var(--soft); }
+
 /* ---------- step navigation (batch 6) ---------- */
 .tg-stepnav { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:12px; padding-top:12px; border-top:1px solid var(--line); }
 .tg-stepbtn { border:1.5px solid var(--line); background:#fff; color:var(--ink); border-radius:999px; padding:7px 14px; font-size:13px; font-weight:700; cursor:pointer; }

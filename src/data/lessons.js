@@ -3,9 +3,13 @@ export const COURSE_UNITS = [
   { id: "cafe", title: "Café e comida", subtitle: "Order, ask and survive menus.", emoji: "☕" },
   { id: "city", title: "Pela cidade", subtitle: "Directions, transport and useful questions.", emoji: "🚌" },
   { id: "people", title: "Pessoas e planos", subtitle: "Talk about yourself, family and daily life.", emoji: "💬" },
+  { id: "a2-past", title: "Histórias e passado", subtitle: "A2 · Talk about what happened.", emoji: "📖" },
+  { id: "a2-future", title: "Opiniões e futuro", subtitle: "A2 · Plans, opinions and richer chat.", emoji: "🔮" },
 ];
 
-const mk = (id, unit, emoji, title, mission, focus, rule, coachTip, skillTags, phrases) => ({
+// `teach` is a longer grammar/learning note shown on the lesson intro and result.
+// It defaults to `rule` so every lesson always has something to teach.
+const mk = (id, unit, emoji, title, mission, focus, rule, coachTip, skillTags, phrases, teach) => ({
   id,
   unit,
   emoji,
@@ -17,6 +21,7 @@ const mk = (id, unit, emoji, title, mission, focus, rule, coachTip, skillTags, p
   coachTip,
   skillTags,
   phrases,
+  teach: teach || rule,
 });
 
 export const LESSONS = [
@@ -215,6 +220,108 @@ export const LESSONS = [
     { pt: "Hoje eu quero praticar um pouco.", en: "Today I want to practise a little." },
     { pt: "Pode falar mais devagar, por favor?", en: "Can you speak more slowly, please?" },
   ]),
+
+  // ===================== A2 · Histórias e passado =====================
+  mk("a2-01", "a2-past", "📖", "O que aconteceu?", "Talk about what you did, using the past.", "Simple past (regular)", "Past tense of -ar verbs: eu trabalhei, você trabalhou, nós trabalhamos.", "Past tense unlocks real storytelling. Start with the things you do every day.", ["past", "verbs"], [
+    { pt: "Ontem eu trabalhei muito.", en: "Yesterday I worked a lot." },
+    { pt: "Eu comi em um restaurante.", en: "I ate at a restaurant." },
+    { pt: "Nós fomos à praia.", en: "We went to the beach." },
+    { pt: "Você gostou do filme?", en: "Did you like the film?" },
+    { pt: "Eu cheguei tarde em casa.", en: "I arrived home late." },
+    { pt: "Foi muito divertido.", en: "It was a lot of fun." },
+  ], "The pretérito perfeito is the everyday past. Regular -ar verbs: eu -ei, você -ou, nós -amos, eles -aram (trabalhei, trabalhou…). Watch the big irregulars: ir and ser share fui / foi / fomos, and comer (an -er verb) gives comi / comeu / comemos."),
+
+  mk("a2-02", "a2-past", "✈️", "Minha viagem", "Tell the story of a trip.", "Past + describing", "Use the simple past for actions and 'estava/era' to describe how things were.", "Mixing past actions with description is how stories come alive.", ["past", "travel"], [
+    { pt: "Eu viajei para o Rio no mês passado.", en: "I travelled to Rio last month." },
+    { pt: "Nós ficamos em um hotel pequeno.", en: "We stayed in a small hotel." },
+    { pt: "Eu comprei algumas lembranças.", en: "I bought some souvenirs." },
+    { pt: "O voo atrasou duas horas.", en: "The flight was delayed two hours." },
+    { pt: "A comida estava deliciosa.", en: "The food was delicious." },
+    { pt: "Eu adorei a viagem.", en: "I loved the trip." },
+  ], "Two past tenses work together: the pretérito perfeito for finished actions (viajei, comprei) and the pretérito imperfeito for description and background (estava, era, tinha). 'A comida estava deliciosa' describes; 'eu comprei' reports an action."),
+
+  mk("a2-03", "a2-past", "🧒", "Quando eu era criança", "Describe how life used to be.", "Imperfect (habits)", "The imperfect (-ava / -ia) describes repeated past habits and how things were.", "Think 'used to' — childhood, routines and background scenes.", ["past", "family"], [
+    { pt: "Quando eu era criança, eu morava no campo.", en: "When I was a child, I lived in the countryside." },
+    { pt: "Eu jogava futebol todo dia.", en: "I used to play football every day." },
+    { pt: "Minha avó cozinhava muito bem.", en: "My grandmother cooked very well." },
+    { pt: "Nós tínhamos um cachorro.", en: "We had a dog." },
+    { pt: "Eu não gostava de acordar cedo.", en: "I didn't like waking up early." },
+  ], "The pretérito imperfeito = 'used to / was doing'. Endings: -ar verbs take -ava (morava, jogava); -er/-ir verbs take -ia (comia, dormia). Key irregulars: era (ser), tinha (ter), ia (ir). Use it for habits and descriptions, not single finished events."),
+
+  mk("a2-04", "a2-past", "✅", "Já fiz isso", "Say what you've already done.", "Irregular past + já/ainda", "'Já' = already; 'ainda não' = not yet. Many common verbs are irregular in the past.", "These irregular verbs are everywhere — worth memorising as chunks.", ["past", "verbs"], [
+    { pt: "Eu já fiz o almoço.", en: "I already made lunch." },
+    { pt: "Você já foi ao Brasil?", en: "Have you been to Brazil?" },
+    { pt: "Eu ainda não terminei.", en: "I haven't finished yet." },
+    { pt: "Ele fez um bom trabalho.", en: "He did a good job." },
+    { pt: "Eu disse a verdade.", en: "I told the truth." },
+  ], "High-frequency irregular pasts to learn as a set: fazer → fiz / fez, dizer → disse, ter → tive / teve, estar → estive / esteve, ir/ser → fui / foi. Pair them with 'já' (already) and 'ainda não' (not yet) to talk about experience."),
+
+  mk("a2-05", "a2-past", "🩺", "No médico", "Explain how you feel and ask for help.", "Health + 'estar com'", "'Estar com' + noun describes symptoms: estou com dor, com febre, com tosse.", "Health language is predictable and high-value when travelling.", ["health", "survival"], [
+    { pt: "Eu estou com dor de cabeça.", en: "I have a headache." },
+    { pt: "Eu não me sinto bem.", en: "I don't feel well." },
+    { pt: "Começou ontem à noite.", en: "It started last night." },
+    { pt: "Eu preciso de um remédio.", en: "I need some medicine." },
+    { pt: "Cuide-se!", en: "Take care!" },
+  ], "Brazilians say 'estar com' + a noun for states: estou com fome (hungry), com sede (thirsty), com dor (in pain), com febre (a fever). Note the reflexive verb sentir-se: eu me sinto, você se sente."),
+
+  mk("a2-06", "a2-past", "🏁", "Conte uma história", "Tell a short story from start to finish.", "Sequencing the past", "Order events with: primeiro, depois, então, no fim.", "Connectors turn separate facts into a real story.", ["past", "review"], [
+    { pt: "No fim de semana, eu fui ao mercado.", en: "At the weekend, I went to the market." },
+    { pt: "Primeiro, eu comprei frutas e pão.", en: "First, I bought fruit and bread." },
+    { pt: "Depois, eu encontrei um amigo.", en: "Then, I met a friend." },
+    { pt: "Nós tomamos um café juntos.", en: "We had a coffee together." },
+    { pt: "No fim, foi um dia ótimo.", en: "In the end, it was a great day." },
+  ], "Sequencing words give a story shape: primeiro (first), depois / então (then), mais tarde (later), no fim / por fim (in the end). Combine them with the past tenses you've learned to narrate a whole day."),
+
+  // ===================== A2 · Opiniões e futuro =====================
+  mk("a2-07", "a2-future", "🔮", "Meus planos", "Say what you're going to do.", "Near future (ir + verb)", "Near future = ir (present) + infinitive: vou viajar, vamos comer.", "This is the easy, natural way Brazilians talk about the future.", ["future", "verbs"], [
+    { pt: "Amanhã eu vou viajar.", en: "Tomorrow I'm going to travel." },
+    { pt: "Nós vamos visitar a família.", en: "We're going to visit the family." },
+    { pt: "Eu vou tentar falar só português.", en: "I'm going to try to speak only Portuguese." },
+    { pt: "No próximo ano, eu quero morar no Brasil.", en: "Next year, I want to live in Brazil." },
+    { pt: "Vai ser incrível.", en: "It's going to be amazing." },
+    { pt: "Eu pretendo estudar mais.", en: "I intend to study more." },
+  ], "For everyday plans, use the near future: the present of ir + an infinitive — vou viajar, vai ser, vamos comer. It's far more common in speech than the formal future (viajarei). 'Pretendo' (I intend to) and 'quero' (I want to) also point forward."),
+
+  mk("a2-08", "a2-future", "💭", "Na minha opinião", "Give and react to opinions.", "Opinions + agreeing", "'Eu acho que…' = I think that…; 'concordar com' = to agree with.", "Opinions keep a conversation alive — learn to agree and disagree gently.", ["opinions", "conversation"], [
+    { pt: "Na minha opinião, é importante.", en: "In my opinion, it's important." },
+    { pt: "Eu acho que sim.", en: "I think so." },
+    { pt: "Eu concordo com você.", en: "I agree with you." },
+    { pt: "Eu não concordo.", en: "I don't agree." },
+    { pt: "Para mim, faz sentido.", en: "For me, it makes sense." },
+    { pt: "Depende da situação.", en: "It depends on the situation." },
+  ], "Soften opinions with 'eu acho que…' (I think that…) rather than stating bare facts. To agree, use concordar com (eu concordo com você). 'Para mim' = for me/in my view; 'faz sentido' = it makes sense; 'depende' = it depends."),
+
+  mk("a2-09", "a2-future", "⚖️", "Melhor ou pior?", "Compare things naturally.", "Comparatives", "Compare with mais/menos … (do) que; tão … quanto; melhor / pior.", "Comparisons make your descriptions much more precise.", ["comparison", "verbs"], [
+    { pt: "Este é melhor do que aquele.", en: "This one is better than that one." },
+    { pt: "O café aqui é mais barato.", en: "The coffee here is cheaper." },
+    { pt: "Ela fala português melhor do que eu.", en: "She speaks Portuguese better than me." },
+    { pt: "É tão bom quanto o outro.", en: "It's as good as the other one." },
+    { pt: "Esse é o melhor da cidade.", en: "This is the best in the city." },
+  ], "Comparatives: mais … (do) que (more … than), menos … (do) que (less … than), tão … quanto (as … as). Irregulars: bom → melhor (better), ruim → pior (worse). The superlative adds the article: o melhor, a mais barata."),
+
+  mk("a2-10", "a2-future", "🛠️", "Resolvendo problemas", "Handle complaints politely.", "Polite conditional", "queria / gostaria / poderia are softer, polite forms — use them for requests.", "Politeness defuses problems. Soft verbs do a lot of work.", ["requests", "survival"], [
+    { pt: "Eu queria trocar isso, por favor.", en: "I'd like to exchange this, please." },
+    { pt: "Tem um problema com a conta.", en: "There's a problem with the bill." },
+    { pt: "Isso não está certo.", en: "This isn't right." },
+    { pt: "Você poderia me ajudar?", en: "Could you help me?" },
+    { pt: "Eu gostaria de falar com o gerente.", en: "I'd like to speak with the manager." },
+  ], "The conditional softens requests: queria / gostaria (I'd like) instead of quero (I want), and poderia (could you) instead of pode (can you). Same meaning, much more polite — exactly what you want when sorting out a problem."),
+
+  mk("a2-11", "a2-future", "🔗", "Conversa de verdade", "Link your ideas like a native.", "Connectors", "Join ideas with: mas, porque, então, por isso, apesar de.", "Connectors are the difference between word lists and real speech.", ["connectors", "conversation"], [
+    { pt: "Eu queria ir, mas estava cansado.", en: "I wanted to go, but I was tired." },
+    { pt: "Eu estudo todo dia porque é importante.", en: "I study every day because it's important." },
+    { pt: "Então, o que você acha?", en: "So, what do you think?" },
+    { pt: "Por isso eu cheguei cedo.", en: "That's why I arrived early." },
+    { pt: "Apesar disso, foi um bom dia.", en: "Despite that, it was a good day." },
+  ], "Connectors glue sentences together: mas (but), porque (because), então (so/then), por isso (that's why), apesar de / apesar disso (despite / despite that). Sprinkle them in and your Portuguese instantly sounds more fluent."),
+
+  mk("a2-12", "a2-future", "🏆", "Missão Tagarela A2", "Tell your language-learning story.", "Final A2 mini mission", "Combine past, present, future and opinion in one short story.", "You can now move between time frames — that's real conversational range.", ["conversation", "review"], [
+    { pt: "Mês passado, eu comecei a estudar português.", en: "Last month, I started studying Portuguese." },
+    { pt: "No começo, foi difícil, mas eu não desisti.", en: "At first, it was hard, but I didn't give up." },
+    { pt: "Agora eu consigo ter conversas simples.", en: "Now I can have simple conversations." },
+    { pt: "No futuro, eu quero visitar o Brasil.", en: "In the future, I want to visit Brazil." },
+    { pt: "Eu acho que estou melhorando.", en: "I think I'm getting better." },
+  ], "This mission moves across time: past (comecei, foi), present (consigo, estou melhorando) and future (quero visitar). Being able to shift between time frames in one short story is the heart of A2 — well done."),
 ];
 
 export const SKILL_LABELS = {
@@ -243,6 +350,13 @@ export const SKILL_LABELS = {
   work: "work",
   feelings: "feelings",
   writing: "writing",
+  past: "past tense",
+  future: "future",
+  opinions: "opinions",
+  comparison: "comparisons",
+  connectors: "connectors",
+  health: "health",
+  requests: "polite requests",
 };
 
 export function skillLabel(tag) {

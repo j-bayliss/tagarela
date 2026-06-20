@@ -1,4 +1,5 @@
 export const SCENARIOS = [
+  // --- beginner ---
   {
     id: "cafe",
     emoji: "☕",
@@ -46,5 +47,55 @@ export const SCENARIOS = [
     description: "Ask for help and directions.",
     introPt: "Você parece perdido. Posso ajudar?",
     introEn: "You look lost. Can I help?",
+  },
+
+  // --- intermediate ---
+  {
+    id: "restaurant",
+    emoji: "🍽️",
+    title: "Restaurante",
+    description: "Order a full meal and chat with the waiter.",
+    introPt: "Boa noite! Mesa para quantas pessoas? Já posso trazer o cardápio.",
+    introEn: "Good evening! A table for how many people? I can bring you the menu.",
+  },
+  {
+    id: "pharmacy",
+    emoji: "💊",
+    title: "Farmácia",
+    description: "Describe a symptom and ask for medicine.",
+    introPt: "Oi, bem-vindo à farmácia. Você está se sentindo bem? Em que posso ajudar?",
+    introEn: "Hi, welcome to the pharmacy. Are you feeling well? How can I help?",
+  },
+  {
+    id: "clothes",
+    emoji: "👕",
+    title: "Loja de roupas",
+    description: "Ask for sizes, colours and prices.",
+    introPt: "Olá! Está procurando alguma coisa? Temos camisetas em vários tamanhos.",
+    introEn: "Hello! Are you looking for something? We have t-shirts in several sizes.",
+  },
+  {
+    id: "party",
+    emoji: "🎉",
+    title: "Fazendo amigos",
+    description: "Small talk at a party.",
+    introPt: "Oi! Acho que a gente não se conhece. Eu sou a Carla. E você, de onde é?",
+    introEn: "Hi! I don't think we've met. I'm Carla. And you, where are you from?",
+  },
+  {
+    id: "phone",
+    emoji: "📞",
+    title: "Telefonema",
+    description: "Make an appointment by phone.",
+    introPt: "Alô, consultório do Dr. Lima, bom dia. Como posso ajudar?",
+    introEn: "Hello, Dr. Lima's office, good morning. How can I help?",
+  },
+  {
+    id: "work",
+    emoji: "💼",
+    title: "Conversa de trabalho",
+    description: "Talk about your job and routine.",
+    introPt: "Então me conta: no que você trabalha? Como é o seu dia a dia?",
+    introEn: "So tell me: what do you do for work? What is your daily routine like?",
   },
 ];

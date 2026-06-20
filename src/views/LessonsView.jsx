@@ -10,60 +10,52 @@ function shuffle(items) {
 }
 
 function makeExercises(lesson) {
-  const phrases = lesson.phrases;
+  const phrases = (lesson.phrases || []).filter((p) => p && p.pt && p.en);
   const allEnglish = LESSONS.flatMap((l) => l.phrases.map((p) => p.en));
-  const p1 = phrases[0];
-  const p2 = phrases[1] || phrases[0];
-  const p3 = phrases[2] || phrases[0];
-  const p4 = phrases[3] || phrases[0];
-  const blankWords = p3.pt.split(/\s+/);
-  const blankIndex = Math.max(0, Math.min(blankWords.length - 1, Math.floor(blankWords.length / 2)));
-  const answerWord = blankWords[blankIndex].replace(/[.,!?]/g, "");
-  const blankPrompt = blankWords.map((w, i) => i === blankIndex ? "____" : w).join(" ");
+  const distractors = (correct) => shuffle(allEnglish.filter((x) => x !== correct)).slice(0, 3);
+  const tags = lesson.skillTags;
+  const multiWord = (p) => p.pt.trim().split(/\s+/).length >= 2;
 
-  return [
-    {
-      type: "choice",
-      title: "Meaning check",
-      prompt: p1.pt,
-      answer: p1.en,
-      choices: shuffle([p1.en, ...shuffle(allEnglish.filter((x) => x !== p1.en)).slice(0, 3)]),
-      tags: lesson.skillTags,
-      say: p1.pt,
-      review: { pt: p1.pt, en: p1.en },
-    },
-    {
-      type: "order",
-      title: "Build the phrase",
-      prompt: p2.en,
-      answer: p2.pt,
-      words: shuffle(p2.pt.split(/\s+/)),
-      tags: lesson.skillTags,
-      say: p2.pt,
-      review: { pt: p2.pt, en: p2.en },
-    },
-    {
-      type: "blank",
-      title: "Missing word",
-      prompt: blankPrompt,
-      answer: answerWord,
-      full: p3.pt,
-      translation: p3.en,
-      tags: lesson.skillTags,
-      say: p3.pt,
-      review: { pt: p3.pt, en: p3.en },
-    },
-    {
-      type: "dictation",
-      title: "Listen and type",
-      prompt: p4.pt,
-      answer: p4.pt,
-      translation: p4.en,
-      tags: [...lesson.skillTags, "listening"],
-      say: p4.pt,
-      review: { pt: p4.pt, en: p4.en },
-    },
-  ];
+  const choice = (p, title = "Meaning check", listen = false) => ({
+    type: "choice", listen, title,
+    prompt: p.pt, answer: p.en,
+    choices: shuffle([p.en, ...distractors(p.en)]),
+    tags, say: p.pt, review: { pt: p.pt, en: p.en },
+  });
+  const order = (p) => ({
+    type: "order", title: "Build the phrase",
+    prompt: p.en, answer: p.pt, words: shuffle(p.pt.split(/\s+/)),
+    tags, say: p.pt, review: { pt: p.pt, en: p.en },
+  });
+  const blank = (p) => {
+    const words = p.pt.split(/\s+/);
+    const bi = Math.max(0, Math.min(words.length - 1, Math.floor(words.length / 2)));
+    const answerWord = words[bi].replace(/[.,!?]/g, "");
+    const prompt = words.map((w, i) => (i === bi ? "____" : w)).join(" ");
+    return { type: "blank", title: "Missing word", prompt, answer: answerWord, full: p.pt, translation: p.en, tags, say: p.pt, review: { pt: p.pt, en: p.en } };
+  };
+  const dictation = (p) => ({
+    type: "dictation", title: "Listen and type",
+    prompt: p.pt, answer: p.pt, translation: p.en,
+    tags: [...tags, "listening"], say: p.pt, review: { pt: p.pt, en: p.en },
+  });
+
+  // One exercise per phrase, cycling through types so longer lessons = more
+  // questions. Single-word phrases skip word-order / fill-in-the-blank.
+  const ex = [];
+  phrases.forEach((p, i) => {
+    const cycle = i % 4;
+    if (cycle === 0) ex.push(choice(p));
+    else if (cycle === 1) ex.push(multiWord(p) ? order(p) : choice(p, "Listen & choose", true));
+    else if (cycle === 2) ex.push(multiWord(p) ? blank(p) : dictation(p));
+    else ex.push(dictation(p));
+  });
+
+  // Mixed extras for variety: a listening-choice and a dictation recall.
+  if (phrases[0]) ex.push(choice(phrases[0], "Listen & choose", true));
+  if (phrases[1]) ex.push(dictation(phrases[1]));
+
+  return ex.length ? ex : [choice(phrases[0] || { pt: "Oi", en: "Hi" })];
 }
 
 function Exercise({ exercise, onAnswer }) {
@@ -96,8 +88,14 @@ function Exercise({ exercise, onAnswer }) {
     return (
       <div className="tg-card lesson-exercise">
         <div className="tg-label">{exercise.title}</div>
-        <div className="tg-big-pt">{exercise.prompt}</div>
-        <button className="tg-mini" onClick={() => speak(exercise.prompt)}>{Icons.speaker} Hear it</button>
+        {exercise.listen ? (
+          <button className="tg-listen" onClick={() => speak(exercise.say)}>{Icons.speaker} Play phrase</button>
+        ) : (
+          <>
+            <div className="tg-big-pt">{exercise.prompt}</div>
+            <button className="tg-mini" onClick={() => speak(exercise.prompt)}>{Icons.speaker} Hear it</button>
+          </>
+        )}
         <div className="tg-options">
           {exercise.choices.map((choice) => {
             const out = eliminated.includes(choice);
@@ -222,8 +220,8 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
           <p>{lesson.mission}</p>
         </div>
         <div className="tg-card">
-          <div className="tg-label">Tiny rule</div>
-          <p className="tg-expl">{lesson.rule}</p>
+          <div className="tg-label">Learn this</div>
+          <p className="tg-expl">{lesson.teach}</p>
           <div className="tg-coach">💡 {lesson.coachTip}</div>
         </div>
         <div className="tg-card">
@@ -251,6 +249,10 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
         </div>
         <ProgressBar value={((idx + 1) / exercises.length) * 100} />
       </div>
+      <details className="tg-learn-tip">
+        <summary>💡 Quick reminder</summary>
+        <p>{lesson.teach}</p>
+      </details>
       <Exercise key={idx} exercise={exercises[idx]} onAnswer={handleAnswer} />
       {feedback ? (
         <div className={`tg-feedback ${feedback.correct ? "correct" : feedback.recovered ? "recovered" : "incorrect"}`}>
@@ -316,6 +318,13 @@ function LessonResult({ result, onContinue, onReview }) {
               </div>
             ))}
           </div>
+        </div>
+      ) : null}
+
+      {result.lesson?.teach ? (
+        <div className="tg-card">
+          <div className="tg-label">Remember this</div>
+          <p className="tg-expl">{result.lesson.teach}</p>
         </div>
       ) : null}
 

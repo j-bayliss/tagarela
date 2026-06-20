@@ -1,5 +1,14 @@
 export const ESSENTIAL_GROUPS = [
   {
+    title: "Greetings & basics",
+    items: [
+      { pt: "Bom dia / Boa tarde / Boa noite", en: "Good morning / afternoon / evening", example: "Bom dia! Tudo bem?" },
+      { pt: "Tudo bem?", en: "How are you? / All good?", example: "Oi, tudo bem com você?" },
+      { pt: "Muito prazer.", en: "Nice to meet you.", example: "Muito prazer, eu sou o Jack." },
+      { pt: "Até logo!", en: "See you later!", example: "Tchau, até logo!" },
+    ],
+  },
+  {
     title: "Survival",
     items: [
       { pt: "Pode repetir?", en: "Can you repeat?", example: "Pode repetir, por favor?" },
@@ -18,12 +27,39 @@ export const ESSENTIAL_GROUPS = [
     ],
   },
   {
-    title: "Travel",
+    title: "Numbers & time",
     items: [
-      { pt: "Onde fica a estação?", en: "Where is the station?", example: "Desculpa, onde fica a estação?" },
-      { pt: "Eu tenho uma reserva.", en: "I have a reservation.", example: "Oi, eu tenho uma reserva." },
-      { pt: "Pode me ajudar?", en: "Can you help me?", example: "Pode me ajudar, por favor?" },
-      { pt: "Quanto tempo demora?", en: "How long does it take?", example: "Quanto tempo demora até o hotel?" },
+      { pt: "Que horas são?", en: "What time is it?", example: "Com licença, que horas são?" },
+      { pt: "Às oito da manhã.", en: "At eight in the morning.", example: "O ônibus sai às oito da manhã." },
+      { pt: "Hoje / amanhã / ontem", en: "Today / tomorrow / yesterday", example: "Amanhã eu vou trabalhar." },
+      { pt: "Quanto tempo demora?", en: "How long does it take?", example: "Quanto tempo demora até a praia?" },
+    ],
+  },
+  {
+    title: "Shopping & money",
+    items: [
+      { pt: "Quanto custa?", en: "How much does it cost?", example: "Quanto custa essa camiseta?" },
+      { pt: "Aceita cartão?", en: "Do you take card?", example: "Você aceita cartão de crédito?" },
+      { pt: "Tem desconto?", en: "Is there a discount?", example: "Tem desconto se eu pagar à vista?" },
+      { pt: "Só estou olhando, obrigado.", en: "I'm just looking, thanks.", example: "Não, obrigado, só estou olhando." },
+    ],
+  },
+  {
+    title: "Feelings & small talk",
+    items: [
+      { pt: "Estou com fome.", en: "I'm hungry.", example: "Nossa, estou com muita fome." },
+      { pt: "Estou cansado(a).", en: "I'm tired.", example: "Hoje eu estou bem cansado." },
+      { pt: "Que legal!", en: "How cool! / Nice!", example: "Você foi ao Rio? Que legal!" },
+      { pt: "Eu acho que sim.", en: "I think so.", example: "Vai chover? — Eu acho que sim." },
+    ],
+  },
+  {
+    title: "Emergencies & help",
+    items: [
+      { pt: "Pode me ajudar?", en: "Can you help me?", example: "Por favor, pode me ajudar?" },
+      { pt: "Estou perdido(a).", en: "I'm lost.", example: "Desculpa, eu estou perdido." },
+      { pt: "Preciso de um médico.", en: "I need a doctor.", example: "Por favor, eu preciso de um médico." },
+      { pt: "Chame uma ambulância!", en: "Call an ambulance!", example: "Rápido, chame uma ambulância!" },
     ],
   },
 ];
