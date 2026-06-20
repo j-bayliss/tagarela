@@ -7,6 +7,8 @@ export const COURSE_UNITS = [
   { id: "a2-future", title: "Opiniões e futuro", subtitle: "A2 · Plans, opinions and richer chat.", emoji: "🔮" },
   { id: "b1-core", title: "Nuance e fluência", subtitle: "B1 · Hypotheticals, nuance and flow.", emoji: "🧠" },
   { id: "b1-real", title: "Português de verdade", subtitle: "B1 · Real conversations with range.", emoji: "🗣️" },
+  { id: "b2-core", title: "Precisão e estilo", subtitle: "B2 · Get the fine grammar right.", emoji: "🎯" },
+  { id: "b2-real", title: "Soando natural", subtitle: "B2 · Idioms, register and polish.", emoji: "✨" },
 ];
 
 // `teach` is a longer grammar/learning note shown on the lesson intro and result.
@@ -422,6 +424,104 @@ export const LESSONS = [
     { pt: "Quando eu for ao Brasil, vou falar com todo mundo.", en: "When I go to Brazil, I'll talk to everyone." },
     { pt: "No fim das contas, o esforço vale a pena.", en: "In the end, the effort is worth it." },
   ], "This mission blends the B1 toolkit: conditional (seria), 'faz + tempo' for duration, present subjunctive (espero que… seja), and future subjunctive (quando eu for). Switching smoothly between these moods in one short reflection is exactly what conversational B1 sounds like."),
+
+  // ===================== B2 · Precisão e estilo =====================
+  mk("b2-01", "b2-core", "🎯", "Crase: o famoso à", "Master the dreaded à.", "Crase (à)", "Crase = the preposition 'a' + the article 'a' merging into 'à'.", "Even Brazilians debate crase — learn the high-frequency cases and you're ahead.", ["grammar", "writing"], [
+    { pt: "Eu vou à praia amanhã.", en: "I'm going to the beach tomorrow." },
+    { pt: "A reunião é às oito horas.", en: "The meeting is at eight o'clock." },
+    { pt: "Entregue o relatório à diretora.", en: "Deliver the report to the director." },
+    { pt: "Vou ao mercado e à farmácia.", en: "I'm going to the market and the pharmacy." },
+    { pt: "Estou disposto a ajudar.", en: "I'm willing to help." },
+  ], "Crase happens when the preposition 'a' meets a feminine article 'a': vou a + a praia → vou à praia. Use it before feminine nouns (à diretora), in clock times (às oito), and in 'à direita/à esquerda'. No crase before verbs (disposto a ajudar) or masculine nouns (ao mercado = a + o)."),
+
+  mk("b2-02", "b2-core", "🔀", "Por ou para?", "Choose the right preposition.", "por vs para", "'Por' = reason, exchange, route; 'para' = purpose, destination, recipient.", "This pair confuses learners for years — anchor each to a clear idea.", ["grammar", "prepositions"], [
+    { pt: "Eu fiz isso por você.", en: "I did this for (the sake of) you." },
+    { pt: "Este presente é para você.", en: "This gift is for you." },
+    { pt: "Passei pela sua casa ontem.", en: "I passed by your house yesterday." },
+    { pt: "Estudo para passar na prova.", en: "I study (in order) to pass the test." },
+    { pt: "Obrigado por tudo.", en: "Thanks for everything." },
+  ], "'Por' covers cause/motive (por você), exchange (paguei por isso), route and 'through' (pela casa — por + a), and 'thanks for' (por tudo). 'Para' covers purpose/goal (para passar), destination (para o Rio) and recipient (para você). Rough test: para points forwards to a goal; por points back to a reason."),
+
+  mk("b2-03", "b2-core", "🔁", "Voz passiva", "Say what was done, not who did it.", "Passive voice", "Passive = ser + past participle (+ por + agent); the participle agrees in gender/number.", "The passive is everywhere in news and formal writing.", ["grammar", "verbs"], [
+    { pt: "O livro foi escrito por ele.", en: "The book was written by him." },
+    { pt: "A casa foi vendida no ano passado.", en: "The house was sold last year." },
+    { pt: "Os ingressos serão vendidos online.", en: "The tickets will be sold online." },
+    { pt: "O problema já foi resolvido.", en: "The problem has already been solved." },
+    { pt: "Esse prato é feito com camarão.", en: "This dish is made with prawns." },
+  ], "Form the passive with ser + particípio: foi escrito, foi vendida, serão vendidos. The participle agrees with the subject (a casa foi vendida, os ingressos foram vendidos). Brazilians also use the 'se' passive: 'vende-se casas', 'aluga-se quartos'."),
+
+  mk("b2-04", "b2-core", "🎭", "Pronomes: o, a, lhe", "Replace nouns precisely.", "Object pronouns (formal)", "Direct objects: o, a, os, as (it/him/her/them). Indirect: lhe (to him/her).", "Spoken Brazil simplifies these, but recognising them is essential for reading.", ["pronouns", "grammar"], [
+    { pt: "Eu o vi ontem.", en: "I saw him yesterday." },
+    { pt: "Você a conhece?", en: "Do you know her?" },
+    { pt: "Eu lhe disse a verdade.", en: "I told him/her the truth." },
+    { pt: "Vou comprá-lo amanhã.", en: "I'm going to buy it tomorrow." },
+    { pt: "Ainda não a encontrei.", en: "I still haven't found her/it." },
+  ], "Direct-object pronouns o/a/os/as replace the thing or person (eu o vi). After an infinitive they attach with a hyphen and the verb loses its -r: comprar + o → comprá-lo. 'Lhe' is the indirect object (to him/her). In casual speech Brazilians often just say 'vi ele' / 'comprar ele', but the o/a forms dominate in writing."),
+
+  mk("b2-05", "b2-core", "🔗", "Conjunções + subjuntivo", "Use the subjunctive after key linkers.", "Subjunctive triggers", "Some conjunctions always take the subjunctive: embora, para que, caso, a menos que, antes que.", "Memorise the trigger words — the mood follows automatically.", ["subjunctive", "connectors"], [
+    { pt: "Embora seja difícil, eu vou tentar.", en: "Although it's hard, I'm going to try." },
+    { pt: "Vou explicar para que você entenda.", en: "I'll explain so that you understand." },
+    { pt: "Caso precise, é só me avisar.", en: "If you need to, just let me know." },
+    { pt: "A menos que chova, vamos sair.", en: "Unless it rains, we'll go out." },
+    { pt: "Antes que eu esqueça, obrigado.", en: "Before I forget, thank you." },
+  ], "These conjunctions always force the subjunctive: embora (although), para que (so that), caso (in case/if), a menos que (unless), antes que (before), sem que (without), contanto que (as long as). Learn the trigger and the mood is automatic: embora seja, caso precise, antes que eu esqueça."),
+
+  mk("b2-06", "b2-core", "🧵", "Conectando com estilo", "Link long ideas smoothly.", "Discourse markers", "Markers like ou seja, aliás, portanto and enfim organise longer speech.", "These small words make you sound articulate, not just correct.", ["connectors", "fluency"], [
+    { pt: "Ou seja, não vai dar certo.", en: "In other words, it's not going to work." },
+    { pt: "Aliás, eu queria te falar uma coisa.", en: "By the way, I wanted to tell you something." },
+    { pt: "Portanto, é melhor esperar.", en: "Therefore, it's better to wait." },
+    { pt: "Por outro lado, pode funcionar.", en: "On the other hand, it might work." },
+    { pt: "Enfim, foi uma experiência válida.", en: "Anyway, it was a worthwhile experience." },
+  ], "Discourse markers steer a conversation: ou seja (in other words), aliás (by the way / actually), portanto (therefore), por outro lado (on the other hand), enfim (anyway / in short). Drop them at the start of a sentence to sound natural and organised."),
+
+  // ===================== B2 · Soando natural =====================
+  mk("b2-07", "b2-real", "🎁", "Expressões com dar", "Use the verb everyone overloads.", "Idioms with dar", "'Dar' is wildly idiomatic: dar certo, dá para, deu ruim.", "Learn these as whole chunks, not word by word.", ["idioms", "verbs"], [
+    { pt: "Deu certo no final.", en: "It worked out in the end." },
+    { pt: "Não dá para fazer isso agora.", en: "It's not possible to do this now." },
+    { pt: "Me dá um desconto?", en: "Will you give me a discount?" },
+    { pt: "Vai dar tudo certo.", en: "Everything's going to be fine." },
+    { pt: "Deu ruim.", en: "It went wrong. (slang)" },
+  ], "'Dar' goes far beyond 'to give': dar certo (to work out), dá para + infinitive (it's possible to), não dá (no way / can't), deu ruim (it went wrong — slang), dar uma olhada (to take a look). These chunks are everywhere in everyday Brazilian speech."),
+
+  mk("b2-08", "b2-real", "🔧", "Ficar: muito mais que 'stay'", "Unlock a verb with many lives.", "Uses of ficar", "Ficar means stay, but also become, end up, arrange and 'be located'.", "One verb, many meanings — context tells you which.", ["idioms", "verbs"], [
+    { pt: "Eu fico em casa no domingo.", en: "I stay home on Sundays." },
+    { pt: "Ela ficou brava comigo.", en: "She got angry with me." },
+    { pt: "Ficou caro demais.", en: "It ended up too expensive." },
+    { pt: "A gente ficou de se encontrar.", en: "We arranged to meet." },
+    { pt: "Fica para a próxima.", en: "Let's leave it for next time." },
+  ], "Ficar = to stay (fico em casa), to become (ficou brava, fica feliz), to end up (ficou caro), to arrange (ficou de + infinitive = agreed to), and to be located (a praia fica longe). 'Fica para a próxima' is the friendly Brazilian rain-check."),
+
+  mk("b2-09", "b2-real", "🍬", "Diminutivos e tom", "Add warmth with -inho/-inha.", "Diminutives", "Diminutives aren't only about size — they add affection, softness or charm.", "A cafezinho isn't a tiny coffee; it's a friendly one.", ["style", "conversation"], [
+    { pt: "Vamos tomar um cafezinho?", en: "Shall we have a (little) coffee?" },
+    { pt: "Só um minutinho.", en: "Just a minute (please)." },
+    { pt: "Que casa bonitinha!", en: "What a cute little house!" },
+    { pt: "Está frio, leva um casaquinho.", en: "It's cold, take a (little) jacket." },
+    { pt: "Vamos devagarinho.", en: "Let's go nice and slowly." },
+  ], "Adding -inho/-inha rarely means 'small'. It softens and warms: cafezinho (a friendly coffee), minutinho (just a moment), bonitinho (cute), devagarinho (nice and slow). Overusing it sounds sweet and very Brazilian — a key part of the culture's tone."),
+
+  mk("b2-10", "b2-real", "🕰️", "Hipóteses no passado", "Talk about what could have been.", "Past hypotheticals", "Se + pluperfect subjunctive + conditional perfect: se eu soubesse, teria avisado.", "This is how you express regret and 'what if' about the past.", ["conditional", "subjunctive"], [
+    { pt: "Se eu soubesse, teria avisado.", en: "If I had known, I would have warned you." },
+    { pt: "Eu teria ido, mas estava doente.", en: "I would have gone, but I was sick." },
+    { pt: "Eles já tinham saído quando cheguei.", en: "They had already left when I arrived." },
+    { pt: "Eu deveria ter estudado mais.", en: "I should have studied more." },
+    { pt: "Podia ter sido pior.", en: "It could have been worse." },
+  ], "Past 'what ifs' combine 'se' + pluperfect subjunctive (se eu tivesse sabido / soubesse) with the conditional perfect (teria avisado). For regret use 'deveria ter + particípio' (should have) and 'podia ter + particípio' (could have). 'Já tinha + particípio' = had already done."),
+
+  mk("b2-11", "b2-real", "📧", "Registro formal", "Write and speak formally.", "Formal register", "Formal Portuguese swaps everyday verbs for solicitar, informar, and set polite phrases.", "Essential for emails, officialdom and the workplace.", ["formal", "professional"], [
+    { pt: "Gostaria de solicitar uma informação.", en: "I would like to request some information." },
+    { pt: "Poderia me informar o horário?", en: "Could you inform me of the time?" },
+    { pt: "Agradeço desde já a atenção.", en: "Thank you in advance for your attention." },
+    { pt: "Fico à disposição.", en: "I remain at your disposal." },
+    { pt: "Prezado senhor, boa tarde.", en: "Dear sir, good afternoon." },
+  ], "Formal register prefers solicitar (vs pedir), informar (vs falar) and gostaria/poderia for politeness. Set closings: 'agradeço desde já', 'fico à disposição', 'atenciosamente'. Openers: 'Prezado(a)…'. Use these for emails, bureaucracy and professional settings."),
+
+  mk("b2-12", "b2-real", "🏆", "Missão Tagarela B2", "Reflect with full nuance.", "Final B2 mini mission", "Blend past hypotheticals, subjunctive and concessive structures.", "If this feels natural, you've got real B2 range and style.", ["conversation", "review"], [
+    { pt: "Se eu tivesse começado antes, já estaria fluente.", en: "If I had started earlier, I'd already be fluent." },
+    { pt: "Ainda assim, não me arrependo de nada.", en: "Even so, I don't regret anything." },
+    { pt: "O importante é que eu continue praticando.", en: "What matters is that I keep practising." },
+    { pt: "Por mais difícil que seja, vale a pena.", en: "However hard it may be, it's worth it." },
+    { pt: "Enfim, essa é a minha jornada com o português.", en: "Anyway, that's my journey with Portuguese." },
+  ], "This mission blends B2 hallmarks: the past hypothetical (se tivesse começado… estaria), the subjunctive after 'o importante é que' (que eu continue), and the concessive 'por mais que' (however much). Carrying nuance like this across a short reflection is exactly what B2 sounds like."),
 ];
 
 export const SKILL_LABELS = {
@@ -464,6 +564,10 @@ export const SKILL_LABELS = {
   professional: "work & professional",
   relationships: "relationships",
   storytelling: "storytelling",
+  grammar: "grammar",
+  style: "style & tone",
+  idioms: "idioms",
+  formal: "formal register",
 };
 
 export function skillLabel(tag) {

@@ -402,3 +402,14 @@ html[data-theme="dark"] .tg-tool-btn { background:var(--cloud); }
 .tg-stepbtn:active { transform: scale(.96); }
 .tg-stepcount { font-size:13px; font-weight:800; color:var(--soft); font-variant-numeric: tabular-nums; }
 html[data-theme="dark"] .tg-stepbtn { background:var(--cloud); }
+
+/* ---------- verbs & vocab (batch 7) ---------- */
+.tg-pill-scroll.subtle { margin-bottom:12px; }
+.tg-verb-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+.tg-conj { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+.tg-conj-row { display:flex; align-items:center; gap:10px; width:100%; text-align:left; border:1px solid var(--line); background:var(--cloud); border-radius:12px; padding:10px 12px; cursor:pointer; }
+.tg-conj-row:active { transform: scale(.99); }
+.tg-conj-pron { flex:none; min-width:84px; font-size:12px; font-weight:700; color:var(--soft); }
+.tg-conj-form { flex:1; font-weight:800; color:var(--ink); font-size:16px; }
+.tg-conj-spk { flex:none; opacity:.5; display:inline-flex; }
+.tg-conj-spk svg { width:16px; height:16px; }

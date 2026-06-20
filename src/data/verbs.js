@@ -1,0 +1,110 @@
+// Conjugation reference for the highest-frequency Brazilian Portuguese verbs.
+// Forms are given for four spoken-Brazil persons: eu, você/ele/ela,
+// nós, eles/elas/vocês. Tenses cover the everyday core.
+export const VERB_PRONOUNS = ["eu", "você / ele", "nós", "eles / vocês"];
+
+export const TENSES = [
+  { id: "presente", label: "Presente", hint: "Present — what happens now / generally." },
+  { id: "preterito", label: "Pretérito", hint: "Simple past — finished actions." },
+  { id: "imperfeito", label: "Imperfeito", hint: "Imperfect — used to / was doing." },
+  { id: "futuro", label: "Futuro", hint: "Future — will (formal); spoken Brazil often uses vou + verb)." },
+];
+
+export const VERBS = [
+  {
+    infinitive: "ser", en: "to be (permanent)", kind: "irregular",
+    note: "Permanent traits and identity: eu sou inglês. Contrast with estar (temporary).",
+    presente: ["sou", "é", "somos", "são"],
+    preterito: ["fui", "foi", "fomos", "foram"],
+    imperfeito: ["era", "era", "éramos", "eram"],
+    futuro: ["serei", "será", "seremos", "serão"],
+  },
+  {
+    infinitive: "estar", en: "to be (temporary)", kind: "irregular",
+    note: "States and locations right now: estou cansado, está na mesa.",
+    presente: ["estou", "está", "estamos", "estão"],
+    preterito: ["estive", "esteve", "estivemos", "estiveram"],
+    imperfeito: ["estava", "estava", "estávamos", "estavam"],
+    futuro: ["estarei", "estará", "estaremos", "estarão"],
+  },
+  {
+    infinitive: "ter", en: "to have", kind: "irregular",
+    note: "Possession and also age: eu tenho 30 anos. 'Tem' also means 'there is'.",
+    presente: ["tenho", "tem", "temos", "têm"],
+    preterito: ["tive", "teve", "tivemos", "tiveram"],
+    imperfeito: ["tinha", "tinha", "tínhamos", "tinham"],
+    futuro: ["terei", "terá", "teremos", "terão"],
+  },
+  {
+    infinitive: "ir", en: "to go", kind: "irregular",
+    note: "Movement and the near future: vou viajar (I'm going to travel). Past is shared with ser.",
+    presente: ["vou", "vai", "vamos", "vão"],
+    preterito: ["fui", "foi", "fomos", "foram"],
+    imperfeito: ["ia", "ia", "íamos", "iam"],
+    futuro: ["irei", "irá", "iremos", "irão"],
+  },
+  {
+    infinitive: "fazer", en: "to do / to make", kind: "irregular",
+    note: "Also weather and time: faz calor, faz dois anos.",
+    presente: ["faço", "faz", "fazemos", "fazem"],
+    preterito: ["fiz", "fez", "fizemos", "fizeram"],
+    imperfeito: ["fazia", "fazia", "fazíamos", "faziam"],
+    futuro: ["farei", "fará", "faremos", "farão"],
+  },
+  {
+    infinitive: "poder", en: "can / to be able to", kind: "irregular",
+    note: "Permission and possibility: posso ajudar? Note the accent on pôde (past).",
+    presente: ["posso", "pode", "podemos", "podem"],
+    preterito: ["pude", "pôde", "pudemos", "puderam"],
+    imperfeito: ["podia", "podia", "podíamos", "podiam"],
+    futuro: ["poderei", "poderá", "poderemos", "poderão"],
+  },
+  {
+    infinitive: "querer", en: "to want", kind: "irregular",
+    note: "Desire and ordering: eu quero um café. 'Queria' (imperfect) is the polite 'I'd like'.",
+    presente: ["quero", "quer", "queremos", "querem"],
+    preterito: ["quis", "quis", "quisemos", "quiseram"],
+    imperfeito: ["queria", "queria", "queríamos", "queriam"],
+    futuro: ["quererei", "quererá", "quereremos", "quererão"],
+  },
+  {
+    infinitive: "dizer", en: "to say / to tell", kind: "irregular",
+    note: "Reported speech: ele disse que… Past 'disse' is very common.",
+    presente: ["digo", "diz", "dizemos", "dizem"],
+    preterito: ["disse", "disse", "dissemos", "disseram"],
+    imperfeito: ["dizia", "dizia", "dizíamos", "diziam"],
+    futuro: ["direi", "dirá", "diremos", "dirão"],
+  },
+  {
+    infinitive: "ver", en: "to see", kind: "irregular",
+    note: "Note 'veem' (present, eles) and the short past 'vi / viu'.",
+    presente: ["vejo", "vê", "vemos", "veem"],
+    preterito: ["vi", "viu", "vimos", "viram"],
+    imperfeito: ["via", "via", "víamos", "viam"],
+    futuro: ["verei", "verá", "veremos", "verão"],
+  },
+  {
+    infinitive: "falar", en: "to speak (regular -ar)", kind: "regular -ar",
+    note: "Model for all regular -ar verbs (trabalhar, morar, gostar…).",
+    presente: ["falo", "fala", "falamos", "falam"],
+    preterito: ["falei", "falou", "falamos", "falaram"],
+    imperfeito: ["falava", "falava", "falávamos", "falavam"],
+    futuro: ["falarei", "falará", "falaremos", "falarão"],
+  },
+  {
+    infinitive: "comer", en: "to eat (regular -er)", kind: "regular -er",
+    note: "Model for regular -er verbs (beber, aprender, vender…).",
+    presente: ["como", "come", "comemos", "comem"],
+    preterito: ["comi", "comeu", "comemos", "comeram"],
+    imperfeito: ["comia", "comia", "comíamos", "comiam"],
+    futuro: ["comerei", "comerá", "comeremos", "comerão"],
+  },
+  {
+    infinitive: "partir", en: "to leave (regular -ir)", kind: "regular -ir",
+    note: "Model for regular -ir verbs (abrir, decidir, assistir…).",
+    presente: ["parto", "parte", "partimos", "partem"],
+    preterito: ["parti", "partiu", "partimos", "partiram"],
+    imperfeito: ["partia", "partia", "partíamos", "partiam"],
+    futuro: ["partirei", "partirá", "partiremos", "partirão"],
+  },
+];

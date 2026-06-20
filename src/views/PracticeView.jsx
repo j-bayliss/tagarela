@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ESSENTIAL_GROUPS } from "../data/essentials";
 import { SCENARIOS } from "../data/scenarios";
 import { PRONUNCIATION_DRILLS } from "../data/pronunciation";
+import { VERBS, VERB_PRONOUNS, TENSES } from "../data/verbs";
+import { VOCAB_PACKS } from "../data/vocab";
 import { askClaude, askClaudeStream, parseJSON } from "../services/anthropic";
 import { assessPronunciationWithAzure, recognizeOnceWithAzure } from "../services/azureSpeech";
 import { getApiKey, getAzureSettings, readJSON, writeJSON } from "../services/storage";
@@ -384,10 +386,78 @@ function PronunciationMode({ onSave, onActivity }) {
   return <div>{!hasAzure ? <div className="tg-card api-nudge"><div className="tg-label">Azure pronunciation</div><p className="tg-expl">Add your Azure Speech key and region in settings to unlock pronunciation scoring. This app is locked to Brazilian Portuguese: pt-BR.</p></div> : null}<div className="tg-card"><div className="tg-label">Repeat after me</div><div className="tg-big-pt">{cur.pt}</div><div className="tg-meaning">{cur.en}</div>{cur.note ? <div className="tg-coach">💡 {cur.note}</div> : null}<button className="tg-btn tg-btn-ghost" onClick={() => speak(cur.pt)}>Hear phrase</button><button className="tg-btn tg-btn-primary" disabled={!hasAzure || busy} onClick={record}>{busy ? "Listening..." : "Record and score"}</button><StepNav idx={idx} total={PRONUNCIATION_DRILLS.length} onPrev={() => move(-1)} onNext={() => move(1)} /></div>{error ? <div className="tg-error">{error}</div> : null}{result ? <div className="tg-card"><div className={`tg-score small ${scoreClass(result.pronunciationScore)}`}>{result.pronunciationScore}<small>%</small></div><p className="tg-expl">{friendlyPronunciationFeedback(result.pronunciationScore)}</p><div className="tg-score-grid"><span>Accuracy <b>{result.accuracyScore}%</b></span><span>Fluency <b>{result.fluencyScore}%</b></span><span>Completeness <b>{result.completenessScore}%</b></span><span>Prosody <b>{result.prosodyScore || "—"}%</b></span></div><div className="tg-meaning">Heard: {result.text || "—"}</div>{result.words?.length ? <><div className="tg-word-scores">{result.words.map((w, i) => <button type="button" key={w.word + i} className={`tg-word ${w.errorType === "Omission" ? "miss" : w.accuracy >= 80 ? "good" : w.accuracy >= 60 ? "ok" : "bad"}`} onClick={() => { buzz(6); speak(w.word); }}>{w.word}<small>{w.errorType === "Omission" ? "missed" : `${w.accuracy}%`}</small></button>)}</div><div className="tg-small-note">Tap a word to hear it on its own.</div></> : null}<button className="tg-btn tg-btn-primary" onClick={() => move(1)}>Next phrase</button></div> : null}</div>;
 }
 
+function VerbsMode() {
+  const [idx, go] = usePersistedIndex("tagarela:pos:verbs", VERBS.length);
+  const verb = VERBS[idx % VERBS.length];
+  const move = (delta) => { buzz(6); go(delta); };
+  return (
+    <div>
+      <div className="tg-pill-scroll subtle">
+        {VERBS.map((v, i) => (
+          <button key={v.infinitive} className={i === idx % VERBS.length ? "active" : ""} onClick={() => { buzz(6); go(i - (idx % VERBS.length)); }}>{v.infinitive}</button>
+        ))}
+      </div>
+      <div className="tg-card">
+        <div className="tg-verb-head">
+          <div>
+            <div className="tg-big-pt">{verb.infinitive}</div>
+            <div className="tg-meaning">{verb.en}</div>
+          </div>
+          <button className="tg-mini round" aria-label="Hear verb" onClick={() => { buzz(6); speak(verb.infinitive); }}>{Icons.speaker}</button>
+        </div>
+        <span className="tg-badge ok">{verb.kind}</span>
+        {verb.note ? <div className="tg-coach">💡 {verb.note}</div> : null}
+      </div>
+      {TENSES.map((t) => (
+        <div className="tg-card" key={t.id}>
+          <div className="tg-label">{t.label}</div>
+          <div className="tg-small-note">{t.hint}</div>
+          <div className="tg-conj">
+            {verb[t.id].map((form, i) => (
+              <button type="button" key={i} className="tg-conj-row" onClick={() => { buzz(6); speak(form); }}>
+                <span className="tg-conj-pron">{VERB_PRONOUNS[i]}</span>
+                <span className="tg-conj-form">{form}</span>
+                <span className="tg-conj-spk">{Icons.speaker}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+      <StepNav idx={idx} total={VERBS.length} onPrev={() => move(-1)} onNext={() => move(1)} nextLabel="Next verb" />
+    </div>
+  );
+}
+
+function VocabMode({ onSave }) {
+  const [packIdx, setPackIdx] = useState(0);
+  const pack = VOCAB_PACKS[packIdx % VOCAB_PACKS.length];
+  return (
+    <div>
+      <div className="tg-pill-scroll subtle">
+        {VOCAB_PACKS.map((p, i) => (
+          <button key={p.id} className={i === packIdx ? "active" : ""} onClick={() => { buzz(6); setPackIdx(i); }}>{p.emoji} {p.title}</button>
+        ))}
+      </div>
+      {pack.items.map((item) => (
+        <div key={item.pt} className="tg-ess">
+          <div className="tg-ess-top">
+            <div><div className="tg-ess-word">{item.pt}</div><div className="tg-ess-mean">{item.en}</div></div>
+            <button className="tg-mini round" aria-label="Hear word" onClick={() => { buzz(6); speak(item.pt); }}>{Icons.speaker}</button>
+          </div>
+          {item.example ? <div className="tg-ess-ex">{item.example}</div> : null}
+          <div className="tg-ess-row"><button className="tg-mini" onClick={() => onSave(item.pt, item.en, "learning", ["vocabulary", pack.id])}>Save</button></div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function PracticeView({ onSave, onMistake, initialMode, onActivity, onOpenSettings, online = true }) {
   const [mode, setMode] = useState(initialMode || "phrasebook");
   const modes = [
     { id: "phrasebook", label: "Frases" },
+    { id: "vocab", label: "Vocabulário" },
+    { id: "verbs", label: "Verbos" },
     { id: "chat", label: "Conversa" },
     { id: "missions", label: "Missões" },
     { id: "grammar", label: "Gramática" },
@@ -409,10 +479,12 @@ export default function PracticeView({ onSave, onMistake, initialMode, onActivit
   return (
     <div className="tg-screen">
       <h2 className="tg-intro-h">Praticar</h2>
-      <p className="tg-intro-p">Phrasebook, conversation, missions, grammar, listening and Brazilian Portuguese pronunciation.</p>
+      <p className="tg-intro-p">Phrasebook, vocabulary packs, verb tables, conversation, missions, grammar, listening and Brazilian Portuguese pronunciation.</p>
       <div className="tg-pill-scroll">{modes.map((item) => <button key={item.id} className={mode === item.id ? "active" : ""} onClick={() => setMode(item.id)}>{item.label}</button>)}</div>
       {nudge ? <div className="tg-card api-nudge"><p className="tg-expl">{nudge}</p>{onOpenSettings && online ? <button className="tg-btn tg-btn-ghost" onClick={onOpenSettings}>Open settings</button> : null}</div> : null}
       {mode === "phrasebook" ? <Phrasebook onSave={onSave} /> : null}
+      {mode === "vocab" ? <VocabMode onSave={onSave} /> : null}
+      {mode === "verbs" ? <VerbsMode /> : null}
       {mode === "chat" ? <ChatMode onSave={onSave} onMistake={onMistake} onActivity={onActivity} /> : null}
       {mode === "missions" ? <ScenarioMode onSave={onSave} onMistake={onMistake} onActivity={onActivity} /> : null}
       {mode === "grammar" ? <GrammarMode onSave={onSave} onMistake={onMistake} onActivity={onActivity} /> : null}
