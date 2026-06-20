@@ -26,10 +26,6 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      # npm 11 has a bug where the exit handler crashes when installing large
-      # packages (microsoft-cognitiveservices-speech-sdk), leaving bin symlinks
-      # uncreated. Downgrade to the stable npm 10 to avoid this.
-      - run: npm install -g npm@10
       - run: npm ci
       - run: npm test
       - run: npm run build

@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@fontsource/space-grotesk": "^5.2.5",
-    "microsoft-cognitiveservices-speech-sdk": "^1.50.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

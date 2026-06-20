@@ -10,6 +10,8 @@
     <meta name="apple-mobile-web-app-title" content="Tagarela" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>Tagarela</title>
+    <!-- Azure Speech SDK loaded from CDN to avoid bundling a 300MB npm package -->
+    <script src="https://cdn.jsdelivr.net/npm/microsoft-cognitiveservices-speech-sdk@1.50.0/distrib/browser/microsoft.cognitiveservices.speech.sdk.bundle-min.js"></script>
   </head>
   <body>
     <div id="root"></div>
