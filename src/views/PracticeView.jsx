@@ -389,6 +389,9 @@ function PronunciationMode({ onSave, onActivity }) {
   return <div>{!hasAzure ? <div className="tg-card api-nudge"><div className="tg-label">Azure pronunciation</div><p className="tg-expl">Add your Azure Speech key and region in settings to unlock pronunciation scoring. This app is locked to Brazilian Portuguese: pt-BR.</p></div> : null}<div className="tg-card"><div className="tg-label">Repeat after me</div><div className="tg-big-pt">{cur.pt}</div><div className="tg-meaning">{cur.en}</div>{cur.note ? <div className="tg-coach">💡 {cur.note}</div> : null}<button className="tg-btn tg-btn-ghost" onClick={() => speak(cur.pt)}>Hear phrase</button><button className="tg-btn tg-btn-primary" disabled={!hasAzure || busy} onClick={record}>{busy ? "Listening..." : "Record and score"}</button><StepNav idx={idx} total={PRONUNCIATION_DRILLS.length} onPrev={() => move(-1)} onNext={() => move(1)} /></div>{error ? <div className="tg-error">{error}</div> : null}{result ? <div className="tg-card"><div className={`tg-score small ${scoreClass(result.pronunciationScore)}`}>{result.pronunciationScore}<small>%</small></div><p className="tg-expl">{friendlyPronunciationFeedback(result.pronunciationScore)}</p><div className="tg-score-grid"><span>Accuracy <b>{result.accuracyScore}%</b></span><span>Fluency <b>{result.fluencyScore}%</b></span><span>Completeness <b>{result.completenessScore}%</b></span><span>Prosody <b>{result.prosodyScore || "—"}%</b></span></div><div className="tg-meaning">Heard: {result.text || "—"}</div>{result.words?.length ? <><div className="tg-word-scores">{result.words.map((w, i) => <button type="button" key={w.word + i} className={`tg-word ${w.errorType === "Omission" ? "miss" : w.accuracy >= 80 ? "good" : w.accuracy >= 60 ? "ok" : "bad"}`} onClick={() => { buzz(6); speak(w.word); }}>{w.word}<small>{w.errorType === "Omission" ? "missed" : `${w.accuracy}%`}</small></button>)}</div><div className="tg-small-note">Tap a word to hear it on its own.</div></> : null}<button className="tg-btn tg-btn-primary" onClick={() => move(1)}>Next phrase</button></div> : null}</div>;
 }
 
+// Link to real native-speaker recordings on Forvo (strips a leading article).
+const forvoUrl = (s) => `https://forvo.com/word/${encodeURIComponent(String(s).replace(/^(o|a|os|as)\s+/i, "").split(/[/(,]/)[0].trim())}/#pt`;
+
 function MyTextMode({ onSave }) {
   const hasKey = Boolean(getApiKey());
   const [input, setInput] = useState(() => readJSON("tagarela:mytext", ""));
@@ -477,6 +480,7 @@ function VerbsMode() {
         </div>
         <span className="tg-badge ok">{verb.kind}</span>
         {verb.note ? <div className="tg-coach">💡 {verb.note}</div> : null}
+        <a className="tg-mini" style={{ marginTop: 8 }} href={forvoUrl(verb.infinitive)} target="_blank" rel="noopener noreferrer">Hear a native on Forvo 🔊</a>
       </div>
       {TENSES.map((t) => (
         <div className="tg-card" key={t.id}>
@@ -515,7 +519,7 @@ function VocabMode({ onSave }) {
             <button className="tg-mini round" aria-label="Hear word" onClick={() => { buzz(6); speak(item.pt); }}>{Icons.speaker}</button>
           </div>
           {item.example ? <div className="tg-ess-ex">{item.example}</div> : null}
-          <div className="tg-ess-row"><button className="tg-mini" onClick={() => onSave(item.pt, item.en, "learning", ["vocabulary", pack.id])}>Save</button></div>
+          <div className="tg-ess-row"><button className="tg-mini" onClick={() => onSave(item.pt, item.en, "learning", ["vocabulary", pack.id])}>Save</button><a className="tg-mini" href={forvoUrl(item.pt)} target="_blank" rel="noopener noreferrer">Forvo 🔊</a></div>
         </div>
       ))}
     </div>
