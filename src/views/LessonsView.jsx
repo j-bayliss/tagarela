@@ -32,7 +32,7 @@ function AccentKeys({ onInsert }) {
   );
 }
 
-function makeExercises(lesson, reviewPool = []) {
+function makeExercises(lesson, reviewPool = [], skillStats = {}) {
   const phrases = (lesson.phrases || []).filter((p) => p && p.pt && p.en);
   const tags = lesson.skillTags;
   const tagSet = new Set(tags || []);
@@ -130,20 +130,35 @@ function makeExercises(lesson, reviewPool = []) {
   // production / listening step — so each phrase is practised more deeply and
   // longer lessons naturally yield more questions. Single-word phrases skip
   // word-order / fill-in-the-blank.
+  // Adapt difficulty to how well these skills are known: new learners get
+  // gentler, more scaffolded questions; mastered skills get harder, more
+  // productive ones. Tiers from the lesson's skill accuracy so far.
+  let attempts = 0, correct = 0;
+  (lesson.skillTags || []).forEach((t) => { const s = skillStats[t]; if (s) { attempts += s.attempts || 0; correct += s.correct || 0; } });
+  const tier = attempts < 4 ? "new" : (correct / attempts >= 0.8 ? "strong" : "learning");
+
   // Shuffle the phrase order so a repeated lesson feels fresh, but keep each
   // phrase's recognise-then-produce pair together.
   const ex = [];
   shuffle(phrases).forEach((p, i) => {
-    // 1) recognition: read the Portuguese, or listen and choose the meaning
-    ex.push(i % 2 === 0 ? choice(p) : choice(p, "Listen & choose", true));
-    // 2) production / recall: rebuild it, fill the gap, or type what you hear
-    if (multiWord(p)) ex.push(i % 2 === 0 ? order(p) : blank(p));
-    else ex.push(dictation(p));
+    // 1) recognition: easiest (read) when new, hardest (listen) when strong
+    if (tier === "strong") ex.push(choice(p, "Listen & choose", true));
+    else if (tier === "new") ex.push(choice(p));
+    else ex.push(i % 2 === 0 ? choice(p) : choice(p, "Listen & choose", true));
+    // 2) production: scaffolded tiles when new, free recall when strong
+    if (multiWord(p)) {
+      if (tier === "strong") ex.push(i % 2 === 0 ? produce(p) : blank(p));
+      else if (tier === "new") ex.push(order(p));
+      else ex.push(i % 2 === 0 ? order(p) : blank(p));
+    } else {
+      ex.push(tier === "new" ? dictation(p) : produce(p));
+    }
   });
 
-  // Delayed free-recall production: a couple of phrases met earlier in the
-  // lesson now have to be produced from scratch (strongest retrieval).
-  shuffle(phrases).slice(0, phrases.length >= 4 ? 2 : 1).forEach((p) => ex.push(produce(p)));
+  // Delayed free-recall production: phrases met earlier now produced from
+  // scratch (strongest retrieval). More of them once a skill is solid.
+  const produceCount = tier === "new" ? 1 : tier === "strong" ? 2 : (phrases.length >= 4 ? 2 : 1);
+  shuffle(phrases).slice(0, produceCount).forEach((p) => ex.push(produce(p)));
 
   // Shorter lessons get a mixed recall extra for closure.
   if (phrases.length <= 4 && phrases[0]) ex.push(choice(phrases[0], "Listen & choose", true));
@@ -457,8 +472,8 @@ function Exercise({ exercise, onAnswer }) {
 
 const XP_PER_CORRECT = 10;
 
-function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity, reviewPool }) {
-  const exercises = useRef(makeExercises(lesson, reviewPool)).current;
+function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity, reviewPool, skillStats }) {
+  const exercises = useRef(makeExercises(lesson, reviewPool, skillStats)).current;
   const [started, setStarted] = useState(false);
   const [idx, setIdx] = useState(0);
   const [results, setResults] = useState([]);
@@ -694,7 +709,7 @@ export default function LessonsView({ progress, setProgress, onSave, onGoReview,
     const reviewPool = LESSONS
       .filter((l) => completed.has(l.id) && l.id !== activeLesson.id)
       .flatMap((l) => l.phrases.map((p) => ({ pt: p.pt, en: p.en, skillTags: l.skillTags })));
-    return <LessonRunner lesson={activeLesson} onBack={() => setActiveLesson(null)} onComplete={completeLesson} onSave={onSave} onActivity={onActivity} reviewPool={reviewPool} />;
+    return <LessonRunner lesson={activeLesson} onBack={() => setActiveLesson(null)} onComplete={completeLesson} onSave={onSave} onActivity={onActivity} reviewPool={reviewPool} skillStats={progress.skillStats || {}} />;
   }
 
   if (lastResult) {
