@@ -453,3 +453,11 @@ html[data-theme="dark"] .tg-saved.off { background:rgba(255,255,255,.08); }
 .tg-options button.wrong-pick { border-color:var(--coral); background:rgba(232,92,63,.12); color:var(--coral); }
 .tg-options button:disabled { cursor:default; }
 .tg-dlg-speaker { flex:none; min-width:74px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:var(--coral); padding-top:2px; }
+
+/* ---------- minimal pairs (batch 3) ---------- */
+.tg-pairs { display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+.tg-pair-row { display:flex; align-items:stretch; gap:8px; }
+.tg-pair { flex:1; border:1.5px solid var(--line); background:var(--cloud); border-radius:14px; padding:10px; cursor:pointer; display:flex; flex-direction:column; gap:2px; align-items:center; color:var(--green-d); font-weight:800; font-size:17px; }
+.tg-pair small { color:var(--soft); font-weight:600; font-size:11px; }
+.tg-pair:active { transform:scale(.97); }
+.tg-pair-vs { display:flex; align-items:center; color:var(--soft); font-weight:800; }

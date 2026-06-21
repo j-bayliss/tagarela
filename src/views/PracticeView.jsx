@@ -6,6 +6,7 @@ import { VERBS, VERB_PRONOUNS, TENSES } from "../data/verbs";
 import { VOCAB_PACKS } from "../data/vocab";
 import { READINGS } from "../data/readings";
 import { LISTENING } from "../data/listening";
+import { MINIMAL_PAIRS } from "../data/minimalpairs";
 import { askClaude, askClaudeStream, parseJSON } from "../services/anthropic";
 import { assessPronunciationWithAzure, recognizeOnceWithAzure } from "../services/azureSpeech";
 import { getApiKey, getAzureSettings, readJSON, writeJSON } from "../services/storage";
@@ -577,6 +578,81 @@ function ReadingMode({ onSave }) {
   );
 }
 
+function EarTrainer({ group }) {
+  const [challenge, setChallenge] = useState(null);
+  const [picked, setPicked] = useState(null);
+  const play = () => {
+    const pair = group.pairs[Math.floor(Math.random() * group.pairs.length)];
+    const which = Math.random() < 0.5 ? "a" : "b";
+    const word = pair[which].pt;
+    setChallenge({ pair, word });
+    setPicked(null);
+    buzz(8);
+    speak(word);
+  };
+  const result = picked ? (picked === challenge.word ? "correct" : "wrong") : null;
+  return (
+    <div className="tg-card">
+      <div className="tg-label">Train your ear</div>
+      <div className="tg-small-note">Play a word, then tap which one you heard.</div>
+      <button className="tg-btn tg-btn-primary" onClick={play}>{challenge ? "▶ Play a new word" : "▶ Play a word"}</button>
+      {challenge ? (
+        <>
+          <div className="tg-options" style={{ marginTop: 10 }}>
+            {[challenge.pair.a, challenge.pair.b].map((w) => {
+              let cls = "";
+              if (result) { if (w.pt === challenge.word) cls = "correct-pick"; else if (picked === w.pt) cls = "wrong-pick"; }
+              return (
+                <button key={w.pt} className={cls} disabled={!!result} onClick={() => { setPicked(w.pt); buzz(w.pt === challenge.word ? 10 : [0, 18, 80, 18]); }}>
+                  {w.pt} <small style={{ opacity: .7, fontWeight: 600 }}>{w.en}</small>
+                </button>
+              );
+            })}
+          </div>
+          {result ? (
+            <div className={`tg-feedback ${result === "correct" ? "correct" : "incorrect"}`}>
+              <b>{result === "correct" ? "Boa! 🎉" : "Not quite."}</b>
+              <span>You heard: <b>{challenge.word}</b> <button className="tg-mini" onClick={() => { buzz(4); speak(challenge.word); }}>{Icons.speaker} again</button></span>
+              <button className="tg-btn tg-btn-primary" onClick={play}>Next word</button>
+            </div>
+          ) : (
+            <button className="tg-mini" style={{ marginTop: 8 }} onClick={() => { buzz(4); speak(challenge.word); }}>{Icons.speaker} Play again</button>
+          )}
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+function MinimalPairsMode() {
+  const [gi, setGi] = useState(0);
+  const group = MINIMAL_PAIRS[gi % MINIMAL_PAIRS.length];
+  return (
+    <div>
+      <div className="tg-pill-scroll subtle">
+        {MINIMAL_PAIRS.map((g, i) => (
+          <button key={g.id} className={i === gi ? "active" : ""} onClick={() => { buzz(6); setGi(i); }}>{g.title}</button>
+        ))}
+      </div>
+      <div className="tg-card">
+        <div className="tg-label">{group.title}</div>
+        <div className="tg-coach">💡 {group.note}</div>
+        <div className="tg-small-note">Tap a word to hear it.</div>
+        <div className="tg-pairs">
+          {group.pairs.map((p, i) => (
+            <div key={i} className="tg-pair-row">
+              <button className="tg-pair" onClick={() => { buzz(4); speak(p.a.pt); }}>{p.a.pt}<small>{p.a.en}</small></button>
+              <span className="tg-pair-vs">↔</span>
+              <button className="tg-pair" onClick={() => { buzz(4); speak(p.b.pt); }}>{p.b.pt}<small>{p.b.en}</small></button>
+            </div>
+          ))}
+        </div>
+      </div>
+      <EarTrainer key={group.id} group={group} />
+    </div>
+  );
+}
+
 export default function PracticeView({ onSave, onMistake, initialMode, onActivity, onOpenSettings, online = true }) {
   const [mode, setMode] = useState(initialMode || "phrasebook");
   const modes = [
@@ -591,6 +667,7 @@ export default function PracticeView({ onSave, onMistake, initialMode, onActivit
     { id: "translate", label: "Traduzir" },
     { id: "dictation", label: "Ouvir" },
     { id: "speak", label: "Fala" },
+    { id: "sounds", label: "Sons" },
   ];
   useEffect(() => { if (initialMode) setMode(initialMode); }, [initialMode]);
 
@@ -620,6 +697,7 @@ export default function PracticeView({ onSave, onMistake, initialMode, onActivit
       {mode === "translate" ? <TranslateMode onSave={onSave} onActivity={onActivity} /> : null}
       {mode === "dictation" ? <DictationMode onSave={onSave} onActivity={onActivity} /> : null}
       {mode === "speak" ? <PronunciationMode onSave={onSave} onActivity={onActivity} /> : null}
+      {mode === "sounds" ? <MinimalPairsMode /> : null}
     </div>
   );
 }
