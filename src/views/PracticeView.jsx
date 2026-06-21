@@ -5,6 +5,7 @@ import { PRONUNCIATION_DRILLS } from "../data/pronunciation";
 import { VERBS, VERB_PRONOUNS, TENSES } from "../data/verbs";
 import { VOCAB_PACKS } from "../data/vocab";
 import { READINGS } from "../data/readings";
+import { LISTENING } from "../data/listening";
 import { askClaude, askClaudeStream, parseJSON } from "../services/anthropic";
 import { assessPronunciationWithAzure, recognizeOnceWithAzure } from "../services/azureSpeech";
 import { getApiKey, getAzureSettings, readJSON, writeJSON } from "../services/storage";
@@ -453,9 +454,34 @@ function VocabMode({ onSave }) {
   );
 }
 
+function Quiz({ questions }) {
+  const [picked, setPicked] = useState({});
+  if (!questions?.length) return null;
+  return (
+    <div className="tg-card">
+      <div className="tg-label">Comprehension</div>
+      {questions.map((qq, qi) => (
+        <div key={qi} className="tg-read-q">
+          <div className="tg-read-qtext">{qi + 1}. {qq.q}</div>
+          <div className="tg-options">
+            {qq.choices.map((c) => {
+              const chosen = picked[qi];
+              const isAns = c === qq.answer;
+              let cls = "";
+              if (chosen != null) { if (c === chosen) cls = isAns ? "correct-pick" : "wrong-pick"; else if (isAns) cls = "correct-pick"; }
+              return (
+                <button key={c} className={cls} disabled={chosen != null} onClick={() => { buzz(c === qq.answer ? 10 : [0, 18, 80, 18]); setPicked((p) => ({ ...p, [qi]: c })); }}>{c}</button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Passage({ passage, onSave }) {
   const [open, setOpen] = useState({});
-  const [picked, setPicked] = useState({});
   const fullText = passage.sentences.map((s) => s.pt).join(" ");
   return (
     <>
@@ -478,28 +504,58 @@ function Passage({ passage, onSave }) {
           ))}
         </div>
       </div>
-      {passage.questions?.length ? (
-        <div className="tg-card">
-          <div className="tg-label">Comprehension</div>
-          {passage.questions.map((qq, qi) => (
-            <div key={qi} className="tg-read-q">
-              <div className="tg-read-qtext">{qi + 1}. {qq.q}</div>
-              <div className="tg-options">
-                {qq.choices.map((c) => {
-                  const chosen = picked[qi];
-                  const isAns = c === qq.answer;
-                  let cls = "";
-                  if (chosen != null) { if (c === chosen) cls = isAns ? "correct-pick" : "wrong-pick"; else if (isAns) cls = "correct-pick"; }
-                  return (
-                    <button key={c} className={cls} disabled={chosen != null} onClick={() => { buzz(c === qq.answer ? 10 : [0, 18, 80, 18]); setPicked((p) => ({ ...p, [qi]: c })); }}>{c}</button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : null}
+      <Quiz questions={passage.questions} />
     </>
+  );
+}
+
+function Dialogue({ item }) {
+  const [showText, setShowText] = useState(false);
+  const fullText = item.lines.map((l) => l.pt).join("\n");
+  return (
+    <>
+      <div className="tg-card">
+        <div className="tg-reading-head">
+          <span className="tg-hero-emoji">{item.emoji}</span>
+          <div><div className="tg-big-pt">{item.title}</div><span className="tg-badge ok">{item.level}</span></div>
+        </div>
+        <button className="tg-listen" onClick={() => { buzz(6); speak(fullText); }}>{Icons.speaker} Play the conversation</button>
+        <div className="tg-small-note">Listen first, then answer. Reveal the transcript only if you need it.</div>
+        <button className="tg-mini" style={{ marginTop: 8 }} onClick={() => { buzz(4); setShowText((s) => !s); }}>{showText ? "Hide transcript" : "Show transcript"}</button>
+        {showText ? (
+          <div className="tg-reading">
+            {item.lines.map((l, i) => (
+              <div key={i} className="tg-read-line">
+                <div className="tg-read-row">
+                  <span className="tg-dlg-speaker">{l.speaker}</span>
+                  <button type="button" className="tg-read-pt" onClick={() => { buzz(4); speak(l.pt); }}>{l.pt}</button>
+                </div>
+                {l.en ? <div className="tg-read-en">{l.en}</div> : null}
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </div>
+      <Quiz questions={item.questions} />
+    </>
+  );
+}
+
+function ListeningMode() {
+  const [idx, go] = usePersistedIndex("tagarela:pos:listening", LISTENING.length);
+  const item = LISTENING[idx % LISTENING.length];
+  const move = (delta) => { buzz(6); go(delta); };
+  const cur = idx % LISTENING.length;
+  return (
+    <div>
+      <div className="tg-pill-scroll subtle">
+        {LISTENING.map((p, i) => (
+          <button key={p.id} className={i === cur ? "active" : ""} onClick={() => { buzz(6); go(i - cur); }}>{p.level} · {p.title}</button>
+        ))}
+      </div>
+      <Dialogue key={item.id} item={item} />
+      <StepNav idx={idx} total={LISTENING.length} onPrev={() => move(-1)} onNext={() => move(1)} nextLabel="Next dialogue" />
+    </div>
   );
 }
 
@@ -528,6 +584,7 @@ export default function PracticeView({ onSave, onMistake, initialMode, onActivit
     { id: "vocab", label: "Vocabulário" },
     { id: "verbs", label: "Verbos" },
     { id: "reading", label: "Leitura" },
+    { id: "listening", label: "Escuta" },
     { id: "chat", label: "Conversa" },
     { id: "missions", label: "Missões" },
     { id: "grammar", label: "Gramática" },
@@ -556,6 +613,7 @@ export default function PracticeView({ onSave, onMistake, initialMode, onActivit
       {mode === "vocab" ? <VocabMode onSave={onSave} /> : null}
       {mode === "verbs" ? <VerbsMode /> : null}
       {mode === "reading" ? <ReadingMode onSave={onSave} /> : null}
+      {mode === "listening" ? <ListeningMode /> : null}
       {mode === "chat" ? <ChatMode onSave={onSave} onMistake={onMistake} onActivity={onActivity} /> : null}
       {mode === "missions" ? <ScenarioMode onSave={onSave} onMistake={onMistake} onActivity={onActivity} /> : null}
       {mode === "grammar" ? <GrammarMode onSave={onSave} onMistake={onMistake} onActivity={onActivity} /> : null}
