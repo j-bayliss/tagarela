@@ -100,6 +100,9 @@ button, input, textarea, select { font: inherit; }
 .tg-tabbadge { position:absolute; top:3px; right:calc(50% - 27px); background:var(--coral); color:#fff; min-width:17px; height:17px; border-radius:999px; display:grid; place-items:center; font-size:10px; font-weight:900; padding:0 4px; }
 
 /* today */
+.tg-today-top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+.tg-today-top .tg-hero-emoji { margin-bottom:0; }
+.tg-today-chips { display:flex; flex-wrap:wrap; gap:7px; margin:10px 0 4px; }
 .mission-card.primary { border-color:rgba(30,122,94,.28); box-shadow:var(--shadow); }
 .tg-mission-line { display:flex; gap:12px; align-items:center; margin:4px 0 12px; }
 .tg-mission-line > span { width:44px; height:44px; border-radius:16px; background:rgba(30,122,94,.10); display:grid; place-items:center; font-size:25px; }
