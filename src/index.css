@@ -153,13 +153,26 @@ button, input, textarea, select { font: inherit; }
 .tg-levelup { margin-top:12px; background:rgba(242,169,60,.18); border:1px solid rgba(242,169,60,.35); color:#8a5a08; border-radius:14px; padding:10px 12px; font-size:14px; font-weight:700; }
 html[data-theme="dark"] .tg-levelup { color:#F4CC7C; }
 
+/* CEFR level colours */
+.lvl-A1 { --lvl:#1E7A5E; }
+.lvl-A2 { --lvl:#2E86C1; }
+.lvl-B1 { --lvl:#E0892B; }
+.lvl-B2 { --lvl:#8A5CD1; }
+.lvl-C1 { --lvl:#D1495B; }
+html[data-theme="dark"] .lvl-A1 { --lvl:#46C79E; }
+html[data-theme="dark"] .lvl-A2 { --lvl:#5AB0EC; }
+html[data-theme="dark"] .lvl-B2 { --lvl:#B392EA; }
+html[data-theme="dark"] .lvl-C1 { --lvl:#F07A8B; }
+
 /* CEFR level dividers in the lesson path */
-.tg-level-divider { display:flex; align-items:center; gap:12px; margin:22px 0 12px; padding:10px 12px; border-radius:16px; background:linear-gradient(145deg, rgba(30,122,94,.12), rgba(242,169,60,.12)); border:1px solid var(--line); }
+.tg-level-divider { display:flex; align-items:center; gap:12px; margin:22px 0 12px; padding:10px 12px 10px 14px; border-radius:16px; background:var(--cloud); border:1px solid var(--line); border-left:5px solid var(--lvl, var(--green)); }
 .tg-level-divider:first-child { margin-top:6px; }
-.tg-level-badge { flex:none; width:44px; height:44px; border-radius:13px; display:grid; place-items:center; font-family:var(--font-display); font-weight:900; font-size:18px; color:#fff; background:var(--green); }
-.tg-level-divider.done .tg-level-badge { background:var(--amber); }
-.tg-level-info b { display:block; font-family:var(--font-display); color:var(--green-d); font-size:17px; }
+.tg-level-badge { flex:none; width:44px; height:44px; border-radius:13px; display:grid; place-items:center; font-family:var(--font-display); font-weight:900; font-size:18px; color:#fff; background:var(--lvl, var(--green)); }
+.tg-level-info b { display:block; font-family:var(--font-display); color:var(--lvl, var(--green-d)); font-size:17px; }
 .tg-level-info small { color:var(--soft); font-weight:700; }
+
+/* level accent on each lesson card */
+.tg-lesson-card { border-left:4px solid var(--lvl, var(--line)); }
 .tg-lesson-hero { background:linear-gradient(145deg,#fff,#FDF6E9); border:1px solid rgba(242,169,60,.32); border-radius:24px; padding:20px; text-align:center; margin-bottom:14px; }
 .tg-lesson-hero span { font-size:42px; }
 .tg-lesson-hero h2 { margin:5px 0; font-family:var(--font-display); color:var(--green-d); font-size:27px; }

@@ -802,7 +802,7 @@ export default function LessonsView({ progress, setProgress, onSave, onGoReview,
           return (
             <Fragment key={unit.id}>
               {showDivider ? (
-                <div className={`tg-level-divider ${lvlComplete ? "done" : ""}`}>
+                <div className={`tg-level-divider lvl-${lvl} ${lvlComplete ? "done" : ""}`}>
                   <span className="tg-level-badge">{lvl}</span>
                   <div className="tg-level-info">
                     <b>{LEVEL_LABEL[lvl]}</b>
@@ -823,7 +823,7 @@ export default function LessonsView({ progress, setProgress, onSave, onGoReview,
             const score = progress.lessonScores?.[lesson.id]?.score;
             const timesDone = Number(progress.lessonCounts?.[lesson.id] || 0);
             return (
-              <div key={lesson.id} className={`tg-lesson-card ${!unlocked ? "locked" : ""} ${active ? "active" : ""}`}>
+              <div key={lesson.id} className={`tg-lesson-card lvl-${UNIT_LEVEL[lesson.unit] || "A1"} ${!unlocked ? "locked" : ""} ${active ? "active" : ""}`}>
                 <div className="tg-lesson-main">
                   <div className="tg-lesson-emoji">{lesson.emoji}</div>
                   <div className="tg-lesson-info">
