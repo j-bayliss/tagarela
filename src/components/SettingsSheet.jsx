@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { getApiKey, getAzureSettings, saveApiKey, saveAzureSettings } from "../services/storage";
 import { testAnthropicKey } from "../services/anthropic";
+import PlacementQuiz from "./PlacementQuiz";
 
 const linkBtn = { border: "none", background: "transparent", color: "var(--green-d, #13573F)", fontWeight: 700, fontSize: 12, cursor: "pointer", padding: "4px 2px" };
 
@@ -16,6 +17,7 @@ export default function SettingsSheet({ onboarding, setOnboarding, onClose }) {
   const [dailyTarget, setDailyTarget] = useState(onboarding?.dailyTarget || 10);
   const [theme, setTheme] = useState(onboarding?.theme || "system");
   const [startLevel, setStartLevel] = useState(onboarding?.startLevel || "A1");
+  const [quizOpen, setQuizOpen] = useState(false);
   const [status, setStatus] = useState("");
   const [showAnthropic, setShowAnthropic] = useState(false);
   const [showAzure, setShowAzure] = useState(false);
@@ -49,6 +51,15 @@ export default function SettingsSheet({ onboarding, setOnboarding, onClose }) {
     setTestMsg("");
     setStatus("Keys cleared from this device.");
   };
+
+  const applyQuiz = (lv) => {
+    setStartLevel(lv);
+    setOnboarding((cur) => ({ ...(cur || {}), startLevel: lv }));
+    setQuizOpen(false);
+    setStatus(`Recommended level ${lv} set as your starting point.`);
+  };
+
+  if (quizOpen) return <PlacementQuiz onClose={() => setQuizOpen(false)} onApply={applyQuiz} />;
 
   return (
     <div className="tg-sheet-backdrop" role="dialog" aria-modal="true">
@@ -84,7 +95,8 @@ export default function SettingsSheet({ onboarding, setOnboarding, onClose }) {
               </button>
             ))}
           </div>
-          <p className="tg-small-note">Not a beginner? Pick your level to unlock everything up to it and jump in anywhere. Higher levels still unlock as you progress.</p>
+          <button className="tg-btn tg-btn-ghost" type="button" onClick={() => setQuizOpen(true)}>📝 Take a quick placement quiz</button>
+          <p className="tg-small-note">Not a beginner? Pick your level to unlock everything up to it and jump in anywhere — or take the quiz for a recommendation. Higher levels still unlock as you progress.</p>
         </div>
 
         <div className="tg-card">
