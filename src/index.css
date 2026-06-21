@@ -177,6 +177,7 @@ button, input, textarea, select { font: inherit; }
 .tg-feedback-note { margin-top:8px; font-size:13.5px; line-height:1.45; opacity:.95; }
 .tg-retry-banner { background:rgba(242,169,60,.16); border:1px solid rgba(242,169,60,.3); color:#8a5a08; border-radius:14px; padding:10px 12px; font-size:13.5px; font-weight:700; margin-bottom:12px; }
 html[data-theme="dark"] .tg-retry-banner { color:#F4CC7C; }
+.tg-review-banner { background:rgba(30,122,94,.10); border:1px solid rgba(30,122,94,.2); color:var(--green-d); border-radius:14px; padding:9px 12px; font-size:13px; font-weight:700; margin-bottom:12px; }
 
 /* on-screen accent keys for typing Portuguese diacritics */
 .tg-accents { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0 4px; }

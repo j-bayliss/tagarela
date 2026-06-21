@@ -30,7 +30,7 @@ function AccentKeys({ onInsert }) {
   );
 }
 
-function makeExercises(lesson) {
+function makeExercises(lesson, reviewPool = []) {
   const phrases = (lesson.phrases || []).filter((p) => p && p.pt && p.en);
   const tags = lesson.skillTags;
   const tagSet = new Set(tags || []);
@@ -145,6 +145,19 @@ function makeExercises(lesson) {
 
   // Shorter lessons get a mixed recall extra for closure.
   if (phrases.length <= 4 && phrases[0]) ex.push(choice(phrases[0], "Listen & choose", true));
+
+  // Spiralling: bring back a couple of phrases from earlier lessons so old
+  // vocabulary keeps recurring (spaced, interleaved retrieval).
+  if (reviewPool.length) {
+    shuffle(reviewPool).slice(0, 2).forEach((p, k) => {
+      const rTags = p.skillTags || tags;
+      if (k === 0) {
+        ex.push({ type: "choice", title: "Review · meaning", prompt: p.pt, answer: p.en, choices: shuffle([p.en, ...distractors(p.en)]), tags: rTags, say: p.pt, review: { pt: p.pt, en: p.en }, callback: true });
+      } else {
+        ex.push({ type: "produce", title: "Review · say it", prompt: p.en, answer: p.pt, full: p.pt, tags: rTags, say: p.pt, review: { pt: p.pt, en: p.en }, callback: true });
+      }
+    });
+  }
 
   // B1/B2 lessons get harder, higher-order questions on top.
   const level = (lesson.unit || "").startsWith("b2") ? "b2" : (lesson.unit || "").startsWith("b1") ? "b1" : null;
@@ -373,8 +386,8 @@ function Exercise({ exercise, onAnswer }) {
 
 const XP_PER_CORRECT = 10;
 
-function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
-  const exercises = useRef(makeExercises(lesson)).current;
+function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity, reviewPool }) {
+  const exercises = useRef(makeExercises(lesson, reviewPool)).current;
   const [started, setStarted] = useState(false);
   const [idx, setIdx] = useState(0);
   const [results, setResults] = useState([]);
@@ -461,6 +474,7 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
         <ProgressBar value={((idx + 1) / queue.length) * 100} />
       </div>
       {retrying ? <div className="tg-retry-banner">🔁 Quick recap — let's nail the ones you missed.</div> : null}
+      {!retrying && current.callback ? <div className="tg-review-banner">↩️ Review from an earlier lesson</div> : null}
       <details className="tg-learn-tip">
         <summary>💡 Quick reminder</summary>
         <p>{lesson.teach}</p>
@@ -604,7 +618,11 @@ export default function LessonsView({ progress, setProgress, onSave, onGoReview,
   };
 
   if (activeLesson) {
-    return <LessonRunner lesson={activeLesson} onBack={() => setActiveLesson(null)} onComplete={completeLesson} onSave={onSave} onActivity={onActivity} />;
+    // Phrases from other completed lessons, for spaced "callback" review questions.
+    const reviewPool = LESSONS
+      .filter((l) => completed.has(l.id) && l.id !== activeLesson.id)
+      .flatMap((l) => l.phrases.map((p) => ({ pt: p.pt, en: p.en, skillTags: l.skillTags })));
+    return <LessonRunner lesson={activeLesson} onBack={() => setActiveLesson(null)} onComplete={completeLesson} onSave={onSave} onActivity={onActivity} reviewPool={reviewPool} />;
   }
 
   if (lastResult) {
