@@ -27,6 +27,9 @@ export default function TodayView({ progress, deck, mistakes, onboarding, daily,
 
   return (
     <div className="tg-screen">
+      {streakCount > 0 && !goalMet ? (
+        <button className="tg-streak-risk" onClick={onStartSession}>🔥 Keep your {streakCount}-day streak alive — finish today's session.</button>
+      ) : null}
       <div className="tg-hero-card compact">
         <div className="tg-today-top">
           <div>
