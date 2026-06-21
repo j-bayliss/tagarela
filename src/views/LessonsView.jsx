@@ -641,6 +641,7 @@ function LessonResult({ result, onContinue, onReview }) {
         <h2>{score >= 80 ? "Boa! Aula concluída." : "Aula concluída — vamos reforçar."}</h2>
         <div className="tg-score">{score}<small>%</small></div>
         <p>{score >= 80 ? "You’re ready for the next small step." : "I saved the key phrases for review so they come back at the right time."}</p>
+        {result.timesDone ? <div className="tg-times-pill">{result.timesDone === 1 ? "First time completed 🎉" : `Completed ${result.timesDone}× 🔁`}</div> : null}
       </div>
 
       {results.length ? (
@@ -700,6 +701,7 @@ export default function LessonsView({ progress, setProgress, onSave, onGoReview,
 
   const completeLesson = (lesson, outcome) => {
     const score = outcome.score;
+    const timesDone = Number((progress.lessonCounts || {})[lesson.id] || 0) + 1;
     setProgress((current) => {
       const done = current.completed?.includes(lesson.id) ? current.completed : [...(current.completed || []), lesson.id];
       let skillStats = current.skillStats || {};
@@ -709,11 +711,13 @@ export default function LessonsView({ progress, setProgress, onSave, onGoReview,
           skillStats = { ...skillStats, [tag]: { correct: cur.correct + (item.correct ? 1 : 0), attempts: cur.attempts + 1 } };
         });
       });
+      const counts = current.lessonCounts || {};
       return {
         ...current,
         completed: done,
         activeLessonId: (LESSONS.find((l) => !done.includes(l.id)) || lesson).id,
         lessonScores: { ...(current.lessonScores || {}), [lesson.id]: { score, when: Date.now() } },
+        lessonCounts: { ...counts, [lesson.id]: Number(counts[lesson.id] || 0) + 1 },
         skillStats,
         xp: Number(current.xp || 0) + Math.max(40, score),
         lastLessonAt: Date.now(),
@@ -721,7 +725,7 @@ export default function LessonsView({ progress, setProgress, onSave, onGoReview,
     });
     lesson.phrases.forEach((phrase) => onSave(phrase.pt, phrase.en, score < 70 ? "difficult" : "learning", lesson.skillTags));
     setActiveLesson(null);
-    setLastResult({ lesson, score, results: outcome.results });
+    setLastResult({ lesson, score, results: outcome.results, timesDone });
   };
 
   if (activeLesson) {
@@ -755,6 +759,7 @@ export default function LessonsView({ progress, setProgress, onSave, onGoReview,
             const unlocked = idx === 0 || completed.has(LESSONS[idx - 1].id) || done;
             const active = idx === nextIdx && !done;
             const score = progress.lessonScores?.[lesson.id]?.score;
+            const timesDone = Number(progress.lessonCounts?.[lesson.id] || 0);
             return (
               <div key={lesson.id} className={`tg-lesson-card ${!unlocked ? "locked" : ""} ${active ? "active" : ""}`}>
                 <div className="tg-lesson-main">
@@ -765,7 +770,13 @@ export default function LessonsView({ progress, setProgress, onSave, onGoReview,
                       <span className={`tg-pill ${done ? "done" : unlocked ? "open" : "lock"}`}>{done ? "Done" : unlocked ? "Open" : "Locked"}</span>
                     </div>
                     <div className="tg-lesson-tags">{lesson.skillTags.map((tag) => <span key={tag} className="tg-skill">{skillLabel(tag)}</span>)}</div>
-                    {score ? <div className="tg-lesson-score">Last score: {score}%</div> : null}
+                    {score || timesDone ? (
+                      <div className="tg-lesson-score">
+                        {score ? `Last score: ${score}%` : null}
+                        {score && timesDone ? " · " : null}
+                        {timesDone ? <span className="tg-times">✓ completed {timesDone}×</span> : null}
+                      </div>
+                    ) : null}
                     {unlocked ? <div className="tg-lesson-actions"><button className="tg-inline-btn primary" onClick={() => startLesson(lesson)}>{done ? "Practise again" : "Start"}</button><button className="tg-inline-btn" onClick={() => lesson.phrases.forEach((p) => onSave(p.pt, p.en, "learning", lesson.skillTags))}>Save phrases</button></div> : <div className="tg-small-note">Complete the previous lesson to unlock this one.</div>}
                   </div>
                 </div>
