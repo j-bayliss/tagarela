@@ -179,6 +179,13 @@ button, input, textarea, select { font: inherit; }
 html[data-theme="dark"] .tg-retry-banner { color:#F4CC7C; }
 .tg-review-banner { background:rgba(30,122,94,.10); border:1px solid rgba(30,122,94,.2); color:var(--green-d); border-radius:14px; padding:9px 12px; font-size:13px; font-weight:700; margin-bottom:12px; }
 
+/* complete-the-conversation display */
+.tg-convo { display:flex; flex-direction:column; gap:8px; margin:10px 0 14px; }
+.tg-convo-line { display:flex; gap:10px; align-items:baseline; }
+.tg-convo-who { flex:none; min-width:64px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:var(--coral); }
+.tg-convo-pt { flex:1; background:var(--cloud); border:1px solid var(--line); border-radius:13px; padding:9px 12px; font-weight:700; color:var(--ink); }
+.tg-convo-pt.gap { border-style:dashed; color:var(--soft); font-weight:800; letter-spacing:2px; }
+
 /* on-screen accent keys for typing Portuguese diacritics */
 .tg-accents { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0 4px; }
 .tg-accent-key { border:1.5px solid var(--line); background:var(--cloud); color:var(--ink); border-radius:10px; min-width:34px; padding:7px 0; font-size:16px; font-weight:700; cursor:pointer; flex:1 0 auto; }

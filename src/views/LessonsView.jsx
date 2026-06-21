@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { COURSE_UNITS, LESSONS, skillLabel } from "../data/lessons";
 import { HIGHER_ORDER } from "../data/higherorder";
 import { TRANSFER } from "../data/transfer";
+import { CONVO_GAPS } from "../data/conversations";
 import { normaliseAnswer, speak } from "../utils/language";
 import { ProgressBar, XpPop } from "../components/Common";
 import { Icons } from "../components/Icons";
@@ -169,6 +170,18 @@ function makeExercises(lesson, reviewPool = []) {
       choices: shuffle(transferItem.choices), answer: transferItem.answer,
       say: transferItem.say, note: transferItem.note,
       review: { pt: transferItem.say, en: transferItem.en || "" }, tags,
+    });
+  }
+
+  // Contextual gap-fill: complete a short conversation (pragmatics in context).
+  const convoItem = CONVO_GAPS[lesson.id];
+  if (convoItem) {
+    ex.push({
+      type: "convo", title: "Complete the conversation",
+      lines: convoItem.lines, instruction: convoItem.instruction,
+      choices: shuffle(convoItem.choices), answer: convoItem.answer,
+      say: convoItem.say || convoItem.answer, note: convoItem.note,
+      review: { pt: convoItem.answer, en: convoItem.en || "" }, tags,
     });
   }
 
@@ -375,6 +388,32 @@ function Exercise({ exercise, onAnswer }) {
         <div className="tg-label">{exercise.title}</div>
         {exercise.instruction ? <div className="tg-coach">🧩 {exercise.instruction}</div> : null}
         <div className="tg-prompt-en">{exercise.prompt}</div>
+        <div className="tg-options">
+          {exercise.choices.map((c) => (
+            <button key={c} className={selected === c ? "selected" : ""} onClick={() => { buzz(6); setSelected(c); }}>{c}</button>
+          ))}
+        </div>
+        <button className="tg-btn tg-btn-primary" disabled={!selected} onClick={() => {
+          const correct = selected === exercise.answer;
+          onAnswer({ correct, userAnswer: selected, expected: exercise.answer, ...meta });
+        }}>Check</button>
+      </div>
+    );
+  }
+
+  if (exercise.type === "convo") {
+    return (
+      <div className="tg-card lesson-exercise">
+        <div className="tg-label">{exercise.title}</div>
+        {exercise.instruction ? <div className="tg-meaning">{exercise.instruction}</div> : null}
+        <div className="tg-convo">
+          {exercise.lines.map((l, i) => (
+            <div key={i} className="tg-convo-line">
+              <span className="tg-convo-who">{l.who}</span>
+              <span className={`tg-convo-pt ${l.pt === "____" ? "gap" : ""}`}>{l.pt === "____" ? "…" : l.pt}</span>
+            </div>
+          ))}
+        </div>
         <div className="tg-options">
           {exercise.choices.map((c) => (
             <button key={c} className={selected === c ? "selected" : ""} onClick={() => { buzz(6); setSelected(c); }}>{c}</button>
