@@ -12,6 +12,12 @@ export const TRANSFER = {
   "a1-28": { instruction: "Say 'I'm going to travel'.", prompt: "Eu ____ viajar.", choices: ["vou", "vai"], answer: "vou", note: "Near future: eu vou, você/ele vai + infinitive.", say: "Eu vou viajar.", en: "I'm going to travel." },
   "a1-29": { instruction: "Say 'I am happy' (right now).", prompt: "Eu ____ feliz.", choices: ["estou", "sou"], answer: "estou", note: "Use estar for temporary states: estou feliz.", say: "Eu estou feliz.", en: "I'm happy." },
 
+  // ---- Bridge (present tense, ser/estar) ----
+  "bridge-01": { instruction: "Conjugate falar for 'nós'.", prompt: "Nós ____ português.", choices: ["falamos", "falam"], answer: "falamos", note: "Regular -ar, nós form: -amos (falamos).", say: "Nós falamos português.", en: "We speak Portuguese." },
+  "bridge-02": { instruction: "Conjugate comer for 'eu'.", prompt: "Eu ____ às oito.", choices: ["como", "come"], answer: "como", note: "Regular -er, eu form: -o (como).", say: "Eu como às oito.", en: "I eat at eight." },
+  "bridge-03": { instruction: "ser or estar? (origin)", prompt: "Eu ____ de Londres.", choices: ["sou", "estou"], answer: "sou", note: "Origin/identity uses ser: sou de Londres.", say: "Eu sou de Londres.", en: "I'm from London." },
+  "bridge-04": { instruction: "Conjugate ter for 'eu'.", prompt: "Eu ____ tempo.", choices: ["tenho", "tem"], answer: "tenho", note: "ter is irregular: eu tenho, você/ele tem.", say: "Eu tenho tempo.", en: "I have time." },
+
   // ---- A2 ----
   "a2-01": { instruction: "Put falar in the past (eu).", prompt: "Ontem eu ____ com ele.", choices: ["falei", "falo"], answer: "falei", note: "Regular -ar past, eu form: -ei (falei).", say: "Ontem eu falei com ele.", en: "Yesterday I spoke with him." },
   "a2-03": { instruction: "A past habit: 'I used to play'.", prompt: "Eu ____ futebol todo dia.", choices: ["jogava", "joguei"], answer: "jogava", note: "Imperfect for repeated past habits: jogava.", say: "Eu jogava futebol todo dia.", en: "I used to play football every day." },

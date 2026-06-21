@@ -4,6 +4,7 @@ export const COURSE_UNITS = [
   { id: "city", title: "Pela cidade", subtitle: "Directions, transport and useful questions.", emoji: "🚌" },
   { id: "people", title: "Pessoas e planos", subtitle: "Talk about yourself, family and daily life.", emoji: "💬" },
   { id: "daily", title: "Vida cotidiana", subtitle: "Everyday situations you'll actually face.", emoji: "🗓️" },
+  { id: "bridge", title: "Ponte para o A2", subtitle: "Verb basics before the grammar levels.", emoji: "🌉" },
   { id: "a2-past", title: "Histórias e passado", subtitle: "A2 · Talk about what happened.", emoji: "📖" },
   { id: "a2-future", title: "Opiniões e futuro", subtitle: "A2 · Plans, opinions and richer chat.", emoji: "🔮" },
   { id: "b1-core", title: "Nuance e fluência", subtitle: "B1 · Hypotheticals, nuance and flow.", emoji: "🧠" },
@@ -279,6 +280,40 @@ export const LESSONS = [
     { pt: "Infelizmente, não vou poder ir.", en: "Unfortunately, I won't be able to go." },
     { pt: "Fica para a próxima!", en: "Next time, then!" },
   ], "Making plans casually: “Vamos…?” / “Bora!” (let's), “Pode ser às oito?” (how about eight?), “Combinado” (deal/agreed), and the friendly rain-check “Fica para a próxima”. To decline kindly: “infelizmente, não vou poder”."),
+
+  // ===================== Ponte para o A2 (bridge) =====================
+  mk("bridge-01", "bridge", "🗣️", "O presente: verbos em -ar", "Conjugate regular -ar verbs.", "Present tense (-ar)", "Drop -ar and add the endings: eu -o, você/ele -a, nós -amos, eles -am.", "Most Portuguese verbs are -ar, so this one pattern unlocks hundreds of them.", ["verbs", "grammar"], [
+    { pt: "Eu falo português.", en: "I speak Portuguese." },
+    { pt: "Você trabalha muito.", en: "You work a lot." },
+    { pt: "Nós moramos no Brasil.", en: "We live in Brazil." },
+    { pt: "Eles gostam de música.", en: "They like music." },
+    { pt: "A gente estuda todo dia.", en: "We study every day." },
+  ], "Regular -ar verbs (falar, trabalhar, morar, gostar, estudar) follow one pattern in the present: eu falo, você/ele fala, nós falamos, eles/vocês falam. Note that 'a gente' (we, colloquial) takes the ele/ela form: a gente estuda."),
+
+  mk("bridge-02", "bridge", "🗣️", "O presente: -er e -ir", "Conjugate regular -er and -ir verbs.", "Present tense (-er/-ir)", "-er: -o, -e, -emos, -em. -ir: -o, -e, -imos, -em. Only the 'nós' form differs.", "These two families behave almost identically — learn them together.", ["verbs", "grammar"], [
+    { pt: "Eu como às sete.", en: "I eat at seven." },
+    { pt: "Você bebe café?", en: "Do you drink coffee?" },
+    { pt: "Nós abrimos a loja.", en: "We open the shop." },
+    { pt: "Eles decidem juntos.", en: "They decide together." },
+    { pt: "Eu escrevo todo dia.", en: "I write every day." },
+  ], "Regular -er (comer, beber, escrever): eu como, você come, nós comemos, eles comem. Regular -ir (abrir, decidir, partir): eu abro, você abre, nós abrimos, eles abrem. The only difference is the nós form: -emos vs -imos."),
+
+  mk("bridge-03", "bridge", "⚖️", "Ser ou estar?", "Choose between the two verbs for 'to be'.", "Ser vs estar", "ser = permanent/essential (identity, origin, profession); estar = temporary states & location.", "Getting this contrast right early prevents a very common beginner mistake.", ["grammar", "verbs"], [
+    { pt: "Eu sou brasileiro.", en: "I am Brazilian." },
+    { pt: "Eu estou cansado.", en: "I am tired." },
+    { pt: "Ela é médica.", en: "She is a doctor." },
+    { pt: "Ela está em casa.", en: "She is at home." },
+    { pt: "O café está quente.", en: "The coffee is hot." },
+    { pt: "Como você está?", en: "How are you?" },
+  ], "Both mean 'to be'. Use ser (sou, é, somos, são) for lasting things — identity, origin, profession: sou inglês, ela é médica. Use estar (estou, está, estamos, estão) for temporary states and location: estou cansado, está em casa, o café está quente. Quick test: a feeling, a place, or right-now → estar; a defining, lasting fact → ser."),
+
+  mk("bridge-04", "bridge", "⭐", "Irregulares essenciais", "Use the most common irregular verbs.", "Key irregular verbs", "Memorise the present of ter, ir, fazer, querer and poder — they're everywhere.", "These five carry an enormous amount of everyday Portuguese.", ["verbs", "grammar"], [
+    { pt: "Eu tenho tempo hoje.", en: "I have time today." },
+    { pt: "Você vai ao trabalho?", en: "Are you going to work?" },
+    { pt: "Nós fazemos exercício.", en: "We do exercise." },
+    { pt: "Eu quero água, por favor.", en: "I want water, please." },
+    { pt: "Ela pode ajudar.", en: "She can help." },
+  ], "High-frequency irregulars to know cold in the present: ter (tenho, tem, temos, têm), ir (vou, vai, vamos, vão), fazer (faço, faz, fazemos, fazem), querer (quero, quer, queremos, querem), poder (posso, pode, podemos, podem). They anchor countless sentences."),
 
   // ===================== A2 · Histórias e passado =====================
   mk("a2-01", "a2-past", "📖", "O que aconteceu?", "Talk about what you did, using the past.", "Simple past (regular)", "Past tense of -ar verbs: eu trabalhei, você trabalhou, nós trabalhamos.", "Past tense unlocks real storytelling. Start with the things you do every day.", ["past", "verbs"], [
