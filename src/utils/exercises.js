@@ -57,7 +57,7 @@ export function makeExercises(lesson, reviewPool = [], skillStats = {}, audioOff
     return {
       type: "order", title: "Build the phrase",
       prompt: p.en, answer: p.pt, words: shuffle([...correctWords, ...extras]),
-      tags, say: p.pt, review: { pt: p.pt, en: p.en },
+      tags, say: p.pt, review: { pt: p.pt, en: p.en }, accept: p.accept,
     };
   };
   // Blank a meaningful content word (longest non-function word), not a filler.
@@ -79,13 +79,13 @@ export function makeExercises(lesson, reviewPool = [], skillStats = {}, audioOff
   const dictation = (p) => ({
     type: "dictation", title: "Listen and type",
     prompt: p.pt, answer: p.pt, translation: p.en,
-    tags: [...tags, "listening"], say: p.pt, review: { pt: p.pt, en: p.en },
+    tags: [...tags, "listening"], say: p.pt, review: { pt: p.pt, en: p.en }, accept: p.accept,
   });
   // Free productive recall: type the whole phrase in Portuguese from English.
   const produce = (p) => ({
     type: "produce", title: "Say it in Portuguese",
     prompt: p.en, answer: p.pt, full: p.pt,
-    tags, say: p.pt, review: { pt: p.pt, en: p.en },
+    tags, say: p.pt, review: { pt: p.pt, en: p.en }, accept: p.accept,
   });
   // Two-gap cloze, generated from a phrase with enough words.
   const cloze2 = (p) => {

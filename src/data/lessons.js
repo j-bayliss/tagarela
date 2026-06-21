@@ -73,7 +73,7 @@ export const LESSONS = [
 
   mk("a1-06", "start", "❓", "Perguntas rápidas", "Ask simple questions when you need help.", "Question words", "“Onde” means where, “quanto” means how much, and “quando” means when.", "One good question can replace twenty memorised phrases.", ["questions", "survival"], [
     { pt: "Onde fica o banheiro?", en: "Where is the bathroom?" },
-    { pt: "Quanto custa?", en: "How much does it cost?" },
+    { pt: "Quanto custa?", en: "How much does it cost?", accept: ["Quanto custa isso?", "Quanto isso custa?", "Quanto custa isto?", "Quanto custa este?"] },
     { pt: "Quando abre?", en: "When does it open?" },
     { pt: "Você fala inglês?", en: "Do you speak English?" },
   ]),
