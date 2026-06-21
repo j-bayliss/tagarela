@@ -109,8 +109,10 @@ function makeExercises(lesson) {
   // production / listening step — so each phrase is practised more deeply and
   // longer lessons naturally yield more questions. Single-word phrases skip
   // word-order / fill-in-the-blank.
+  // Shuffle the phrase order so a repeated lesson feels fresh, but keep each
+  // phrase's recognise-then-produce pair together.
   const ex = [];
-  phrases.forEach((p, i) => {
+  shuffle(phrases).forEach((p, i) => {
     // 1) recognition: read the Portuguese, or listen and choose the meaning
     ex.push(i % 2 === 0 ? choice(p) : choice(p, "Listen & choose", true));
     // 2) production / recall: rebuild it, fill the gap, or type what you hear
@@ -327,6 +329,12 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
   const [results, setResults] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [streak, setStreak] = useState(0);
+  const [retryQueue, setRetryQueue] = useState([]); // missed exercises, re-asked once at the end
+  const [missed, setMissed] = useState([]); // base indices answered wrong on the first pass
+
+  const queue = exercises.concat(retryQueue);
+  const retrying = idx >= exercises.length;
+  const current = queue[idx];
 
   const handleAnswer = (result) => {
     // distinct patterns: single soft pulse = correct, double knock = wrong
@@ -339,10 +347,21 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
   };
 
   const next = () => {
-    const nextResults = feedback ? results.concat(feedback) : results;
+    const firstPass = idx < exercises.length;
+    const wrong = feedback && !feedback.correct && !feedback.recovered;
+    const nextResults = firstPass && feedback ? results.concat(feedback) : results;
+    const nextMissed = firstPass && wrong ? missed.concat(idx) : missed;
     setResults(nextResults);
+    setMissed(nextMissed);
     setFeedback(null);
-    if (idx >= exercises.length - 1) {
+
+    if (idx >= queue.length - 1) {
+      // End of the first pass: if anything was missed, re-ask it once more.
+      if (retryQueue.length === 0 && nextMissed.length > 0) {
+        setRetryQueue(nextMissed.map((i) => exercises[i]));
+        setIdx(idx + 1);
+        return;
+      }
       const correct = nextResults.filter((r) => r.correct).length;
       const score = Math.round((correct / exercises.length) * 100);
       onComplete(lesson, { score, results: nextResults });
@@ -386,15 +405,16 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
       <div className="tg-progress-card compact">
         <div className="tg-progress-top">
           <b>{lesson.emoji} {lesson.title}</b>
-          <span>{streak >= 3 ? <span className="tg-streak-badge">🔥 {streak} in a row!</span> : null}{idx + 1}/{exercises.length}</span>
+          <span>{streak >= 3 ? <span className="tg-streak-badge">🔥 {streak} in a row!</span> : null}{idx + 1}/{queue.length}</span>
         </div>
-        <ProgressBar value={((idx + 1) / exercises.length) * 100} />
+        <ProgressBar value={((idx + 1) / queue.length) * 100} />
       </div>
+      {retrying ? <div className="tg-retry-banner">🔁 Quick recap — let's nail the ones you missed.</div> : null}
       <details className="tg-learn-tip">
         <summary>💡 Quick reminder</summary>
         <p>{lesson.teach}</p>
       </details>
-      <Exercise key={idx} exercise={exercises[idx]} onAnswer={handleAnswer} />
+      <Exercise key={idx} exercise={current} onAnswer={handleAnswer} />
       {feedback ? (
         <div className={`tg-feedback ${feedback.correct ? "correct" : feedback.recovered ? "recovered" : "incorrect"}`}>
           {feedback.correct && <XpPop key={`xp-${idx}`} amount={XP_PER_CORRECT} />}
@@ -427,7 +447,12 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
             </>
           )}
           {feedback.note ? <div className="tg-feedback-note">💡 {feedback.note}</div> : null}
-          <button className="tg-btn tg-btn-primary" onClick={() => { buzz(10); next(); }}>{idx >= exercises.length - 1 ? "See result" : "Next"}</button>
+          {(() => {
+            const wrongNow = !feedback.correct && !feedback.recovered && idx < exercises.length;
+            const willRetry = retryQueue.length === 0 && (missed.length + (wrongNow ? 1 : 0)) > 0;
+            const finishing = idx >= queue.length - 1 && !willRetry;
+            return <button className="tg-btn tg-btn-primary" onClick={() => { buzz(10); next(); }}>{finishing ? "See result" : "Next"}</button>;
+          })()}
         </div>
       ) : null}
     </div>
