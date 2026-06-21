@@ -134,6 +134,14 @@ describe("answerMatches (lenient checker)", () => {
   it("honours an explicit accept list", () => {
     expect(answerMatches("a gente quer", "nós queremos", ["a gente quer"])).toBe(true);
   });
+  it("accepts an added pointing word (isso/isto/aquilo)", () => {
+    expect(answerMatches("Quanto isso custa?", "Quanto custa?")).toBe(true);
+    expect(answerMatches("Quanto custa isso?", "Quanto custa?")).toBe(true);
+    expect(answerMatches("Quanto é isso?", "Quanto é?")).toBe(true);
+  });
+  it("still rejects a genuinely missing required word", () => {
+    expect(answerMatches("eu quero", "eu quero isso")).toBe(false);
+  });
 });
 
 describe("placement recommendation", () => {

@@ -17,7 +17,15 @@ const stripLeadPronoun = (s) => {
   return s;
 };
 
+// Optional "pointing" words the learner may add without changing correctness
+// (Quanto custa? ≡ Quanto isso custa?). Only ever removed from the LEARNER's
+// answer, never the expected — so omitting a genuinely required word still fails.
+const DEICTICS = new Set(["isso", "isto", "aquilo", "aqui", "ali"]);
+const dropDeictics = (s) => s.split(" ").filter((w) => !DEICTICS.has(w)).join(" ").replace(/\s+/g, " ").trim();
+
 export function answerMatches(user, expected, accept = []) {
   const u = canonAnswer(user);
-  return [expected, ...(accept || [])].map(canonAnswer).some((c) => c === u || stripLeadPronoun(c) === stripLeadPronoun(u));
+  const variants = [u, dropDeictics(u)];
+  const targets = [expected, ...(accept || [])].map(canonAnswer);
+  return targets.some((c) => variants.some((v) => c === v || stripLeadPronoun(c) === stripLeadPronoun(v)));
 }

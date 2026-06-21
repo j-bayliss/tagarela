@@ -110,7 +110,7 @@ export const LESSONS = [
   ]),
   mk("a1-12", "cafe", "🍽️", "No restaurante", "Ask for a table and order politely.", "Restaurant basics", "“A gente” is very common in Brazil for “we”. It uses third-person singular verbs.", "Listen for “a gente” in real speech — Brazilians use it constantly.", ["food", "conversation"], [
     { pt: "Mesa para duas pessoas, por favor.", en: "Table for two people, please." },
-    { pt: "A gente quer pedir.", en: "We want to order." },
+    { pt: "A gente quer pedir.", en: "We want to order.", accept: ["Nós queremos pedir."] },
     { pt: "O cardápio, por favor.", en: "The menu, please." },
     { pt: "A conta, por favor.", en: "The bill, please." },
   ]),
@@ -311,7 +311,7 @@ export const LESSONS = [
     { pt: "Você trabalha muito.", en: "You work a lot." },
     { pt: "Nós moramos no Brasil.", en: "We live in Brazil." },
     { pt: "Eles gostam de música.", en: "They like music." },
-    { pt: "A gente estuda todo dia.", en: "We study every day." },
+    { pt: "A gente estuda todo dia.", en: "We study every day.", accept: ["Nós estudamos todo dia."] },
   ], "Regular -ar verbs (falar, trabalhar, morar, gostar, estudar) follow one pattern in the present: eu falo, você/ele fala, nós falamos, eles/vocês falam. Note that 'a gente' (we, colloquial) takes the ele/ela form: a gente estuda."),
 
   mk("bridge-02", "bridge", "🗣️", "O presente: -er e -ir", "Conjugate regular -er and -ir verbs.", "Present tense (-er/-ir)", "-er: -o, -e, -emos, -em. -ir: -o, -e, -imos, -em. Only the 'nós' form differs.", "These two families behave almost identically — learn them together.", ["verbs", "grammar"], [
@@ -445,7 +445,7 @@ export const LESSONS = [
   mk("b1-01", "b1-core", "🙏", "Espero que dê certo", "Express wishes, hopes and doubts.", "Present subjunctive", "After hopes, wishes and doubt, Portuguese switches to the subjunctive: espero que você esteja bem.", "The subjunctive feels strange at first — learn it through fixed openers like 'espero que' and 'tomara que'.", ["subjunctive", "conversation"], [
     { pt: "Espero que você esteja bem.", en: "I hope you're well." },
     { pt: "Tomara que dê tudo certo.", en: "Hopefully everything works out." },
-    { pt: "É importante que a gente pratique.", en: "It's important that we practise." },
+    { pt: "É importante que a gente pratique.", en: "It's important that we practise.", accept: ["É importante que nós pratiquemos."] },
     { pt: "Quero que você venha comigo.", en: "I want you to come with me." },
     { pt: "Talvez ele não saiba.", en: "Maybe he doesn't know." },
   ], "The present subjunctive appears after wishes, doubt and emotion: espero que, tomara que, é importante que, quero que, talvez. Form it from the eu-present stem with the 'opposite' vowel: -ar → e (fale), -er/-ir → a (coma, parta). Memorise the irregulars: seja, esteja, vá, dê, venha, saiba."),
