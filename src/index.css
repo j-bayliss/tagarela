@@ -429,3 +429,10 @@ html[data-theme="dark"] .tg-tool-btn.accent,
 html[data-theme="dark"] .tg-word.ok { color:#F4CC7C; }
 html[data-theme="dark"] .tg-word.good { color:#7FE3C4; }
 html[data-theme="dark"] .tg-word.bad { color:#FF9E88; }
+
+/* ---------- saved-key indicator (batch 9) ---------- */
+.tg-label-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.tg-saved { text-transform:none; letter-spacing:0; font-size:11px; font-weight:800; padding:3px 9px; border-radius:999px; }
+.tg-saved.on { background:rgba(30,122,94,.14); color:var(--green-d); }
+.tg-saved.off { background:rgba(23,58,46,.08); color:var(--soft); }
+html[data-theme="dark"] .tg-saved.off { background:rgba(255,255,255,.08); }

@@ -4,6 +4,12 @@ import { testAnthropicKey } from "../services/anthropic";
 
 const linkBtn = { border: "none", background: "transparent", color: "var(--green-d, #13573F)", fontWeight: 700, fontSize: 12, cursor: "pointer", padding: "4px 2px" };
 
+function SavedBadge({ on }) {
+  return <span className={`tg-saved ${on ? "on" : "off"}`}>{on ? "Saved ✓" : "Not set"}</span>;
+}
+
+const isAzureSaved = (a) => Boolean(a && a.key && a.key.trim() && a.region && a.region.trim());
+
 export default function SettingsSheet({ onboarding, setOnboarding, onClose }) {
   const [apiKey, setApiKey] = useState(() => getApiKey());
   const [azure, setAzure] = useState(() => getAzureSettings());
@@ -14,11 +20,14 @@ export default function SettingsSheet({ onboarding, setOnboarding, onClose }) {
   const [showAzure, setShowAzure] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testMsg, setTestMsg] = useState("");
+  // Reflects what's actually persisted in storage, not just the input fields.
+  const [saved, setSaved] = useState(() => ({ anthropic: Boolean(getApiKey()), azure: isAzureSaved(getAzureSettings()) }));
 
   const save = () => {
     saveApiKey(apiKey);
     saveAzureSettings({ ...azure, locale: "pt-BR" });
     setOnboarding((cur) => ({ ...(cur || {}), dailyTarget, theme, variant: "pt-BR" }));
+    setSaved({ anthropic: Boolean(apiKey.trim()), azure: isAzureSaved(azure) });
     setStatus("Settings saved.");
   };
 
@@ -35,6 +44,7 @@ export default function SettingsSheet({ onboarding, setOnboarding, onClose }) {
     setAzure((s) => ({ ...s, key: "" }));
     saveApiKey("");
     saveAzureSettings({ ...azure, key: "" });
+    setSaved({ anthropic: false, azure: false });
     setTestMsg("");
     setStatus("Keys cleared from this device.");
   };
@@ -64,7 +74,7 @@ export default function SettingsSheet({ onboarding, setOnboarding, onClose }) {
         </div>
 
         <div className="tg-card">
-          <div className="tg-label">Anthropic API key</div>
+          <div className="tg-label tg-label-row">Anthropic API key <SavedBadge on={saved.anthropic} /></div>
           <input className="tg-input full" type={showAnthropic ? "text" : "password"} autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="sk-ant-..." />
           <div style={{ display: "flex", gap: 14, marginTop: 6 }}>
             <button style={linkBtn} type="button" onClick={() => setShowAnthropic((s) => !s)}>{showAnthropic ? "Hide" : "Show"}</button>
@@ -75,7 +85,7 @@ export default function SettingsSheet({ onboarding, setOnboarding, onClose }) {
         </div>
 
         <div className="tg-card">
-          <div className="tg-label">Azure Speech (pronunciation + voice input)</div>
+          <div className="tg-label tg-label-row">Azure Speech (pronunciation + voice input) <SavedBadge on={saved.azure} /></div>
           <input className="tg-input full" type={showAzure ? "text" : "password"} autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" value={azure.key} onChange={(e) => setAzure((s) => ({ ...s, key: e.target.value }))} placeholder="Azure Speech key" />
           <input className="tg-input full" value={azure.region} onChange={(e) => setAzure((s) => ({ ...s, region: e.target.value }))} placeholder="Region, e.g. uksouth" />
           <div style={{ display: "flex", gap: 14, marginTop: 6 }}>
