@@ -10,11 +10,44 @@ function shuffle(items) {
   return [...items].sort(() => Math.random() - 0.5);
 }
 
+// Like normaliseAnswer but keeps accents, so we can tell when an answer was
+// only correct after ignoring them (to nudge the learner about accents).
+const normKeepAccents = (s) => String(s || "").toLowerCase().replace(/[.,!?;:]/g, "").replace(/\s+/g, " ").trim();
+
+const FUNCTION_WORDS = new Set(["de", "da", "do", "das", "dos", "o", "a", "os", "as", "um", "uma", "uns", "umas", "e", "ou", "em", "no", "na", "nos", "nas", "que", "com", "sem", "por", "para", "pra", "eu", "voce", "você", "ele", "ela", "se", "ao", "aos", "à", "às", "meu", "minha", "seu", "sua", "é"]);
+const cleanTok = (w) => w.replace(/[.,!?;:]/g, "");
+
 function makeExercises(lesson) {
   const phrases = (lesson.phrases || []).filter((p) => p && p.pt && p.en);
-  const allEnglish = LESSONS.flatMap((l) => l.phrases.map((p) => p.en));
-  const distractors = (correct) => shuffle(allEnglish.filter((x) => x !== correct)).slice(0, 3);
   const tags = lesson.skillTags;
+  const tagSet = new Set(tags || []);
+  const uniq = (arr) => [...new Set(arr)];
+  const allEnglish = LESSONS.flatMap((l) => l.phrases.map((p) => p.en));
+  const sameLessonEn = phrases.map((p) => p.en);
+  const sameTagLessons = LESSONS.filter((l) => l.id !== lesson.id && (l.skillTags || []).some((t) => tagSet.has(t)));
+  const sameTagEn = sameTagLessons.flatMap((l) => l.phrases.map((p) => p.en));
+
+  // Plausible distractors: prefer same-lesson meanings (same topic), then
+  // same-skill lessons closest in length, then anything — so wrong options
+  // aren't obviously off-topic and guessable.
+  const distractors = (correct) => {
+    const out = [];
+    const add = (cands) => { for (const c of cands) { if (out.length >= 3) break; if (c && c !== correct && !out.includes(c)) out.push(c); } };
+    add(shuffle(uniq(sameLessonEn)));
+    add(uniq(sameTagEn).sort((a, b) => Math.abs(a.length - correct.length) - Math.abs(b.length - correct.length)));
+    add(shuffle(uniq(allEnglish)));
+    return out.slice(0, 3);
+  };
+
+  // Plausible wrong word tiles for "build the phrase", drawn from other phrases.
+  const distractorWords = (p, count) => {
+    const have = new Set(p.pt.split(/\s+/).map((w) => cleanTok(w).toLowerCase()));
+    const tokens = phrases.filter((q) => q !== p).flatMap((q) => q.pt.split(/\s+/))
+      .concat(sameTagLessons.flatMap((l) => l.phrases.flatMap((q) => q.pt.split(/\s+/))));
+    const cands = uniq(tokens.map(cleanTok).filter((w) => w.length >= 2 && !have.has(w.toLowerCase())));
+    return shuffle(cands).slice(0, count);
+  };
+
   const multiWord = (p) => p.pt.trim().split(/\s+/).length >= 2;
 
   const choice = (p, title = "Meaning check", listen = false) => ({
@@ -23,15 +56,28 @@ function makeExercises(lesson) {
     choices: shuffle([p.en, ...distractors(p.en)]),
     tags, say: p.pt, review: { pt: p.pt, en: p.en },
   });
-  const order = (p) => ({
-    type: "order", title: "Build the phrase",
-    prompt: p.en, answer: p.pt, words: shuffle(p.pt.split(/\s+/)),
-    tags, say: p.pt, review: { pt: p.pt, en: p.en },
-  });
+  const order = (p) => {
+    const correctWords = p.pt.split(/\s+/);
+    const extras = distractorWords(p, correctWords.length >= 5 ? 2 : 1);
+    return {
+      type: "order", title: "Build the phrase",
+      prompt: p.en, answer: p.pt, words: shuffle([...correctWords, ...extras]),
+      tags, say: p.pt, review: { pt: p.pt, en: p.en },
+    };
+  };
+  // Blank a meaningful content word (longest non-function word), not a filler.
+  const pickContentIndex = (words) => {
+    let bi = -1, best = -1;
+    words.forEach((w, i) => {
+      const c = cleanTok(w).toLowerCase();
+      if (c.length >= 3 && !FUNCTION_WORDS.has(c) && cleanTok(w).length > best) { best = cleanTok(w).length; bi = i; }
+    });
+    return bi === -1 ? Math.max(0, Math.min(words.length - 1, Math.floor(words.length / 2))) : bi;
+  };
   const blank = (p) => {
     const words = p.pt.split(/\s+/);
-    const bi = Math.max(0, Math.min(words.length - 1, Math.floor(words.length / 2)));
-    const answerWord = words[bi].replace(/[.,!?]/g, "");
+    const bi = pickContentIndex(words);
+    const answerWord = cleanTok(words[bi]);
     const prompt = words.map((w, i) => (i === bi ? "____" : w)).join(" ");
     return { type: "blank", title: "Missing word", prompt, answer: answerWord, full: p.pt, translation: p.en, tags, say: p.pt, review: { pt: p.pt, en: p.en } };
   };
@@ -43,12 +89,18 @@ function makeExercises(lesson) {
   // Two-gap cloze, generated from a phrase with enough words.
   const cloze2 = (p) => {
     const words = p.pt.split(/\s+/);
-    const n = words.length;
-    let i1 = Math.max(0, Math.floor(n / 3));
-    let i2 = Math.min(n - 1, Math.floor((2 * n) / 3));
-    if (i2 <= i1) i2 = Math.min(n - 1, i1 + 1);
-    const a1 = words[i1].replace(/[.,!?;:]/g, "");
-    const a2 = words[i2].replace(/[.,!?;:]/g, "");
+    const content = words.map((w, i) => ({ i, w: cleanTok(w) })).filter((x) => x.w.length >= 3 && !FUNCTION_WORDS.has(x.w.toLowerCase()));
+    let i1, i2;
+    if (content.length >= 2) {
+      [i1, i2] = content.sort((a, b) => b.w.length - a.w.length).slice(0, 2).map((x) => x.i).sort((a, b) => a - b);
+    } else {
+      const n = words.length;
+      i1 = Math.max(0, Math.floor(n / 3));
+      i2 = Math.min(n - 1, Math.floor((2 * n) / 3));
+      if (i2 <= i1) i2 = Math.min(n - 1, i1 + 1);
+    }
+    const a1 = cleanTok(words[i1]);
+    const a2 = cleanTok(words[i2]);
     const prompt = words.map((w, i) => (i === i1 || i === i2 ? "____" : w)).join(" ");
     return { type: "cloze2", title: "Fill the gaps", prompt, answers: [a1, a2], full: p.pt, translation: p.en, tags, say: p.pt, review: { pt: p.pt, en: p.en } };
   };
@@ -100,7 +152,8 @@ function Exercise({ exercise, onAnswer }) {
   const submit = (value) => {
     const answer = value ?? selected ?? typed;
     const correct = normaliseAnswer(answer) === normaliseAnswer(exercise.answer);
-    onAnswer({ correct, userAnswer: answer, expected: exercise.answer, ...meta });
+    const accentNote = correct && normKeepAccents(answer) !== normKeepAccents(exercise.answer) ? exercise.answer : null;
+    onAnswer({ correct, userAnswer: answer, expected: exercise.answer, accentNote, ...meta });
   };
 
   if (exercise.type === "choice") {
@@ -184,7 +237,8 @@ function Exercise({ exercise, onAnswer }) {
     const seg = exercise.prompt.split("____");
     const check = () => {
       const ok = normaliseAnswer(typed) === normaliseAnswer(exercise.answers[0]) && normaliseAnswer(typed2) === normaliseAnswer(exercise.answers[1]);
-      onAnswer({ correct: ok, userAnswer: `${typed}, ${typed2}`, expected: exercise.answers.join(", "), ...meta });
+      const accentNote = ok && (normKeepAccents(typed) !== normKeepAccents(exercise.answers[0]) || normKeepAccents(typed2) !== normKeepAccents(exercise.answers[1])) ? exercise.answers.join(", ") : null;
+      onAnswer({ correct: ok, userAnswer: `${typed}, ${typed2}`, expected: exercise.answers.join(", "), accentNote, ...meta });
     };
     return (
       <div className="tg-card lesson-exercise">
@@ -347,7 +401,9 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
           {feedback.correct ? (
             <>
               <b>Boa! 🎉</b>
-              <span>{streak >= 3 ? `🔥 ${streak} in a row — you're on fire!` : "That one goes into your confidence bank."}</span>
+              {feedback.accentNote
+                ? <span>Right! Just mind the accent: <b>{feedback.accentNote}</b></span>
+                : <span>{streak >= 3 ? `🔥 ${streak} in a row — you're on fire!` : "That one goes into your confidence bank."}</span>}
             </>
           ) : feedback.recovered ? (
             <>
