@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { COURSE_UNITS, LESSONS, skillLabel } from "../data/lessons";
+import { HIGHER_ORDER } from "../data/higherorder";
 import { normaliseAnswer, speak } from "../utils/language";
 import { ProgressBar, XpPop } from "../components/Common";
 import { Icons } from "../components/Icons";
@@ -39,6 +40,18 @@ function makeExercises(lesson) {
     prompt: p.pt, answer: p.pt, translation: p.en,
     tags: [...tags, "listening"], say: p.pt, review: { pt: p.pt, en: p.en },
   });
+  // Two-gap cloze, generated from a phrase with enough words.
+  const cloze2 = (p) => {
+    const words = p.pt.split(/\s+/);
+    const n = words.length;
+    let i1 = Math.max(0, Math.floor(n / 3));
+    let i2 = Math.min(n - 1, Math.floor((2 * n) / 3));
+    if (i2 <= i1) i2 = Math.min(n - 1, i1 + 1);
+    const a1 = words[i1].replace(/[.,!?;:]/g, "");
+    const a2 = words[i2].replace(/[.,!?;:]/g, "");
+    const prompt = words.map((w, i) => (i === i1 || i === i2 ? "____" : w)).join(" ");
+    return { type: "cloze2", title: "Fill the gaps", prompt, answers: [a1, a2], full: p.pt, translation: p.en, tags, say: p.pt, review: { pt: p.pt, en: p.en } };
+  };
 
   // Two complementary exercises per phrase — a recognition step then a
   // production / listening step — so each phrase is practised more deeply and
@@ -59,18 +72,30 @@ function makeExercises(lesson) {
     if (phrases[0]) ex.push(choice(phrases[0], "Listen & choose", true));
   }
 
+  // B1/B2 lessons get harder, higher-order questions on top.
+  const level = (lesson.unit || "").startsWith("b2") ? "b2" : (lesson.unit || "").startsWith("b1") ? "b1" : null;
+  if (level) {
+    const clozeSource = phrases.find((p) => p.pt.trim().split(/\s+/).length >= 4);
+    if (clozeSource) ex.push(cloze2(clozeSource));
+    const pool = HIGHER_ORDER[level] || [];
+    shuffle(pool).slice(0, 2).forEach((item) => {
+      ex.push({ ...item, title: item.type === "mistake" ? "Find the mistake" : "Transform it", answer: item.answer, say: item.answer, review: { pt: item.answer, en: item.en || "" }, tags });
+    });
+  }
+
   return ex.length ? ex : [choice(phrases[0] || { pt: "Oi", en: "Hi" })];
 }
 
 function Exercise({ exercise, onAnswer }) {
   const [selected, setSelected] = useState("");
   const [typed, setTyped] = useState("");
+  const [typed2, setTyped2] = useState("");
   const [built, setBuilt] = useState([]);
   const [pool, setPool] = useState(exercise.words || []);
   const [eliminated, setEliminated] = useState([]);
   const [hadMistake, setHadMistake] = useState(false);
 
-  const meta = { tags: exercise.tags, title: exercise.title, say: exercise.say, review: exercise.review };
+  const meta = { tags: exercise.tags, title: exercise.title, say: exercise.say, review: exercise.review, note: exercise.note };
 
   const submit = (value) => {
     const answer = value ?? selected ?? typed;
@@ -150,6 +175,64 @@ function Exercise({ exercise, onAnswer }) {
         <button className="tg-listen" onClick={() => speak(exercise.prompt)}>{Icons.speaker} Play Portuguese</button>
         <div className="tg-meaning">{exercise.translation}</div>
         <textarea className="tg-ta" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="Type what you hear in Portuguese" />
+        <button className="tg-btn tg-btn-primary" disabled={!typed.trim()} onClick={() => submit(typed)}>Check</button>
+      </div>
+    );
+  }
+
+  if (exercise.type === "cloze2") {
+    const seg = exercise.prompt.split("____");
+    const check = () => {
+      const ok = normaliseAnswer(typed) === normaliseAnswer(exercise.answers[0]) && normaliseAnswer(typed2) === normaliseAnswer(exercise.answers[1]);
+      onAnswer({ correct: ok, userAnswer: `${typed}, ${typed2}`, expected: exercise.answers.join(", "), ...meta });
+    };
+    return (
+      <div className="tg-card lesson-exercise">
+        <div className="tg-label">{exercise.title}</div>
+        {exercise.translation ? <div className="tg-meaning">"{exercise.translation}"</div> : null}
+        <div className="tg-blank-line">
+          <span className="tg-blank-ctx">{seg[0]}</span>
+          <input className="tg-blank-input" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="?" autoCapitalize="none" autoCorrect="off" spellCheck="false" size={Math.max(4, exercise.answers[0].length + 1)} />
+          <span className="tg-blank-ctx">{seg[1]}</span>
+          <input className="tg-blank-input" value={typed2} onChange={(e) => setTyped2(e.target.value)} placeholder="?" autoCapitalize="none" autoCorrect="off" spellCheck="false" size={Math.max(4, exercise.answers[1].length + 1)} />
+          <span className="tg-blank-ctx">{seg[2]}</span>
+        </div>
+        <button className="tg-mini" onClick={() => speak(exercise.full)}>{Icons.speaker} Hear full phrase</button>
+        <button className="tg-btn tg-btn-primary" disabled={!typed.trim() || !typed2.trim()} onClick={check}>Check</button>
+      </div>
+    );
+  }
+
+  if (exercise.type === "mistake") {
+    const tokens = exercise.wrong.split(/\s+/);
+    const check = () => {
+      const tk = tokens[selected] || "";
+      const clean = tk.replace(/[.,!?;:]/g, "").toLowerCase();
+      const correct = clean === exercise.wrongWord.toLowerCase();
+      onAnswer({ correct, userAnswer: tk, expected: exercise.answer, ...meta });
+    };
+    return (
+      <div className="tg-card lesson-exercise">
+        <div className="tg-label">{exercise.title}</div>
+        <div className="tg-meaning">Tap the word that's wrong, then check.</div>
+        <div className="tg-word-pool">
+          {tokens.map((tk, i) => (
+            <button key={i} className={selected === i ? "selected" : ""} onClick={() => { buzz(6); setSelected(i); }}>{tk}</button>
+          ))}
+        </div>
+        <button className="tg-btn tg-btn-primary" disabled={selected === ""} onClick={check}>Check</button>
+      </div>
+    );
+  }
+
+  if (exercise.type === "transform") {
+    return (
+      <div className="tg-card lesson-exercise">
+        <div className="tg-label">{exercise.title}</div>
+        <div className="tg-coach">🔁 {exercise.instruction}</div>
+        <div className="tg-prompt-en">{exercise.prompt}</div>
+        <button className="tg-mini" onClick={() => speak(exercise.prompt)}>{Icons.speaker} Hear original</button>
+        <textarea className="tg-ta" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="Rewrite it in Portuguese" autoCapitalize="none" autoCorrect="off" spellCheck="false" />
         <button className="tg-btn tg-btn-primary" disabled={!typed.trim()} onClick={() => submit(typed)}>Check</button>
       </div>
     );
@@ -287,6 +370,7 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity }) {
               </div>
             </>
           )}
+          {feedback.note ? <div className="tg-feedback-note">💡 {feedback.note}</div> : null}
           <button className="tg-btn tg-btn-primary" onClick={() => { buzz(10); next(); }}>{idx >= exercises.length - 1 ? "See result" : "Next"}</button>
         </div>
       ) : null}
