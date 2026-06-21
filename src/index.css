@@ -148,6 +148,16 @@ button, input, textarea, select { font: inherit; }
 .tg-lesson-score { color:var(--soft); font-size:12px; font-weight:800; margin-top:8px; }
 .tg-times { color:var(--green-d); }
 .tg-times-pill { display:inline-block; margin-top:10px; background:rgba(30,122,94,.12); color:var(--green-d); font-weight:800; font-size:13px; padding:5px 12px; border-radius:999px; }
+.tg-levelup { margin-top:12px; background:rgba(242,169,60,.18); border:1px solid rgba(242,169,60,.35); color:#8a5a08; border-radius:14px; padding:10px 12px; font-size:14px; font-weight:700; }
+html[data-theme="dark"] .tg-levelup { color:#F4CC7C; }
+
+/* CEFR level dividers in the lesson path */
+.tg-level-divider { display:flex; align-items:center; gap:12px; margin:22px 0 12px; padding:10px 12px; border-radius:16px; background:linear-gradient(145deg, rgba(30,122,94,.12), rgba(242,169,60,.12)); border:1px solid var(--line); }
+.tg-level-divider:first-child { margin-top:6px; }
+.tg-level-badge { flex:none; width:44px; height:44px; border-radius:13px; display:grid; place-items:center; font-family:var(--font-display); font-weight:900; font-size:18px; color:#fff; background:var(--green); }
+.tg-level-divider.done .tg-level-badge { background:var(--amber); }
+.tg-level-info b { display:block; font-family:var(--font-display); color:var(--green-d); font-size:17px; }
+.tg-level-info small { color:var(--soft); font-weight:700; }
 .tg-lesson-hero { background:linear-gradient(145deg,#fff,#FDF6E9); border:1px solid rgba(242,169,60,.32); border-radius:24px; padding:20px; text-align:center; margin-bottom:14px; }
 .tg-lesson-hero span { font-size:42px; }
 .tg-lesson-hero h2 { margin:5px 0; font-family:var(--font-display); color:var(--green-d); font-size:27px; }

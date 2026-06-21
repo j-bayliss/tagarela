@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { COURSE_UNITS, LESSONS, skillLabel } from "../data/lessons";
 import { HIGHER_ORDER } from "../data/higherorder";
 import { TRANSFER } from "../data/transfer";
@@ -12,6 +12,18 @@ import { buzz } from "../utils/haptics";
 function shuffle(items) {
   return [...items].sort(() => Math.random() - 0.5);
 }
+
+// Map each unit to a CEFR level for path signposting.
+const UNIT_LEVEL = {
+  start: "A1", cafe: "A1", city: "A1", people: "A1", daily: "A1", bridge: "A1",
+  "a2-past": "A2", "a2-future": "A2",
+  "b1-core": "B1", "b1-real": "B1",
+  "b2-core": "B2", "b2-real": "B2",
+  "c1-lang": "C1", "c1-ideias": "C1",
+};
+const LEVEL_ORDER = ["A1", "A2", "B1", "B2", "C1"];
+const LEVEL_LABEL = { A1: "Beginner", A2: "Elementary", B1: "Intermediate", B2: "Upper-intermediate", C1: "Advanced" };
+const lessonsInLevel = (lvl) => LESSONS.filter((l) => UNIT_LEVEL[l.unit] === lvl);
 
 // Like normaliseAnswer but keeps accents, so we can tell when an answer was
 // only correct after ignoring them (to nudge the learner about accents).
@@ -657,6 +669,11 @@ function LessonResult({ result, onContinue, onReview }) {
         <div className="tg-score">{score}<small>%</small></div>
         <p>{score >= 80 ? "You’re ready for the next small step." : "I saved the key phrases for review so they come back at the right time."}</p>
         {result.timesDone ? <div className="tg-times-pill">{result.timesDone === 1 ? "First time completed 🎉" : `Completed ${result.timesDone}× 🔁`}</div> : null}
+        {result.reachedLevel ? (
+          <div className="tg-levelup">
+            🏅 You've completed <b>{result.reachedLevel}</b>!{result.nextLevel ? <> On to <b>{result.nextLevel}</b>.</> : <> You've finished the whole course! 🎉</>}
+          </div>
+        ) : null}
       </div>
 
       {results.length ? (
@@ -739,8 +756,16 @@ export default function LessonsView({ progress, setProgress, onSave, onGoReview,
       };
     });
     lesson.phrases.forEach((phrase) => onSave(phrase.pt, phrase.en, score < 70 ? "difficult" : "learning", lesson.skillTags));
+    // Did this completion finish a whole CEFR level for the first time?
+    const lvl = UNIT_LEVEL[lesson.unit];
+    const lvlLessons = lessonsInLevel(lvl);
+    const prevDone = progress.completed || [];
+    const wasComplete = lvlLessons.every((l) => prevDone.includes(l.id));
+    const nowComplete = lvlLessons.every((l) => l.id === lesson.id || prevDone.includes(l.id));
+    const reachedLevel = !wasComplete && nowComplete ? lvl : null;
+    const nextLevel = reachedLevel ? LEVEL_ORDER[LEVEL_ORDER.indexOf(reachedLevel) + 1] || null : null;
     setActiveLesson(null);
-    setLastResult({ lesson, score, results: outcome.results, timesDone });
+    setLastResult({ lesson, score, results: outcome.results, timesDone, reachedLevel, nextLevel });
   };
 
   if (activeLesson) {
@@ -765,9 +790,28 @@ export default function LessonsView({ progress, setProgress, onSave, onGoReview,
         <ProgressBar value={pct} />
       </div>
 
-      {COURSE_UNITS.map((unit) => (
-        <section key={unit.id} className="tg-unit">
-          <div className="tg-unit-title"><span>{unit.emoji}</span><div><b>{unit.title}</b><small>{unit.subtitle}</small></div></div>
+      {(() => {
+        let prevLevel = null;
+        return COURSE_UNITS.map((unit) => {
+          const lvl = UNIT_LEVEL[unit.id] || "";
+          const showDivider = lvl && lvl !== prevLevel;
+          prevLevel = lvl;
+          const lvlLessons = showDivider ? lessonsInLevel(lvl) : [];
+          const lvlDone = showDivider ? lvlLessons.filter((l) => completed.has(l.id)).length : 0;
+          const lvlComplete = showDivider && lvlLessons.length > 0 && lvlDone === lvlLessons.length;
+          return (
+            <Fragment key={unit.id}>
+              {showDivider ? (
+                <div className={`tg-level-divider ${lvlComplete ? "done" : ""}`}>
+                  <span className="tg-level-badge">{lvl}</span>
+                  <div className="tg-level-info">
+                    <b>{LEVEL_LABEL[lvl]}</b>
+                    <small>{lvlDone}/{lvlLessons.length} lessons{lvlComplete ? " · complete ✓" : ""}</small>
+                  </div>
+                </div>
+              ) : null}
+              <section className="tg-unit">
+                <div className="tg-unit-title"><span>{unit.emoji}</span><div><b>{unit.title}</b><small>{unit.subtitle}</small></div></div>
           {LESSONS.filter((lesson) => lesson.unit === unit.id).map((lesson) => {
             const idx = LESSONS.findIndex((l) => l.id === lesson.id);
             const done = completed.has(lesson.id);
@@ -798,8 +842,11 @@ export default function LessonsView({ progress, setProgress, onSave, onGoReview,
               </div>
             );
           })}
-        </section>
-      ))}
+              </section>
+            </Fragment>
+          );
+        });
+      })()}
     </div>
   );
 }
