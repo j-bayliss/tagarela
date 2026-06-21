@@ -16,6 +16,25 @@ function shuffle(items) {
 // only correct after ignoring them (to nudge the learner about accents).
 const normKeepAccents = (s) => String(s || "").toLowerCase().replace(/[.,!?;:]/g, "").replace(/\s+/g, " ").trim();
 
+// Accept valid alternative phrasings, not just one exact string. Handles
+// common Brazilian-Portuguese equivalences so legitimate answers aren't
+// marked wrong: an optional leading subject pronoun (você tem ≡ tem), and
+// casual spellings (pra/para, vc/você, tá/está).
+const SUBJECT_PRONOUNS = ["a gente", "eu", "voce", "tu", "ele", "ela", "nos", "voces", "eles", "elas"];
+const TOKEN_EQUIV = { pra: "para", vc: "voce", ta: "esta" }; // applied to accent-stripped tokens
+const canonAnswer = (s) => normaliseAnswer(s).split(" ").map((w) => TOKEN_EQUIV[w] || w).join(" ");
+const stripLeadPronoun = (s) => {
+  for (const p of SUBJECT_PRONOUNS) {
+    if (s === p) return s;
+    if (s.startsWith(p + " ")) return s.slice(p.length + 1);
+  }
+  return s;
+};
+function answerMatches(user, expected, accept = []) {
+  const u = canonAnswer(user);
+  return [expected, ...(accept || [])].map(canonAnswer).some((c) => c === u || stripLeadPronoun(c) === stripLeadPronoun(u));
+}
+
 const FUNCTION_WORDS = new Set(["de", "da", "do", "das", "dos", "o", "a", "os", "as", "um", "uma", "uns", "umas", "e", "ou", "em", "no", "na", "nos", "nas", "que", "com", "sem", "por", "para", "pra", "eu", "voce", "você", "ele", "ela", "se", "ao", "aos", "à", "às", "meu", "minha", "seu", "sua", "é"]);
 const cleanTok = (w) => w.replace(/[.,!?;:]/g, "");
 
@@ -240,8 +259,9 @@ function Exercise({ exercise, onAnswer }) {
 
   const submit = (value) => {
     const answer = value ?? selected ?? typed;
-    const correct = normaliseAnswer(answer) === normaliseAnswer(exercise.answer);
-    const accentNote = correct && normKeepAccents(answer) !== normKeepAccents(exercise.answer) ? exercise.answer : null;
+    const correct = answerMatches(answer, exercise.answer, exercise.accept);
+    // Only nudge about accents when the accents are the *only* difference.
+    const accentNote = correct && normaliseAnswer(answer) === normaliseAnswer(exercise.answer) && normKeepAccents(answer) !== normKeepAccents(exercise.answer) ? exercise.answer : null;
     onAnswer({ correct, userAnswer: answer, expected: exercise.answer, accentNote, ...meta });
   };
 
@@ -326,7 +346,7 @@ function Exercise({ exercise, onAnswer }) {
   if (exercise.type === "cloze2") {
     const seg = exercise.prompt.split("____");
     const check = () => {
-      const ok = normaliseAnswer(typed) === normaliseAnswer(exercise.answers[0]) && normaliseAnswer(typed2) === normaliseAnswer(exercise.answers[1]);
+      const ok = answerMatches(typed, exercise.answers[0]) && answerMatches(typed2, exercise.answers[1]);
       const accentNote = ok && (normKeepAccents(typed) !== normKeepAccents(exercise.answers[0]) || normKeepAccents(typed2) !== normKeepAccents(exercise.answers[1])) ? exercise.answers.join(", ") : null;
       onAnswer({ correct: ok, userAnswer: `${typed}, ${typed2}`, expected: exercise.answers.join(", "), accentNote, ...meta });
     };
