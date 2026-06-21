@@ -436,3 +436,19 @@ html[data-theme="dark"] .tg-word.bad { color:#FF9E88; }
 .tg-saved.on { background:rgba(30,122,94,.14); color:var(--green-d); }
 .tg-saved.off { background:rgba(23,58,46,.08); color:var(--soft); }
 html[data-theme="dark"] .tg-saved.off { background:rgba(255,255,255,.08); }
+
+/* ---------- graded reading (batch 10) ---------- */
+.tg-reading-head { display:flex; align-items:center; gap:12px; margin-bottom:4px; }
+.tg-reading-head .tg-hero-emoji { margin:0; }
+.tg-reading { margin-top:12px; display:flex; flex-direction:column; gap:10px; }
+.tg-read-line { border-top:1px solid var(--line); padding-top:10px; }
+.tg-read-line:first-child { border-top:none; padding-top:0; }
+.tg-read-row { display:flex; align-items:flex-start; gap:8px; }
+.tg-read-pt { flex:1; text-align:left; border:none; background:none; cursor:pointer; font-size:16px; font-weight:700; color:var(--ink); line-height:1.45; padding:0; }
+.tg-read-en { margin-top:6px; color:var(--soft); font-size:14px; line-height:1.4; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.tg-read-q { margin-bottom:14px; }
+.tg-read-q:last-child { margin-bottom:0; }
+.tg-read-qtext { font-weight:800; color:var(--ink); margin-bottom:8px; }
+.tg-options button.correct-pick { border-color:var(--green); background:rgba(30,122,94,.14); color:var(--green-d); }
+.tg-options button.wrong-pick { border-color:var(--coral); background:rgba(232,92,63,.12); color:var(--coral); }
+.tg-options button:disabled { cursor:default; }
