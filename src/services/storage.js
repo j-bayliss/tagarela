@@ -8,7 +8,10 @@ export const KEYS = {
   apiKey: "tagarela:apikey",
   azureKey: "tagarela:azure:speechKey",
   azureRegion: "tagarela:azure:region",
+  azureVoice: "tagarela:azure:voice",
 };
+
+export const DEFAULT_VOICE = "pt-BR-FranciscaNeural";
 
 export const BACKUP_VERSION = 4;
 
@@ -38,10 +41,11 @@ export function getAzureSettings() {
     return {
       key: localStorage.getItem(KEYS.azureKey) || "",
       region: localStorage.getItem(KEYS.azureRegion) || "uksouth",
+      voice: localStorage.getItem(KEYS.azureVoice) || DEFAULT_VOICE,
       locale: "pt-BR",
     };
   } catch {
-    return { key: "", region: "uksouth", locale: "pt-BR" };
+    return { key: "", region: "uksouth", voice: DEFAULT_VOICE, locale: "pt-BR" };
   }
 }
 
@@ -49,6 +53,7 @@ export function saveAzureSettings(settings) {
   try {
     localStorage.setItem(KEYS.azureKey, (settings.key || "").trim());
     localStorage.setItem(KEYS.azureRegion, (settings.region || "uksouth").trim());
+    localStorage.setItem(KEYS.azureVoice, (settings.voice || DEFAULT_VOICE).trim());
   } catch {}
 }
 

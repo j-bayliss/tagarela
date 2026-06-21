@@ -1,7 +1,17 @@
 import { useState } from "react";
 import { getApiKey, getAzureSettings, saveApiKey, saveAzureSettings } from "../services/storage";
 import { testAnthropicKey } from "../services/anthropic";
+import { speak } from "../utils/language";
 import PlacementQuiz from "./PlacementQuiz";
+
+const BR_VOICES = [
+  { id: "pt-BR-FranciscaNeural", label: "Francisca ♀" },
+  { id: "pt-BR-AntonioNeural", label: "Antônio ♂" },
+  { id: "pt-BR-BrendaNeural", label: "Brenda ♀" },
+  { id: "pt-BR-FabioNeural", label: "Fábio ♂" },
+  { id: "pt-BR-GiovannaNeural", label: "Giovanna ♀" },
+  { id: "pt-BR-HumbertoNeural", label: "Humberto ♂" },
+];
 
 const linkBtn = { border: "none", background: "transparent", color: "var(--green-d, #13573F)", fontWeight: 700, fontSize: 12, cursor: "pointer", padding: "4px 2px" };
 
@@ -117,7 +127,17 @@ export default function SettingsSheet({ onboarding, setOnboarding, onClose }) {
           <div style={{ display: "flex", gap: 14, marginTop: 6 }}>
             <button style={linkBtn} type="button" onClick={() => setShowAzure((s) => !s)}>{showAzure ? "Hide key" : "Show key"}</button>
           </div>
-          <p className="tg-small-note">Optional. Powers pronunciation scoring and reliable speech-to-text in chat. The free F0 tier covers about 5 audio hours/month. Stored only on this device.</p>
+          <div className="tg-label" style={{ marginTop: 12 }}>Voice</div>
+          <div className="tg-choice-grid">
+            {BR_VOICES.map((v) => (
+              <button key={v.id} className={`tg-choice compact ${azure.voice === v.id ? "selected" : ""}`} onClick={() => setAzure((s) => ({ ...s, voice: v.id }))}>
+                <b>{v.label.split(" ")[0]}</b>
+                <small>{v.label.split(" ")[1] === "♀" ? "female" : "male"}</small>
+              </button>
+            ))}
+          </div>
+          <button className="tg-btn tg-btn-ghost" type="button" onClick={() => { saveAzureSettings({ ...azure, locale: "pt-BR" }); speak("Oi! Tudo bem? Vamos praticar português."); }}>▶ Preview voice</button>
+          <p className="tg-small-note">Optional. Powers pronunciation scoring and reliable speech-to-text in chat. Several Brazilian neural voices (different speakers) — all standard Brazilian Portuguese. Without an Azure key, the app uses your device's free built-in voice. Free F0 tier ≈ 5 audio hours/month.</p>
         </div>
 
         <button className="tg-btn tg-btn-primary" onClick={save}>Save settings</button>

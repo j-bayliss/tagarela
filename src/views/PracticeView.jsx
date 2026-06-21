@@ -389,6 +389,73 @@ function PronunciationMode({ onSave, onActivity }) {
   return <div>{!hasAzure ? <div className="tg-card api-nudge"><div className="tg-label">Azure pronunciation</div><p className="tg-expl">Add your Azure Speech key and region in settings to unlock pronunciation scoring. This app is locked to Brazilian Portuguese: pt-BR.</p></div> : null}<div className="tg-card"><div className="tg-label">Repeat after me</div><div className="tg-big-pt">{cur.pt}</div><div className="tg-meaning">{cur.en}</div>{cur.note ? <div className="tg-coach">💡 {cur.note}</div> : null}<button className="tg-btn tg-btn-ghost" onClick={() => speak(cur.pt)}>Hear phrase</button><button className="tg-btn tg-btn-primary" disabled={!hasAzure || busy} onClick={record}>{busy ? "Listening..." : "Record and score"}</button><StepNav idx={idx} total={PRONUNCIATION_DRILLS.length} onPrev={() => move(-1)} onNext={() => move(1)} /></div>{error ? <div className="tg-error">{error}</div> : null}{result ? <div className="tg-card"><div className={`tg-score small ${scoreClass(result.pronunciationScore)}`}>{result.pronunciationScore}<small>%</small></div><p className="tg-expl">{friendlyPronunciationFeedback(result.pronunciationScore)}</p><div className="tg-score-grid"><span>Accuracy <b>{result.accuracyScore}%</b></span><span>Fluency <b>{result.fluencyScore}%</b></span><span>Completeness <b>{result.completenessScore}%</b></span><span>Prosody <b>{result.prosodyScore || "—"}%</b></span></div><div className="tg-meaning">Heard: {result.text || "—"}</div>{result.words?.length ? <><div className="tg-word-scores">{result.words.map((w, i) => <button type="button" key={w.word + i} className={`tg-word ${w.errorType === "Omission" ? "miss" : w.accuracy >= 80 ? "good" : w.accuracy >= 60 ? "ok" : "bad"}`} onClick={() => { buzz(6); speak(w.word); }}>{w.word}<small>{w.errorType === "Omission" ? "missed" : `${w.accuracy}%`}</small></button>)}</div><div className="tg-small-note">Tap a word to hear it on its own.</div></> : null}<button className="tg-btn tg-btn-primary" onClick={() => move(1)}>Next phrase</button></div> : null}</div>;
 }
 
+function MyTextMode({ onSave }) {
+  const hasKey = Boolean(getApiKey());
+  const [input, setInput] = useState(() => readJSON("tagarela:mytext", ""));
+  const [text, setText] = useState(() => readJSON("tagarela:mytext", ""));
+  const [trans, setTrans] = useState({});
+  const [error, setError] = useState("");
+  const sentences = useMemo(() => (text.match(/[^.!?\n]+[.!?]*/g) || []).map((s) => s.trim()).filter(Boolean), [text]);
+
+  const load = () => { const t = input.trim(); setText(t); writeJSON("tagarela:mytext", t); setTrans({}); setError(""); buzz(8); };
+  const clear = () => { setText(""); setInput(""); writeJSON("tagarela:mytext", ""); setTrans({}); setError(""); };
+  const translate = async (i, s) => {
+    if (!hasKey || (trans[i] && trans[i] !== "…")) return;
+    setTrans((t) => ({ ...t, [i]: "…" }));
+    try {
+      const raw = await askClaude("Translate this Brazilian Portuguese sentence into natural English. Reply with only the translation — no quotes, no notes.", [{ role: "user", content: s }]);
+      setTrans((t) => ({ ...t, [i]: (raw || "").trim() }));
+    } catch (err) {
+      setError(err.message || "Translation failed.");
+      setTrans((t) => { const c = { ...t }; delete c[i]; return c; });
+    }
+  };
+
+  if (!text) {
+    return (
+      <div>
+        <div className="tg-card">
+          <div className="tg-label">Paste any Brazilian Portuguese text</div>
+          <p className="tg-expl">An article, song lyrics, a message — anything. Reading and audio work offline; tap-to-translate uses your optional Anthropic key.</p>
+          <textarea className="tg-ta" style={{ minHeight: 150 }} value={input} onChange={(e) => setInput(e.target.value)} placeholder="Cole um texto em português aqui…" />
+          <button className="tg-btn tg-btn-primary" disabled={!input.trim()} onClick={load}>Load text</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {!hasKey ? <ApiNudge text="Reading and audio work without a key. Add your Anthropic key to tap any line for an instant translation." /> : null}
+      <div className="tg-card">
+        <div className="tg-reading-head">
+          <span className="tg-hero-emoji">📄</span>
+          <div><div className="tg-big-pt">Your text</div><span className="tg-badge ok">{sentences.length} sentences</span></div>
+        </div>
+        <button className="tg-listen" onClick={() => { buzz(6); speak(text); }}>{Icons.speaker} Play all</button>
+        <div className="tg-small-note">{hasKey ? "Tap a line for the English; tap 🔊 to hear it." : "Tap 🔊 to hear any line."}</div>
+        <div className="tg-reading">
+          {sentences.map((s, i) => (
+            <div key={i} className="tg-read-line">
+              <div className="tg-read-row">
+                <button type="button" className="tg-read-pt" onClick={() => { buzz(4); translate(i, s); }}>{s}</button>
+                <button className="tg-mini round" aria-label="Hear line" onClick={() => { buzz(4); speak(s); }}>{Icons.speaker}</button>
+              </div>
+              {trans[i] ? (
+                <div className="tg-read-en">
+                  {trans[i] === "…" ? "…" : <>{trans[i]} <button className="tg-mini" onClick={() => onSave(s, trans[i], "learning", ["reading"])}>Save</button></>}
+                </div>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      </div>
+      {error ? <div className="tg-error">{error}</div> : null}
+      <button className="tg-btn tg-btn-ghost" onClick={clear}>Clear / paste new text</button>
+    </div>
+  );
+}
+
 function VerbsMode() {
   const [idx, go] = usePersistedIndex("tagarela:pos:verbs", VERBS.length);
   const verb = VERBS[idx % VERBS.length];
@@ -660,6 +727,7 @@ export default function PracticeView({ onSave, onMistake, initialMode, onActivit
     { id: "vocab", label: "Vocabulário" },
     { id: "verbs", label: "Verbos" },
     { id: "reading", label: "Leitura" },
+    { id: "mytext", label: "Meu texto" },
     { id: "listening", label: "Escuta" },
     { id: "chat", label: "Conversa" },
     { id: "missions", label: "Missões" },
@@ -690,6 +758,7 @@ export default function PracticeView({ onSave, onMistake, initialMode, onActivit
       {mode === "vocab" ? <VocabMode onSave={onSave} /> : null}
       {mode === "verbs" ? <VerbsMode /> : null}
       {mode === "reading" ? <ReadingMode onSave={onSave} /> : null}
+      {mode === "mytext" ? <MyTextMode onSave={onSave} /> : null}
       {mode === "listening" ? <ListeningMode /> : null}
       {mode === "chat" ? <ChatMode onSave={onSave} onMistake={onMistake} onActivity={onActivity} /> : null}
       {mode === "missions" ? <ScenarioMode onSave={onSave} onMistake={onMistake} onActivity={onActivity} /> : null}
