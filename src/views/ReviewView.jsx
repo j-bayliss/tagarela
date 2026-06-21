@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from "react";
-import { BACKUP_VERSION } from "../services/storage";
+import { BACKUP_VERSION, KEYS } from "../services/storage";
+import { gistBackup, gistRestore } from "../services/sync";
 import { dueCards, makeCard, reschedule } from "../services/spacedRepetition";
 import { speak } from "../utils/language";
 import { orderDueByWeakness } from "../utils/progress";
@@ -99,7 +100,63 @@ function Backup({ data, onImport }) {
       event.target.value = "";
     }
   };
-  return <div className="tg-card"><div className="tg-label">Backup</div><p className="tg-expl">Export or restore your lessons, deck, mistakes, streak and settings. This is useful while the app is local-first.</p><button className="tg-btn tg-btn-primary" onClick={exportData}>Export backup</button><button className="tg-btn tg-btn-ghost" onClick={() => fileRef.current?.click()}>Import backup</button><input ref={fileRef} type="file" accept="application/json" style={{ display: "none" }} onChange={importData}/>{status ? <div className="tg-status">{status}</div> : null}</div>;
+  return (
+    <>
+      <div className="tg-card"><div className="tg-label">Backup (file)</div><p className="tg-expl">Export or restore your lessons, deck, mistakes, streak and settings to a file on this device.</p><button className="tg-btn tg-btn-primary" onClick={exportData}>Export backup</button><button className="tg-btn tg-btn-ghost" onClick={() => fileRef.current?.click()}>Import backup</button><input ref={fileRef} type="file" accept="application/json" style={{ display: "none" }} onChange={importData}/>{status ? <div className="tg-status">{status}</div> : null}</div>
+      <CloudSync data={data} onImport={onImport} />
+    </>
+  );
+}
+
+function CloudSync({ data, onImport }) {
+  const [token, setToken] = useState(() => { try { return localStorage.getItem(KEYS.gistToken) || ""; } catch { return ""; } });
+  const [showToken, setShowToken] = useState(false);
+  const [busy, setBusy] = useState("");
+  const [status, setStatus] = useState("");
+  const syncedAt = (() => { try { return localStorage.getItem(KEYS.gistSyncedAt) || ""; } catch { return ""; } })();
+
+  const saveToken = (t) => { setToken(t); try { localStorage.setItem(KEYS.gistToken, t.trim()); } catch {} };
+
+  const backup = async () => {
+    if (!token.trim()) { setStatus("Paste a GitHub token first."); return; }
+    setBusy("up"); setStatus("");
+    try {
+      const gistId = localStorage.getItem(KEYS.gistId) || "";
+      const payload = { version: BACKUP_VERSION, exportedAt: new Date().toISOString(), ...data };
+      const id = await gistBackup(token, gistId, payload);
+      localStorage.setItem(KEYS.gistId, id);
+      localStorage.setItem(KEYS.gistSyncedAt, new Date().toISOString());
+      setStatus("✓ Backed up to your private gist.");
+    } catch (err) { setStatus(err.message || "Cloud backup failed."); }
+    finally { setBusy(""); }
+  };
+
+  const restore = async () => {
+    if (!token.trim()) { setStatus("Paste a GitHub token first."); return; }
+    setBusy("down"); setStatus("");
+    try {
+      const gistId = localStorage.getItem(KEYS.gistId) || "";
+      const restored = await gistRestore(token, gistId);
+      onImport(restored);
+      setStatus("✓ Restored from cloud.");
+    } catch (err) { setStatus(err.message || "Cloud restore failed."); }
+    finally { setBusy(""); }
+  };
+
+  return (
+    <div className="tg-card">
+      <div className="tg-label">Cloud sync (GitHub)</div>
+      <p className="tg-expl">Sync across devices via a private GitHub gist — no account here, just a token. Create one at github.com/settings/tokens with only the <b>gist</b> scope, then paste it below.</p>
+      <input className="tg-input full" type={showToken ? "text" : "password"} autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" value={token} onChange={(e) => saveToken(e.target.value)} placeholder="github_pat_…" />
+      <div style={{ display: "flex", gap: 14, marginTop: 6 }}>
+        <button style={{ border: "none", background: "transparent", color: "var(--green-d)", fontWeight: 700, fontSize: 12, cursor: "pointer", padding: "4px 2px" }} type="button" onClick={() => setShowToken((s) => !s)}>{showToken ? "Hide" : "Show"}</button>
+      </div>
+      <button className="tg-btn tg-btn-primary" disabled={!!busy} onClick={backup}>{busy === "up" ? "Backing up…" : "Back up to cloud"}</button>
+      <button className="tg-btn tg-btn-ghost" disabled={!!busy} onClick={restore}>{busy === "down" ? "Restoring…" : "Restore from cloud"}</button>
+      {syncedAt ? <div className="tg-small-note">Last cloud backup: {new Date(syncedAt).toLocaleString()}</div> : null}
+      {status ? <div className="tg-status">{status}</div> : null}
+    </div>
+  );
 }
 
 export default function ReviewView({ deck, setDeck, addCard, mistakes, setMistakes, backupData, onImportData, skillStats, onActivity }) {

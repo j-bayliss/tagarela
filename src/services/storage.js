@@ -9,6 +9,9 @@ export const KEYS = {
   azureKey: "tagarela:azure:speechKey",
   azureRegion: "tagarela:azure:region",
   azureVoice: "tagarela:azure:voice",
+  gistToken: "tagarela:sync:token",
+  gistId: "tagarela:sync:gistId",
+  gistSyncedAt: "tagarela:sync:at",
 };
 
 export const DEFAULT_VOICE = "pt-BR-FranciscaNeural";
