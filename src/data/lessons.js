@@ -3,6 +3,7 @@ export const COURSE_UNITS = [
   { id: "cafe", title: "Café e comida", subtitle: "Order, ask and survive menus.", emoji: "☕" },
   { id: "city", title: "Pela cidade", subtitle: "Directions, transport and useful questions.", emoji: "🚌" },
   { id: "people", title: "Pessoas e planos", subtitle: "Talk about yourself, family and daily life.", emoji: "💬" },
+  { id: "daily", title: "Vida cotidiana", subtitle: "Everyday situations you'll actually face.", emoji: "🗓️" },
   { id: "a2-past", title: "Histórias e passado", subtitle: "A2 · Talk about what happened.", emoji: "📖" },
   { id: "a2-future", title: "Opiniões e futuro", subtitle: "A2 · Plans, opinions and richer chat.", emoji: "🔮" },
   { id: "b1-core", title: "Nuance e fluência", subtitle: "B1 · Hypotheticals, nuance and flow.", emoji: "🧠" },
@@ -226,6 +227,58 @@ export const LESSONS = [
     { pt: "Hoje eu quero praticar um pouco.", en: "Today I want to practise a little." },
     { pt: "Pode falar mais devagar, por favor?", en: "Can you speak more slowly, please?" },
   ]),
+
+  // ===================== Vida cotidiana (everyday) =====================
+  mk("daily-01", "daily", "📞", "No telefone", "Handle a simple phone call.", "Phone basics", "On the phone, Brazilians say “Alô?” (never as an in-person greeting) and “Quem fala?” to ask who's calling.", "Phone calls feel hard because there are no gestures — lean on fixed phrases.", ["conversation", "survival"], [
+    { pt: "Alô, quem fala?", en: "Hello, who's speaking?" },
+    { pt: "Posso falar com a Ana?", en: "Can I speak with Ana?" },
+    { pt: "Um momento, vou chamar.", en: "One moment, I'll get her." },
+    { pt: "Ela não está agora.", en: "She's not here right now." },
+    { pt: "Pode deixar um recado?", en: "Can I leave a message?" },
+    { pt: "Eu ligo mais tarde, então.", en: "I'll call later, then." },
+  ], "Phone Portuguese runs on set phrases: “Alô?” answers a call (it's not a general hello), “Quem fala?” asks who's calling, “recado” is a message, and “ligar” is the verb to call (eu ligo, ele liga)."),
+
+  mk("daily-02", "daily", "👕", "Roupas e compras", "Shop for clothes confidently.", "Shopping for clothes", "Key verbs: experimentar (to try on) and levar (to take/buy).", "Sizes and colours plus a couple of verbs cover almost any clothes shop.", ["shopping"], [
+    { pt: "Eu queria uma camiseta, por favor.", en: "I'd like a t-shirt, please." },
+    { pt: "Qual é o seu tamanho?", en: "What's your size?" },
+    { pt: "Posso experimentar?", en: "Can I try it on?" },
+    { pt: "Tem em outra cor?", en: "Do you have it in another colour?" },
+    { pt: "Ficou um pouco apertado.", en: "It came out a bit tight." },
+    { pt: "Vou levar este.", en: "I'll take this one." },
+  ], "Clothes shopping vocabulary: experimentar (to try on), tamanho (size), cor (colour), apertado/largo (tight/loose). “Vou levar” = I'll take it. “Ficar” describes the fit: ficou apertado (it turned out tight)."),
+
+  mk("daily-03", "daily", "💊", "Na farmácia", "Describe a symptom and get medicine.", "At the pharmacy", "Use “estar com” + a symptom: estou com dor de garganta, com febre.", "Pharmacies in Brazil help with minor issues — these phrases go far.", ["health", "survival"], [
+    { pt: "Estou com dor de garganta.", en: "I have a sore throat." },
+    { pt: "Você tem algo para febre?", en: "Do you have something for a fever?" },
+    { pt: "Quantas vezes por dia?", en: "How many times a day?" },
+    { pt: "É com ou sem receita?", en: "Is it with or without a prescription?" },
+    { pt: "Melhoras!", en: "Get well soon!" },
+  ], "Symptoms use “estar com” + noun: estou com dor de garganta (sore throat), com febre (a fever), com tosse (a cough). “Receita” is a prescription; “quantas vezes por dia?” asks the dosage. A kind sign-off: “Melhoras!”"),
+
+  mk("daily-04", "daily", "📱", "Tecnologia e celular", "Deal with everyday tech.", "Tech essentials", "Handy nouns: bateria, senha, mensagem, internet.", "Modern life needs modern words — these come up constantly.", ["conversation", "writing"], [
+    { pt: "Meu celular está sem bateria.", en: "My phone is out of battery." },
+    { pt: "Qual é a senha do wi-fi?", en: "What's the wi-fi password?" },
+    { pt: "Você pode me mandar por mensagem?", en: "Can you text it to me?" },
+    { pt: "A internet está muito lenta.", en: "The internet is very slow." },
+    { pt: "Esqueci a senha de novo.", en: "I forgot the password again." },
+  ], "Everyday tech: “sem bateria” (out of battery), “senha” (password), “mandar por mensagem” (to text), “lenta” (slow). “De novo” = again. These phrases come up far more than most textbook vocabulary."),
+
+  mk("daily-05", "daily", "💳", "Dinheiro e banco", "Pay and handle money.", "Paying & money", "Very Brazilian: “parcelar” (to pay in instalments) and “à vista” (in one payment).", "Knowing how payment works avoids awkward moments at the till.", ["shopping", "numbers"], [
+    { pt: "Quanto custa no total?", en: "How much is it in total?" },
+    { pt: "Aceita cartão ou só dinheiro?", en: "Do you take card or only cash?" },
+    { pt: "Pode parcelar?", en: "Can I pay in instalments?" },
+    { pt: "Onde fica o caixa eletrônico?", en: "Where's the ATM?" },
+    { pt: "Acho que o troco veio errado.", en: "I think the change is wrong." },
+  ], "Brazilian payment vocabulary: “parcelar” (to split into monthly instalments — extremely common), “à vista” (pay in full), “caixa eletrônico” (ATM), “troco” (change). “No total” = altogether."),
+
+  mk("daily-06", "daily", "🎉", "Convites e combinados", "Make and answer plans.", "Inviting & arranging", "Casual invites: “Vamos…?”, “Bora!”, and “Combinado” to seal a plan.", "This is the social glue that turns vocabulary into friendships.", ["conversation", "time"], [
+    { pt: "Vamos sair hoje à noite?", en: "Shall we go out tonight?" },
+    { pt: "Bora! Que horas?", en: "Let's do it! What time?" },
+    { pt: "Pode ser às oito?", en: "Can it be at eight?" },
+    { pt: "Combinado, te encontro lá.", en: "Deal, I'll meet you there." },
+    { pt: "Infelizmente, não vou poder ir.", en: "Unfortunately, I won't be able to go." },
+    { pt: "Fica para a próxima!", en: "Next time, then!" },
+  ], "Making plans casually: “Vamos…?” / “Bora!” (let's), “Pode ser às oito?” (how about eight?), “Combinado” (deal/agreed), and the friendly rain-check “Fica para a próxima”. To decline kindly: “infelizmente, não vou poder”."),
 
   // ===================== A2 · Histórias e passado =====================
   mk("a2-01", "a2-past", "📖", "O que aconteceu?", "Talk about what you did, using the past.", "Simple past (regular)", "Past tense of -ar verbs: eu trabalhei, você trabalhou, nós trabalhamos.", "Past tense unlocks real storytelling. Start with the things you do every day.", ["past", "verbs"], [
