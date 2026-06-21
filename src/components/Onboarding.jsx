@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PlacementQuiz from "./PlacementQuiz";
 
 const GOALS = [
   { id: "travel", emoji: "✈️", title: "Holiday survival", text: "Cafés, hotels, taxis and useful questions." },
@@ -16,6 +17,12 @@ const TARGETS = [
 export default function Onboarding({ onComplete }) {
   const [goal, setGoal] = useState("travel");
   const [target, setTarget] = useState(10);
+  const [startLevel, setStartLevel] = useState(null);
+  const [quizOpen, setQuizOpen] = useState(false);
+
+  if (quizOpen) {
+    return <PlacementQuiz onClose={() => setQuizOpen(false)} onApply={(lv) => { setStartLevel(lv); setQuizOpen(false); }} />;
+  }
 
   return (
     <div className="tg-onboarding">
@@ -50,8 +57,18 @@ export default function Onboarding({ onComplete }) {
         </div>
       </div>
 
-      <button className="tg-btn tg-btn-primary" onClick={() => onComplete({ goal, dailyTarget: target, variant: "pt-BR", completedAt: Date.now() })}>
-        Start Aula 1
+      <div className="tg-card">
+        <div className="tg-label">Already know some Portuguese?</div>
+        {startLevel ? (
+          <p className="tg-expl">Recommended start: <b>{startLevel}</b>. You can change this any time in settings.</p>
+        ) : (
+          <p className="tg-expl">Take a quick adaptive placement quiz for a level recommendation — or just start from the beginning.</p>
+        )}
+        <button className="tg-btn tg-btn-ghost" type="button" onClick={() => setQuizOpen(true)}>{startLevel ? "Retake placement quiz" : "📝 Take placement quiz"}</button>
+      </div>
+
+      <button className="tg-btn tg-btn-primary" onClick={() => onComplete({ goal, dailyTarget: target, startLevel: startLevel || "A1", variant: "pt-BR", completedAt: Date.now() })}>
+        {startLevel && startLevel !== "A1" ? `Start at ${startLevel}` : "Start Aula 1"}
       </button>
       <p className="tg-footnote">Locked to Brazilian Portuguese for now: pronunciation, lesson wording and tutor prompts all use pt-BR.</p>
     </div>
