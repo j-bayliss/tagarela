@@ -129,6 +129,10 @@ export default function SettingsSheet({ onboarding, setOnboarding, onClose }) {
           </div>
           <div className="tg-label" style={{ marginTop: 12 }}>Voice</div>
           <div className="tg-choice-grid">
+            <button className={`tg-choice compact ${azure.voice === "random" ? "selected" : ""}`} onClick={() => setAzure((s) => ({ ...s, voice: "random" }))}>
+              <b>🎲 Mix</b>
+              <small>random voices</small>
+            </button>
             {BR_VOICES.map((v) => (
               <button key={v.id} className={`tg-choice compact ${azure.voice === v.id ? "selected" : ""}`} onClick={() => setAzure((s) => ({ ...s, voice: v.id }))}>
                 <b>{v.label.split(" ")[0]}</b>

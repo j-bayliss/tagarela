@@ -1,4 +1,4 @@
-import { getAzureSettings } from "../services/storage";
+import { getAzureSettings, VOICE_IDS } from "../services/storage";
 import { synthesizeWithAzure } from "../services/azureSpeech";
 
 let cachedVoices = [];
@@ -34,8 +34,10 @@ export function speak(text) {
   let azure = null;
   try { azure = getAzureSettings(); } catch { azure = null; }
   if (azure && azure.key && azure.region) {
+    // "Mix" mode rotates voices so the learner hears different speakers.
+    const voice = azure.voice === "random" ? VOICE_IDS[Math.floor(Math.random() * VOICE_IDS.length)] : azure.voice;
     // Natural neural voice; fall back to the device voice if Azure fails.
-    synthesizeWithAzure(text, azure).catch(() => speakBrowser(text));
+    synthesizeWithAzure(text, { ...azure, voice }).catch(() => speakBrowser(text));
     return;
   }
   speakBrowser(text);

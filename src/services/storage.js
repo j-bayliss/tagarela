@@ -12,6 +12,15 @@ export const KEYS = {
 };
 
 export const DEFAULT_VOICE = "pt-BR-FranciscaNeural";
+// Brazilian neural voices used for the voice selector and the "Mix" (random) mode.
+export const VOICE_IDS = [
+  "pt-BR-FranciscaNeural",
+  "pt-BR-AntonioNeural",
+  "pt-BR-BrendaNeural",
+  "pt-BR-FabioNeural",
+  "pt-BR-GiovannaNeural",
+  "pt-BR-HumbertoNeural",
+];
 
 export const BACKUP_VERSION = 4;
 
