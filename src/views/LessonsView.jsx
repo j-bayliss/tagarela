@@ -4,6 +4,7 @@ import { HIGHER_ORDER } from "../data/higherorder";
 import { TRANSFER } from "../data/transfer";
 import { CONVO_GAPS } from "../data/conversations";
 import { normaliseAnswer, speak } from "../utils/language";
+import { readJSON, writeJSON } from "../services/storage";
 import { ProgressBar, XpPop } from "../components/Common";
 import { Icons } from "../components/Icons";
 import { buzz } from "../utils/haptics";
@@ -51,7 +52,7 @@ function AccentKeys({ onInsert }) {
   );
 }
 
-function makeExercises(lesson, reviewPool = [], skillStats = {}) {
+function makeExercises(lesson, reviewPool = [], skillStats = {}, audioOff = false) {
   const phrases = (lesson.phrases || []).filter((p) => p && p.pt && p.en);
   const tags = lesson.skillTags;
   const tagSet = new Set(tags || []);
@@ -160,8 +161,10 @@ function makeExercises(lesson, reviewPool = [], skillStats = {}) {
   // phrase's recognise-then-produce pair together.
   const ex = [];
   shuffle(phrases).forEach((p, i) => {
-    // 1) recognition: easiest (read) when new, hardest (listen) when strong
-    if (tier === "strong") ex.push(choice(p, "Listen & choose", true));
+    // 1) recognition: easiest (read) when new, hardest (listen) when strong.
+    //    In no-audio mode, always use the read-and-choose variant.
+    if (audioOff) ex.push(choice(p));
+    else if (tier === "strong") ex.push(choice(p, "Listen & choose", true));
     else if (tier === "new") ex.push(choice(p));
     else ex.push(i % 2 === 0 ? choice(p) : choice(p, "Listen & choose", true));
     // 2) production: scaffolded tiles when new, free recall when strong
@@ -170,7 +173,8 @@ function makeExercises(lesson, reviewPool = [], skillStats = {}) {
       else if (tier === "new") ex.push(order(p));
       else ex.push(i % 2 === 0 ? order(p) : blank(p));
     } else {
-      ex.push(tier === "new" ? dictation(p) : produce(p));
+      // single-word: dictation needs audio, so use free recall when muted
+      ex.push(audioOff ? produce(p) : tier === "new" ? dictation(p) : produce(p));
     }
   });
 
@@ -180,7 +184,7 @@ function makeExercises(lesson, reviewPool = [], skillStats = {}) {
   shuffle(phrases).slice(0, produceCount).forEach((p) => ex.push(produce(p)));
 
   // Shorter lessons get a mixed recall extra for closure.
-  if (phrases.length <= 4 && phrases[0]) ex.push(choice(phrases[0], "Listen & choose", true));
+  if (phrases.length <= 4 && phrases[0]) ex.push(audioOff ? choice(phrases[0]) : choice(phrases[0], "Listen & choose", true));
 
   // Spiralling: bring back a couple of phrases from earlier lessons so old
   // vocabulary keeps recurring (spaced, interleaved retrieval).
@@ -494,7 +498,9 @@ function Exercise({ exercise, onAnswer }) {
 const XP_PER_CORRECT = 10;
 
 function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity, reviewPool, skillStats }) {
-  const exercises = useRef(makeExercises(lesson, reviewPool, skillStats)).current;
+  // No-audio mode: skip listening questions and don't auto-play sound.
+  const [quiet, setQuiet] = useState(() => Boolean(readJSON("tagarela:quietMode", false)));
+  const [exercises, setExercises] = useState(null); // built when the lesson starts
   const [started, setStarted] = useState(false);
   const [idx, setIdx] = useState(0);
   const [results, setResults] = useState([]);
@@ -503,22 +509,26 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity, reviewPo
   const [retryQueue, setRetryQueue] = useState([]); // missed exercises, re-asked once at the end
   const [missed, setMissed] = useState([]); // base indices answered wrong on the first pass
 
-  const queue = exercises.concat(retryQueue);
-  const retrying = idx >= exercises.length;
+  const base = exercises || [];
+  const queue = base.concat(retryQueue);
+  const retrying = idx >= base.length;
   const current = queue[idx];
+
+  const toggleQuiet = () => { const v = !quiet; setQuiet(v); writeJSON("tagarela:quietMode", v); buzz(6); };
+  const start = () => { buzz(12); setExercises(makeExercises(lesson, reviewPool, skillStats, quiet)); setStarted(true); };
 
   const handleAnswer = (result) => {
     // distinct patterns: single soft pulse = correct, double knock = wrong
     buzz(result.correct ? 10 : [0, 18, 80, 18]);
-    // Speak the correct phrase aloud when the user gets it wrong (skip choice recoveries)
-    if (!result.correct && !result.recovered && result.say) speak(result.say);
+    // Speak the correct phrase aloud when wrong — unless we're in no-audio mode
+    if (!quiet && !result.correct && !result.recovered && result.say) speak(result.say);
     setStreak((s) => (result.correct ? s + 1 : 0));
     setFeedback(result);
     if (onActivity) onActivity();
   };
 
   const next = () => {
-    const firstPass = idx < exercises.length;
+    const firstPass = idx < base.length;
     const wrong = feedback && !feedback.correct && !feedback.recovered;
     const nextResults = firstPass && feedback ? results.concat(feedback) : results;
     const nextMissed = firstPass && wrong ? missed.concat(idx) : missed;
@@ -529,12 +539,12 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity, reviewPo
     if (idx >= queue.length - 1) {
       // End of the first pass: if anything was missed, re-ask it once more.
       if (retryQueue.length === 0 && nextMissed.length > 0) {
-        setRetryQueue(nextMissed.map((i) => exercises[i]));
+        setRetryQueue(nextMissed.map((i) => base[i]));
         setIdx(idx + 1);
         return;
       }
       const correct = nextResults.filter((r) => r.correct).length;
-      const score = Math.round((correct / exercises.length) * 100);
+      const score = Math.round((correct / base.length) * 100);
       onComplete(lesson, { score, results: nextResults });
       return;
     }
@@ -565,7 +575,11 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity, reviewPo
           ))}
           <button className="tg-btn tg-btn-ghost" onClick={() => lesson.phrases.forEach((p) => onSave(p.pt, p.en, "learning", lesson.skillTags))}>Save phrase pack</button>
         </div>
-        <button className="tg-btn tg-btn-primary" onClick={() => { buzz(12); setStarted(true); }}>Start playful challenge</button>
+        <button type="button" className={`tg-quiet-toggle ${quiet ? "on" : ""}`} onClick={toggleQuiet}>
+          {quiet ? "🔇 No-audio mode: ON" : "🔈 No-audio mode: off"}
+          <small>{quiet ? "Skipping listening questions" : "Tap if you can't play sound or speak"}</small>
+        </button>
+        <button className="tg-btn tg-btn-primary" onClick={start}>Start playful challenge</button>
       </div>
     );
   }
@@ -621,7 +635,7 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity, reviewPo
           )}
           {feedback.note ? <div className="tg-feedback-note">💡 {feedback.note}</div> : null}
           {(() => {
-            const wrongNow = !feedback.correct && !feedback.recovered && idx < exercises.length;
+            const wrongNow = !feedback.correct && !feedback.recovered && idx < base.length;
             const willRetry = retryQueue.length === 0 && (missed.length + (wrongNow ? 1 : 0)) > 0;
             const finishing = idx >= queue.length - 1 && !willRetry;
             return <button className="tg-btn tg-btn-primary" onClick={() => { buzz(10); next(); }}>{finishing ? "See result" : "Next"}</button>;
