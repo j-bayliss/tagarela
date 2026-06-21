@@ -17,6 +17,19 @@ const normKeepAccents = (s) => String(s || "").toLowerCase().replace(/[.,!?;:]/g
 const FUNCTION_WORDS = new Set(["de", "da", "do", "das", "dos", "o", "a", "os", "as", "um", "uma", "uns", "umas", "e", "ou", "em", "no", "na", "nos", "nas", "que", "com", "sem", "por", "para", "pra", "eu", "voce", "você", "ele", "ela", "se", "ao", "aos", "à", "às", "meu", "minha", "seu", "sua", "é"]);
 const cleanTok = (w) => w.replace(/[.,!?;:]/g, "");
 
+// On-screen accent keys so learners can type Portuguese diacritics on a phone.
+const ACCENT_CHARS = ["á", "â", "ã", "à", "ç", "é", "ê", "í", "ó", "ô", "õ", "ú"];
+function AccentKeys({ onInsert }) {
+  return (
+    <div className="tg-accents">
+      {ACCENT_CHARS.map((c) => (
+        // onMouseDown preventDefault keeps the input focused/caret intact
+        <button type="button" key={c} className="tg-accent-key" onMouseDown={(e) => e.preventDefault()} onClick={() => onInsert(c)}>{c}</button>
+      ))}
+    </div>
+  );
+}
+
 function makeExercises(lesson) {
   const phrases = (lesson.phrases || []).filter((p) => p && p.pt && p.en);
   const tags = lesson.skillTags;
@@ -86,6 +99,12 @@ function makeExercises(lesson) {
     prompt: p.pt, answer: p.pt, translation: p.en,
     tags: [...tags, "listening"], say: p.pt, review: { pt: p.pt, en: p.en },
   });
+  // Free productive recall: type the whole phrase in Portuguese from English.
+  const produce = (p) => ({
+    type: "produce", title: "Say it in Portuguese",
+    prompt: p.en, answer: p.pt, full: p.pt,
+    tags, say: p.pt, review: { pt: p.pt, en: p.en },
+  });
   // Two-gap cloze, generated from a phrase with enough words.
   const cloze2 = (p) => {
     const words = p.pt.split(/\s+/);
@@ -120,11 +139,12 @@ function makeExercises(lesson) {
     else ex.push(dictation(p));
   });
 
-  // Shorter lessons get a couple of mixed recall extras for closure.
-  if (phrases.length <= 4) {
-    if (phrases[1]) ex.push(dictation(phrases[1]));
-    if (phrases[0]) ex.push(choice(phrases[0], "Listen & choose", true));
-  }
+  // Delayed free-recall production: a couple of phrases met earlier in the
+  // lesson now have to be produced from scratch (strongest retrieval).
+  shuffle(phrases).slice(0, phrases.length >= 4 ? 2 : 1).forEach((p) => ex.push(produce(p)));
+
+  // Shorter lessons get a mixed recall extra for closure.
+  if (phrases.length <= 4 && phrases[0]) ex.push(choice(phrases[0], "Listen & choose", true));
 
   // B1/B2 lessons get harder, higher-order questions on top.
   const level = (lesson.unit || "").startsWith("b2") ? "b2" : (lesson.unit || "").startsWith("b1") ? "b1" : null;
@@ -148,6 +168,19 @@ function Exercise({ exercise, onAnswer }) {
   const [pool, setPool] = useState(exercise.words || []);
   const [eliminated, setEliminated] = useState([]);
   const [hadMistake, setHadMistake] = useState(false);
+  const inputRef = useRef(null);
+  const input2Ref = useRef(null);
+  const [clozeFocus, setClozeFocus] = useState("a");
+
+  // Insert an accent character at the caret of a given field.
+  const insertInto = (ref, value, setValue) => (ch) => {
+    const el = ref.current;
+    if (!el || el.selectionStart == null) { setValue(value + ch); return; }
+    const s = el.selectionStart, e = el.selectionEnd;
+    setValue(value.slice(0, s) + ch + value.slice(e));
+    requestAnimationFrame(() => { try { el.focus(); el.setSelectionRange(s + 1, s + 1); } catch {} });
+    buzz(4);
+  };
 
   const meta = { tags: exercise.tags, title: exercise.title, say: exercise.say, review: exercise.review, note: exercise.note };
 
@@ -229,7 +262,8 @@ function Exercise({ exercise, onAnswer }) {
         <div className="tg-label">{exercise.title}</div>
         <button className="tg-listen" onClick={() => speak(exercise.prompt)}>{Icons.speaker} Play Portuguese</button>
         <div className="tg-meaning">{exercise.translation}</div>
-        <textarea className="tg-ta" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="Type what you hear in Portuguese" />
+        <textarea ref={inputRef} className="tg-ta" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="Type what you hear in Portuguese" autoCapitalize="none" autoCorrect="off" spellCheck="false" />
+        <AccentKeys onInsert={insertInto(inputRef, typed, setTyped)} />
         <button className="tg-btn tg-btn-primary" disabled={!typed.trim()} onClick={() => submit(typed)}>Check</button>
       </div>
     );
@@ -248,11 +282,12 @@ function Exercise({ exercise, onAnswer }) {
         {exercise.translation ? <div className="tg-meaning">"{exercise.translation}"</div> : null}
         <div className="tg-blank-line">
           <span className="tg-blank-ctx">{seg[0]}</span>
-          <input className="tg-blank-input" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="?" autoCapitalize="none" autoCorrect="off" spellCheck="false" size={Math.max(4, exercise.answers[0].length + 1)} />
+          <input ref={inputRef} className="tg-blank-input" value={typed} onChange={(e) => setTyped(e.target.value)} onFocus={() => setClozeFocus("a")} placeholder="?" autoCapitalize="none" autoCorrect="off" spellCheck="false" size={Math.max(4, exercise.answers[0].length + 1)} />
           <span className="tg-blank-ctx">{seg[1]}</span>
-          <input className="tg-blank-input" value={typed2} onChange={(e) => setTyped2(e.target.value)} placeholder="?" autoCapitalize="none" autoCorrect="off" spellCheck="false" size={Math.max(4, exercise.answers[1].length + 1)} />
+          <input ref={input2Ref} className="tg-blank-input" value={typed2} onChange={(e) => setTyped2(e.target.value)} onFocus={() => setClozeFocus("b")} placeholder="?" autoCapitalize="none" autoCorrect="off" spellCheck="false" size={Math.max(4, exercise.answers[1].length + 1)} />
           <span className="tg-blank-ctx">{seg[2]}</span>
         </div>
+        <AccentKeys onInsert={clozeFocus === "b" ? insertInto(input2Ref, typed2, setTyped2) : insertInto(inputRef, typed, setTyped)} />
         <button className="tg-mini" onClick={() => speak(exercise.full)}>{Icons.speaker} Hear full phrase</button>
         <button className="tg-btn tg-btn-primary" disabled={!typed.trim() || !typed2.trim()} onClick={check}>Check</button>
       </div>
@@ -288,7 +323,21 @@ function Exercise({ exercise, onAnswer }) {
         <div className="tg-coach">🔁 {exercise.instruction}</div>
         <div className="tg-prompt-en">{exercise.prompt}</div>
         <button className="tg-mini" onClick={() => speak(exercise.prompt)}>{Icons.speaker} Hear original</button>
-        <textarea className="tg-ta" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="Rewrite it in Portuguese" autoCapitalize="none" autoCorrect="off" spellCheck="false" />
+        <textarea ref={inputRef} className="tg-ta" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="Rewrite it in Portuguese" autoCapitalize="none" autoCorrect="off" spellCheck="false" />
+        <AccentKeys onInsert={insertInto(inputRef, typed, setTyped)} />
+        <button className="tg-btn tg-btn-primary" disabled={!typed.trim()} onClick={() => submit(typed)}>Check</button>
+      </div>
+    );
+  }
+
+  if (exercise.type === "produce") {
+    return (
+      <div className="tg-card lesson-exercise">
+        <div className="tg-label">{exercise.title}</div>
+        <div className="tg-meaning">Say this in Portuguese — no word tiles this time.</div>
+        <div className="tg-prompt-en">{exercise.prompt}</div>
+        <textarea ref={inputRef} className="tg-ta" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="Type it in Portuguese…" autoCapitalize="none" autoCorrect="off" spellCheck="false" />
+        <AccentKeys onInsert={insertInto(inputRef, typed, setTyped)} />
         <button className="tg-btn tg-btn-primary" disabled={!typed.trim()} onClick={() => submit(typed)}>Check</button>
       </div>
     );
@@ -303,6 +352,7 @@ function Exercise({ exercise, onAnswer }) {
       <div className="tg-blank-line">
         <span className="tg-blank-ctx">{parts[0]}</span>
         <input
+          ref={inputRef}
           className="tg-blank-input"
           value={typed}
           onChange={(e) => setTyped(e.target.value)}
@@ -314,6 +364,7 @@ function Exercise({ exercise, onAnswer }) {
         />
         <span className="tg-blank-ctx">{parts[1]}</span>
       </div>
+      <AccentKeys onInsert={insertInto(inputRef, typed, setTyped)} />
       <button className="tg-mini" onClick={() => speak(exercise.full)}>{Icons.speaker} Hear full phrase</button>
       <button className="tg-btn tg-btn-primary" disabled={!typed.trim()} onClick={() => submit(typed)}>Check</button>
     </div>
