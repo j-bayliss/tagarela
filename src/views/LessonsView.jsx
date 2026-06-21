@@ -712,7 +712,7 @@ function LessonResult({ result, onContinue, onReview }) {
   );
 }
 
-export default function LessonsView({ progress, setProgress, onSave, onGoReview, launchLesson, onConsumeLaunch, onActivity }) {
+export default function LessonsView({ progress, setProgress, onSave, onGoReview, launchLesson, onConsumeLaunch, onActivity, startLevel = "A1" }) {
   const [activeLesson, setActiveLesson] = useState(null);
   const [lastResult, setLastResult] = useState(null);
   const completed = new Set(progress.completed || []);
@@ -815,7 +815,10 @@ export default function LessonsView({ progress, setProgress, onSave, onGoReview,
           {LESSONS.filter((lesson) => lesson.unit === unit.id).map((lesson) => {
             const idx = LESSONS.findIndex((l) => l.id === lesson.id);
             const done = completed.has(lesson.id);
-            const unlocked = idx === 0 || completed.has(LESSONS[idx - 1].id) || done;
+            // Unlocked if reached sequentially, OR it's at/below your chosen
+            // starting level (so non-beginners can jump in and move freely).
+            const levelOk = LEVEL_ORDER.indexOf(UNIT_LEVEL[lesson.unit] || "A1") <= LEVEL_ORDER.indexOf(startLevel || "A1");
+            const unlocked = idx === 0 || done || completed.has(LESSONS[idx - 1].id) || levelOk;
             const active = idx === nextIdx && !done;
             const score = progress.lessonScores?.[lesson.id]?.score;
             const timesDone = Number(progress.lessonCounts?.[lesson.id] || 0);

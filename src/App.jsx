@@ -177,7 +177,7 @@ export default function App() {
       ) : (
       <main className="tg-main">
         {tab === "today" ? <TodayView progress={progress} deck={deck} mistakes={mistakes} onboarding={onboarding} daily={daily} dailyGoal={dailyGoal} streak={streak} onSavePhrase={addCard} onStartLesson={startLesson} onGoReview={() => setTab("review")} onGoPractice={goPractice} onStartSession={() => setSessionOpen(true)} /> : null}
-        {tab === "lessons" ? <LessonsView progress={progress} setProgress={setProgress} onSave={addCard} onGoReview={() => setTab("review")} launchLesson={launchLesson} onConsumeLaunch={() => setLaunchLesson(null)} onActivity={bumpDaily} /> : null}
+        {tab === "lessons" ? <LessonsView progress={progress} setProgress={setProgress} onSave={addCard} onGoReview={() => setTab("review")} launchLesson={launchLesson} onConsumeLaunch={() => setLaunchLesson(null)} onActivity={bumpDaily} startLevel={onboarding?.startLevel || "A1"} /> : null}
         {tab === "practice" ? <PracticeView onSave={addCard} onMistake={addMistake} initialMode={practiceMode} onActivity={bumpDaily} onOpenSettings={() => setSettingsOpen(true)} online={online} /> : null}
         {tab === "review" ? <ReviewView deck={deck} setDeck={setDeck} addCard={addCard} mistakes={mistakes} setMistakes={setMistakes} backupData={{ deck, mistakes, streak, progress, onboarding }} onImportData={importData} skillStats={progress.skillStats} onActivity={bumpDaily} /> : null}
       </main>

@@ -15,6 +15,7 @@ export default function SettingsSheet({ onboarding, setOnboarding, onClose }) {
   const [azure, setAzure] = useState(() => getAzureSettings());
   const [dailyTarget, setDailyTarget] = useState(onboarding?.dailyTarget || 10);
   const [theme, setTheme] = useState(onboarding?.theme || "system");
+  const [startLevel, setStartLevel] = useState(onboarding?.startLevel || "A1");
   const [status, setStatus] = useState("");
   const [showAnthropic, setShowAnthropic] = useState(false);
   const [showAzure, setShowAzure] = useState(false);
@@ -26,7 +27,7 @@ export default function SettingsSheet({ onboarding, setOnboarding, onClose }) {
   const save = () => {
     saveApiKey(apiKey);
     saveAzureSettings({ ...azure, locale: "pt-BR" });
-    setOnboarding((cur) => ({ ...(cur || {}), dailyTarget, theme, variant: "pt-BR" }));
+    setOnboarding((cur) => ({ ...(cur || {}), dailyTarget, theme, startLevel, variant: "pt-BR" }));
     setSaved({ anthropic: Boolean(apiKey.trim()), azure: isAzureSaved(azure) });
     setStatus("Settings saved.");
   };
@@ -71,6 +72,19 @@ export default function SettingsSheet({ onboarding, setOnboarding, onClose }) {
               </button>
             ))}
           </div>
+        </div>
+
+        <div className="tg-card">
+          <div className="tg-label">Starting level</div>
+          <div className="tg-choice-grid">
+            {["A1", "A2", "B1", "B2", "C1"].map((lv) => (
+              <button key={lv} className={`tg-choice compact ${startLevel === lv ? "selected" : ""}`} onClick={() => setStartLevel(lv)}>
+                <b>{lv}</b>
+                <small>{lv === "A1" ? "beginner" : lv === "A2" ? "elementary" : lv === "B1" ? "intermediate" : lv === "B2" ? "upper-int." : "advanced"}</small>
+              </button>
+            ))}
+          </div>
+          <p className="tg-small-note">Not a beginner? Pick your level to unlock everything up to it and jump in anywhere. Higher levels still unlock as you progress.</p>
         </div>
 
         <div className="tg-card">
