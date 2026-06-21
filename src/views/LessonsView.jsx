@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { COURSE_UNITS, LESSONS, skillLabel } from "../data/lessons";
 import { HIGHER_ORDER } from "../data/higherorder";
+import { TRANSFER } from "../data/transfer";
 import { normaliseAnswer, speak } from "../utils/language";
 import { ProgressBar, XpPop } from "../components/Common";
 import { Icons } from "../components/Icons";
@@ -156,6 +157,18 @@ function makeExercises(lesson, reviewPool = []) {
       } else {
         ex.push({ type: "produce", title: "Review · say it", prompt: p.en, answer: p.pt, full: p.pt, tags: rTags, say: p.pt, review: { pt: p.pt, en: p.en }, callback: true });
       }
+    });
+  }
+
+  // Transfer item (A1/A2): apply the lesson's rule to a brand-new example.
+  const transferItem = TRANSFER[lesson.id];
+  if (transferItem) {
+    ex.push({
+      type: "pick", title: "Apply the rule", transfer: true,
+      instruction: transferItem.instruction, prompt: transferItem.prompt,
+      choices: shuffle(transferItem.choices), answer: transferItem.answer,
+      say: transferItem.say, note: transferItem.note,
+      review: { pt: transferItem.say, en: transferItem.en || "" }, tags,
     });
   }
 
@@ -356,6 +369,25 @@ function Exercise({ exercise, onAnswer }) {
     );
   }
 
+  if (exercise.type === "pick") {
+    return (
+      <div className="tg-card lesson-exercise">
+        <div className="tg-label">{exercise.title}</div>
+        {exercise.instruction ? <div className="tg-coach">🧩 {exercise.instruction}</div> : null}
+        <div className="tg-prompt-en">{exercise.prompt}</div>
+        <div className="tg-options">
+          {exercise.choices.map((c) => (
+            <button key={c} className={selected === c ? "selected" : ""} onClick={() => { buzz(6); setSelected(c); }}>{c}</button>
+          ))}
+        </div>
+        <button className="tg-btn tg-btn-primary" disabled={!selected} onClick={() => {
+          const correct = selected === exercise.answer;
+          onAnswer({ correct, userAnswer: selected, expected: exercise.answer, ...meta });
+        }}>Check</button>
+      </div>
+    );
+  }
+
   // blank / missing-word exercise
   const parts = exercise.prompt.split("____");
   return (
@@ -475,6 +507,7 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity, reviewPo
       </div>
       {retrying ? <div className="tg-retry-banner">🔁 Quick recap — let's nail the ones you missed.</div> : null}
       {!retrying && current.callback ? <div className="tg-review-banner">↩️ Review from an earlier lesson</div> : null}
+      {!retrying && current.transfer ? <div className="tg-review-banner">🧩 New example — apply what you learned</div> : null}
       <details className="tg-learn-tip">
         <summary>💡 Quick reminder</summary>
         <p>{lesson.teach}</p>
