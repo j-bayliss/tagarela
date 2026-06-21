@@ -9,6 +9,8 @@ export const COURSE_UNITS = [
   { id: "b1-real", title: "Português de verdade", subtitle: "B1 · Real conversations with range.", emoji: "🗣️" },
   { id: "b2-core", title: "Precisão e estilo", subtitle: "B2 · Get the fine grammar right.", emoji: "🎯" },
   { id: "b2-real", title: "Soando natural", subtitle: "B2 · Idioms, register and polish.", emoji: "✨" },
+  { id: "c1-lang", title: "Domínio da língua", subtitle: "C1 · Advanced grammar mastery.", emoji: "🏛️" },
+  { id: "c1-ideias", title: "Ideias e expressão", subtitle: "C1 · Register, idioms and nuance.", emoji: "🎩" },
 ];
 
 // `teach` is a longer grammar/learning note shown on the lesson intro and result.
@@ -522,6 +524,104 @@ export const LESSONS = [
     { pt: "Por mais difícil que seja, vale a pena.", en: "However hard it may be, it's worth it." },
     { pt: "Enfim, essa é a minha jornada com o português.", en: "Anyway, that's my journey with Portuguese." },
   ], "This mission blends B2 hallmarks: the past hypothetical (se tivesse começado… estaria), the subjunctive after 'o importante é que' (que eu continue), and the concessive 'por mais que' (however much). Carrying nuance like this across a short reflection is exactly what B2 sounds like."),
+
+  // ===================== C1 · Domínio da língua =====================
+  mk("c1-01", "c1-lang", "🏛️", "Mais-que-perfeito", "Talk about the past-before-the-past.", "Pluperfect", "tinha/havia + particípio = had done; 'havia' is more formal.", "Layering pasts precisely is a hallmark of advanced speech.", ["grammar", "past"], [
+    { pt: "Quando cheguei, ele já tinha saído.", en: "When I arrived, he had already left." },
+    { pt: "Eu nunca tinha visto algo assim.", en: "I had never seen anything like it." },
+    { pt: "Ela disse que já havia terminado.", en: "She said she had already finished." },
+    { pt: "Tínhamos combinado de nos encontrar.", en: "We had arranged to meet." },
+    { pt: "Se eu tivesse sabido, teria agido diferente.", en: "Had I known, I'd have acted differently." },
+  ], "The pluperfect (mais-que-perfeito composto) is tinha or havia + past participle: 'já tinha saído' (had already left). 'Havia' is the more formal/written variant. It pairs with the conditional perfect (teria + particípio) for past hypotheticals: 'se eu tivesse sabido, teria agido…'."),
+
+  mk("c1-02", "c1-lang", "🎚️", "Subjuntivo avançado", "Use the subjunctive after advanced linkers.", "Advanced subjunctive", "More triggers: nem que, conquanto, contanto que, por mais que.", "These conjunctions instantly raise your register.", ["subjunctive", "grammar"], [
+    { pt: "Farei isso nem que leve a noite toda.", en: "I'll do it even if it takes all night." },
+    { pt: "Conquanto seja difícil, é possível.", en: "Although it's hard, it's possible." },
+    { pt: "Vou ajudar, contanto que você se esforce.", en: "I'll help, provided you make an effort." },
+    { pt: "Caso haja dúvidas, me procure.", en: "Should there be questions, come to me." },
+    { pt: "Por mais que eu tente, não consigo.", en: "However much I try, I can't." },
+  ], "Advanced subjunctive triggers: nem que (even if), conquanto (although, formal), contanto que (provided that), caso (if/should), por mais que (however much). Note 'haja' (subjunctive of haver) in 'caso haja dúvidas'."),
+
+  mk("c1-03", "c1-lang", "🔁", "Voz passiva e impessoal", "Use the impersonal and passive 'se'.", "Passive/impersonal se", "'se' makes verbs impersonal or passive: fala-se, trata-se de.", "This is the register of signs, news and formal writing.", ["grammar", "formal"], [
+    { pt: "Fala-se português aqui.", en: "Portuguese is spoken here." },
+    { pt: "Trata-se de um caso raro.", en: "It's a matter of a rare case." },
+    { pt: "Construiu-se uma ponte nova.", en: "A new bridge was built." },
+    { pt: "Foram tomadas várias medidas.", en: "Several measures were taken." },
+    { pt: "Espera-se que a situação melhore.", en: "It's hoped the situation will improve." },
+  ], "The pronoun 'se' creates passive/impersonal sentences: fala-se português (Portuguese is spoken), trata-se de (it's about/a matter of). The verb agrees with the subject: 'construiu-se uma ponte' but 'venderam-se as casas'. Common in notices and formal prose."),
+
+  mk("c1-04", "c1-lang", "🧱", "Coesão e conectivos", "Link ideas in formal speech.", "Formal connectors", "ademais, por conseguinte, tendo em vista, ainda que, vale ressaltar.", "Cohesion devices make arguments flow at C1.", ["connectors", "formal"], [
+    { pt: "Ademais, há outro fator a considerar.", en: "Moreover, there's another factor to consider." },
+    { pt: "Tendo em vista os resultados, seguimos.", en: "Given the results, we carried on." },
+    { pt: "Por conseguinte, a decisão foi adiada.", en: "Consequently, the decision was postponed." },
+    { pt: "Ainda que pareça simples, não é.", en: "Even though it seems simple, it isn't." },
+    { pt: "Vale ressaltar que isso é exceção.", en: "It's worth stressing that this is an exception." },
+  ], "Formal cohesion: ademais (moreover), por conseguinte (consequently), tendo em vista (given/in view of), ainda que + subjunctive (even though), vale ressaltar/destacar que (it's worth noting that). These structure essays and presentations."),
+
+  mk("c1-05", "c1-lang", "📐", "Regência e crase", "Get verb regency and crase right.", "Regency & crase", "Some verbs require 'a': assistir a, preferir A a B, obedecer a.", "Precise regency separates advanced from intermediate speakers.", ["grammar", "regency"], [
+    { pt: "Ele assistiu ao jogo ontem.", en: "He watched the game yesterday." },
+    { pt: "Prefiro chá a café.", en: "I prefer tea to coffee." },
+    { pt: "Obedeça às regras.", en: "Obey the rules." },
+    { pt: "Cheguei a uma conclusão.", en: "I reached a conclusion." },
+    { pt: "Refiro-me àquilo que falamos.", en: "I'm referring to what we discussed." },
+  ], "Verb regency: assistir a (to watch), preferir A a B (never 'do que'), obedecer a, referir-se a, chegar a. When that 'a' meets a feminine article or aquele/aquilo, you get crase: às regras, àquilo. Hallmark of careful, educated Portuguese."),
+
+  mk("c1-06", "c1-lang", "🏁", "Checkpoint C1: argumentar", "Build a formal argument.", "Argumentation", "Frame arguments: em primeiro lugar, em suma, não se pode negar, portanto.", "Structured argument is the core C1 speaking skill.", ["conversation", "review"], [
+    { pt: "Em primeiro lugar, é preciso considerar o contexto.", en: "Firstly, one must consider the context." },
+    { pt: "Por um lado há vantagens; por outro, riscos.", en: "On one hand there are advantages; on the other, risks." },
+    { pt: "Não se pode negar que houve avanços.", en: "It can't be denied that there were advances." },
+    { pt: "Em suma, os benefícios superam os custos.", en: "In short, the benefits outweigh the costs." },
+    { pt: "Portanto, defendo essa posição.", en: "Therefore, I defend this position." },
+  ], "An argument arc: em primeiro lugar (firstly) → por um lado… por outro (weigh sides) → não se pode negar que (concede) → em suma (sum up) → portanto (conclude). Pair with the impersonal 'se' and the subjunctive for a polished register."),
+
+  // ===================== C1 · Ideias e expressão =====================
+  mk("c1-07", "c1-ideias", "🎭", "Expressões idiomáticas", "Use vivid idioms naturally.", "Idioms", "Idioms rarely translate word-for-word — learn the whole image.", "Idioms signal real cultural fluency.", ["idioms", "style"], [
+    { pt: "Ele pagou o pato pelos outros.", en: "He took the blame for the others." },
+    { pt: "Isso é a cereja do bolo.", en: "That's the cherry on the cake." },
+    { pt: "Vou pôr os pingos nos is.", en: "I'm going to set things straight." },
+    { pt: "Ela ficou de mãos atadas.", en: "She was left powerless." },
+    { pt: "Não precisa chover no molhado.", en: "No need to state the obvious." },
+  ], "Idioms carry meaning as a whole: pagar o pato (take the blame), pôr os pingos nos is (set things straight), ficar de mãos atadas (be powerless), chover no molhado (belabour the obvious). Learn the image, not the words."),
+
+  mk("c1-08", "c1-ideias", "🛹", "Coloquialismos e gírias", "Understand casual, slangy speech.", "Slang & informal", "Very informal Brazilian speech — great to understand, use with care.", "Knowing slang helps you follow friends, music and memes.", ["slang", "style"], [
+    { pt: "Cara, que rolê irado!", en: "Dude, what an awesome outing!" },
+    { pt: "Tô de boa, relaxa.", en: "I'm chill, relax." },
+    { pt: "Isso aí é mó treta.", en: "That's a load of drama." },
+    { pt: "Bora marcar alguma coisa.", en: "Let's arrange to do something." },
+    { pt: "Que mico que eu paguei!", en: "How embarrassing that was!" },
+  ], "Casual register: cara (dude), rolê (an outing), irado/massa (awesome), de boa (chill), treta (drama/beef), bora (let's go), pagar mico (to embarrass yourself). Great for comprehension — but read the room before using it."),
+
+  mk("c1-09", "c1-ideias", "🪶", "Nuance e modalização", "Soften and qualify your claims.", "Hedging", "Modalize with: eu diria que, talvez fosse, convém, não deixa de ser.", "Measured language sounds thoughtful and diplomatic.", ["style", "conversation"], [
+    { pt: "Talvez fosse melhor reconsiderar.", en: "Perhaps it would be better to reconsider." },
+    { pt: "Eu diria que é arriscado.", en: "I'd say it's risky." },
+    { pt: "Não deixa de ser verdade.", en: "It's true nonetheless." },
+    { pt: "De certo modo, faz sentido.", en: "In a way, it makes sense." },
+    { pt: "Convém ter cautela.", en: "It's advisable to be cautious." },
+  ], "Hedging softens strong claims: eu diria que (I'd say), talvez fosse (perhaps it would be), não deixa de ser (it is nonetheless), de certo modo (in a way), convém + infinitive (it's advisable to). Diplomatic and distinctly advanced."),
+
+  mk("c1-10", "c1-ideias", "📜", "Discurso formal e escrita", "Write formal emails and letters.", "Formal writing", "Set formulas open and close formal correspondence.", "Bureaucracy and work demand this register.", ["formal", "writing"], [
+    { pt: "Venho por meio desta solicitar uma reunião.", en: "I am writing to request a meeting." },
+    { pt: "Conforme combinado, segue o documento.", en: "As agreed, the document follows." },
+    { pt: "Cabe destacar a relevância do tema.", en: "It is worth highlighting the topic's relevance." },
+    { pt: "Em virtude do exposto, concluímos que...", en: "In view of the above, we conclude that…" },
+    { pt: "Atenciosamente, subscrevo-me.", en: "Yours sincerely." },
+  ], "Formal writing runs on fixed formulas: 'venho por meio desta' (I am writing to), 'conforme combinado' (as agreed), 'cabe destacar' (it's worth highlighting), 'em virtude do exposto' (in view of the above), 'atenciosamente' (yours sincerely)."),
+
+  mk("c1-11", "c1-ideias", "💡", "Tópicos abstratos", "Discuss abstract ideas.", "Abstract discussion", "Verbs for ideas: implicar, suscitar, considerar, a meu ver.", "Abstract vocabulary unlocks debate and essays.", ["abstract", "conversation"], [
+    { pt: "A liberdade implica responsabilidade.", en: "Freedom entails responsibility." },
+    { pt: "Trata-se de uma questão ética complexa.", en: "It's a complex ethical question." },
+    { pt: "Há de se considerar o impacto social.", en: "One must consider the social impact." },
+    { pt: "Isso suscita um debate profundo.", en: "That raises a profound debate." },
+    { pt: "A meu ver, o fim não justifica os meios.", en: "In my view, the end doesn't justify the means." },
+  ], "Vocabulary for ideas: implicar (to entail), suscitar (to raise/provoke), há de se considerar (one must consider), a meu ver (in my view). With the impersonal 'se' and subjunctive, this is the language of essays and debate."),
+
+  mk("c1-12", "c1-ideias", "🏆", "Missão Tagarela C1", "Reflect with full command.", "Final C1 mini mission", "Combine pluperfect, advanced subjunctive, formal connectors and enclisis.", "If this feels natural, your Portuguese is genuinely advanced.", ["conversation", "review"], [
+    { pt: "Ao longo dos anos, aprimorei meu português consideravelmente.", en: "Over the years, I've improved my Portuguese considerably." },
+    { pt: "Ainda que reste muito a aprender, sinto-me confiante.", en: "Although much remains to learn, I feel confident." },
+    { pt: "Caso surjam dúvidas, sei como esclarecê-las.", en: "Should questions arise, I know how to clear them up." },
+    { pt: "Em suma, essa jornada valeu cada esforço.", en: "In short, this journey was worth every effort." },
+    { pt: "Pretendo seguir me aperfeiçoando.", en: "I intend to keep improving." },
+  ], "This mission blends C1 markers: refined vocabulary (aprimorar, aperfeiçoar-se), advanced subjunctive (ainda que reste, caso surjam), formal connectors (em suma) and pronoun enclisis (sinto-me, esclarecê-las). Carrying all of this naturally is genuine advanced command."),
 ];
 
 export const SKILL_LABELS = {
@@ -568,6 +668,9 @@ export const SKILL_LABELS = {
   style: "style & tone",
   idioms: "idioms",
   formal: "formal register",
+  regency: "verb regency",
+  abstract: "abstract topics",
+  slang: "slang & informal",
 };
 
 export function skillLabel(tag) {

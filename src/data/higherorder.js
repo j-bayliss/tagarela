@@ -24,4 +24,12 @@ export const HIGHER_ORDER = {
     { type: "mistake", wrong: "Eu lhe vi ontem.", wrongWord: "lhe", answer: "Eu o vi ontem.", en: "I saw him yesterday.", note: "Direct object uses o/a; 'lhe' is the indirect object (to him/her)." },
     { type: "transform", instruction: "Join with 'embora' (although).", prompt: "É difícil. Eu vou tentar.", answer: "Embora seja difícil, eu vou tentar.", en: "Although it's hard, I'll try.", note: "'Embora' + subjunctive (seja) links the two ideas." },
   ],
+  c1: [
+    { type: "mistake", wrong: "Ele assistiu o jogo ontem.", wrongWord: "o", answer: "Ele assistiu ao jogo ontem.", en: "He watched the game yesterday.", note: "assistir (to watch) requires 'a': assistir ao jogo." },
+    { type: "transform", instruction: "Make it passive with 'se'.", prompt: "Vendem casas aqui.", answer: "Vendem-se casas aqui.", en: "Houses are sold here.", note: "Passive 'se' with enclisis: vendem-se casas." },
+    { type: "mistake", wrong: "Prefiro chá do que café.", wrongWord: "do", answer: "Prefiro chá a café.", en: "I prefer tea to coffee.", note: "preferir takes 'a': prefiro A a B, never 'do que'." },
+    { type: "transform", instruction: "Rewrite formally (use 'em virtude de').", prompt: "Por causa da chuva, cancelamos.", answer: "Em virtude da chuva, cancelamos.", en: "Due to the rain, we cancelled.", note: "'em virtude de' is the formal 'because of'." },
+    { type: "mistake", wrong: "Refiro-me a aquilo.", wrongWord: "a", answer: "Refiro-me àquilo.", en: "I'm referring to that.", note: "a + aquilo = àquilo (crase)." },
+    { type: "transform", instruction: "Soften it (hedge the claim).", prompt: "Isso é arriscado.", answer: "Eu diria que isso é arriscado.", en: "I'd say that's risky.", note: "'Eu diria que' hedges a strong statement." },
+  ],
 };

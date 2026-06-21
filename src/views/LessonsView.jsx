@@ -219,8 +219,9 @@ function makeExercises(lesson, reviewPool = [], skillStats = {}) {
     });
   }
 
-  // B1/B2 lessons get harder, higher-order questions on top.
-  const level = (lesson.unit || "").startsWith("b2") ? "b2" : (lesson.unit || "").startsWith("b1") ? "b1" : null;
+  // B1/B2/C1 lessons get harder, higher-order questions on top.
+  const unitId = lesson.unit || "";
+  const level = unitId.startsWith("c1") ? "c1" : unitId.startsWith("b2") ? "b2" : unitId.startsWith("b1") ? "b1" : null;
   if (level) {
     const clozeSource = phrases.find((p) => p.pt.trim().split(/\s+/).length >= 4);
     if (clozeSource) ex.push(cloze2(clozeSource));
