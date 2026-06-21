@@ -29,3 +29,13 @@ export const PLACEMENT = [
   { level: "C1", prompt: "Choose correct — “I prefer tea to coffee.”", choices: ["Prefiro chá a café.", "Prefiro chá do que café.", "Prefiro chá que café."], answer: "Prefiro chá a café." },
   { level: "C1", prompt: "Pluperfect — “When I arrived, he had already left.”", choices: ["Quando cheguei, ele já tinha saído.", "Quando cheguei, ele já saiu.", "Quando cheguei, ele já sai."], answer: "Quando cheguei, ele já tinha saído." },
 ];
+
+// Recommend a starting level from the adaptive quiz history: the highest level
+// at which an answer was correct (the staircase self-gates harder questions).
+export function recommendFromHistory(history) {
+  let recIdx = -1;
+  for (const h of history || []) {
+    if (h && h.correct) recIdx = Math.max(recIdx, PLACEMENT_LEVELS.indexOf(h.level));
+  }
+  return PLACEMENT_LEVELS[recIdx] || "A1";
+}

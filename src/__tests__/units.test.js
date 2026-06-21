@@ -4,6 +4,10 @@ import { parseJSON } from "../services/anthropic";
 import { normaliseAnswer, stripAccents } from "../utils/language";
 import { normaliseProgress, skillSummary, orderDueByWeakness } from "../utils/progress";
 import { dayString } from "../services/storage";
+import { answerMatches } from "../utils/answers";
+import { recommendFromHistory } from "../data/placement";
+import { makeExercises } from "../utils/exercises";
+import { LESSONS } from "../data/lessons";
 
 describe("spaced repetition", () => {
   it("normalises unknown difficulty to learning", () => {
@@ -105,5 +109,65 @@ describe("progress", () => {
 describe("storage", () => {
   it("dayString is YYYY-MM-DD", () => {
     expect(dayString()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+});
+
+describe("answerMatches (lenient checker)", () => {
+  it("accepts an exact match", () => {
+    expect(answerMatches("Tem pão francês?", "Tem pão francês?")).toBe(true);
+  });
+  it("accepts an optional leading subject pronoun, both directions", () => {
+    expect(answerMatches("Você tem pão francês?", "Tem pão francês?")).toBe(true);
+    expect(answerMatches("Tem pão francês", "Você tem pão francês")).toBe(true);
+  });
+  it("ignores accents and case", () => {
+    expect(answerMatches("voce esta com fome", "Você está com fome")).toBe(true);
+  });
+  it("treats pra/para and tá/está as equal", () => {
+    expect(answerMatches("pra", "para")).toBe(true);
+    expect(answerMatches("tá bom", "está bom")).toBe(true);
+  });
+  it("still rejects a genuinely wrong answer", () => {
+    expect(answerMatches("eu quero chá", "eu quero café")).toBe(false);
+    expect(answerMatches("eu tenho fome", "estou com fome")).toBe(false);
+  });
+  it("honours an explicit accept list", () => {
+    expect(answerMatches("a gente quer", "nós queremos", ["a gente quer"])).toBe(true);
+  });
+});
+
+describe("placement recommendation", () => {
+  it("defaults to A1 with no/zero correct answers", () => {
+    expect(recommendFromHistory([])).toBe("A1");
+    expect(recommendFromHistory([{ level: "A2", correct: false }])).toBe("A1");
+  });
+  it("recommends the highest level answered correctly", () => {
+    expect(recommendFromHistory([{ level: "A1", correct: true }, { level: "A2", correct: true }, { level: "B1", correct: true }, { level: "B2", correct: false }])).toBe("B1");
+    expect(recommendFromHistory([{ level: "C1", correct: true }])).toBe("C1");
+  });
+});
+
+describe("makeExercises", () => {
+  const lesson = LESSONS.find((l) => (l.phrases || []).length >= 4) || LESSONS[0];
+
+  it("generates a non-empty set of well-formed exercises", () => {
+    const ex = makeExercises(lesson, [], {}, false);
+    expect(ex.length).toBeGreaterThan(0);
+    ex.forEach((e) => {
+      expect(typeof e.type).toBe("string");
+      expect(Array.isArray(e.tags)).toBe(true);
+    });
+  });
+
+  it("produces no listening questions in no-audio mode", () => {
+    const ex = makeExercises(lesson, [], {}, true);
+    expect(ex.length).toBeGreaterThan(0);
+    expect(ex.some((e) => e.type === "dictation")).toBe(false);
+    expect(ex.some((e) => e.type === "choice" && e.listen)).toBe(false);
+  });
+
+  it("two-gap cloze always carries exactly two answers", () => {
+    const ex = makeExercises(lesson, [], {}, false);
+    ex.filter((e) => e.type === "cloze2").forEach((e) => expect(e.answers).toHaveLength(2));
   });
 });

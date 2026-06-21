@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PLACEMENT, PLACEMENT_LEVELS as LEVELS } from "../data/placement";
+import { PLACEMENT, PLACEMENT_LEVELS as LEVELS, recommendFromHistory } from "../data/placement";
 import { buzz } from "../utils/haptics";
 
 const LEVEL_LABEL = { A1: "Beginner", A2: "Elementary", B1: "Intermediate", B2: "Upper-intermediate", C1: "Advanced" };
@@ -54,8 +54,7 @@ export default function PlacementQuiz({ onClose, onApply }) {
   // adaptive staircase means you only reach hard questions by passing easier
   // ones first, so this is self-gating). No correct answers → A1.
   const correctCount = history.filter((h) => h.correct).length;
-  const recIdx = history.reduce((m, h) => (h.correct ? Math.max(m, LEVELS.indexOf(h.level)) : m), -1);
-  const rec = LEVELS[recIdx] || "A1";
+  const rec = recommendFromHistory(history);
 
   return (
     <div className="tg-sheet-backdrop" role="dialog" aria-modal="true">
