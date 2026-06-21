@@ -12,6 +12,11 @@ export const TRANSFER = {
   "a1-28": { instruction: "Say 'I'm going to travel'.", prompt: "Eu ____ viajar.", choices: ["vou", "vai"], answer: "vou", note: "Near future: eu vou, você/ele vai + infinitive.", say: "Eu vou viajar.", en: "I'm going to travel." },
   "a1-29": { instruction: "Say 'I am happy' (right now).", prompt: "Eu ____ feliz.", choices: ["estou", "sou"], answer: "estou", note: "Use estar for temporary states: estou feliz.", say: "Eu estou feliz.", en: "I'm happy." },
 
+  // ---- Beginner gaps (numbers, dates, time) ----
+  "a1-num2": { instruction: "Join the number correctly (45).", prompt: "Custa quarenta ____ cinco reais.", choices: ["e", "de"], answer: "e", note: "Join tens and units with 'e': quarenta e cinco.", say: "Custa quarenta e cinco reais.", en: "It costs forty-five reais." },
+  "a1-dates": { instruction: "Say 'on Saturday'.", prompt: "Vejo você ____ sábado.", choices: ["no", "em"], answer: "no", note: "On a specific day uses no/na: no sábado, na segunda.", say: "Vejo você no sábado.", en: "See you on Saturday." },
+  "a1-time2": { instruction: "One o'clock — pick the verb.", prompt: "____ uma hora.", choices: ["É", "São"], answer: "É", note: "One o'clock is singular: É uma hora; other hours use São.", say: "É uma hora.", en: "It's one o'clock." },
+
   // ---- Bridge (present tense, ser/estar) ----
   "bridge-01": { instruction: "Conjugate falar for 'nós'.", prompt: "Nós ____ português.", choices: ["falamos", "falam"], answer: "falamos", note: "Regular -ar, nós form: -amos (falamos).", say: "Nós falamos português.", en: "We speak Portuguese." },
   "bridge-02": { instruction: "Conjugate comer for 'eu'.", prompt: "Eu ____ às oito.", choices: ["como", "come"], answer: "como", note: "Regular -er, eu form: -o (como).", say: "Eu como às oito.", en: "I eat at eight." },

@@ -63,6 +63,14 @@ export const LESSONS = [
     { pt: "três", en: "three" },
     { pt: "dez", en: "ten" },
   ]),
+  mk("a1-num2", "start", "🔢", "Números 11–100", "Handle ages, prices and bigger numbers.", "Numbers 11–100", "Tens are vinte, trinta, quarenta…; join with “e”: quarenta e cinco (45).", "Numbers click only with practice out loud — say prices and ages as you go.", ["numbers", "listening"], [
+    { pt: "Eu tenho trinta anos.", en: "I am thirty years old." },
+    { pt: "Custa quarenta e cinco reais.", en: "It costs forty-five reais." },
+    { pt: "O quarto é o número doze.", en: "The room is number twelve." },
+    { pt: "Tem cinquenta pessoas na festa.", en: "There are fifty people at the party." },
+    { pt: "São cem reais no total.", en: "It's a hundred reais in total." },
+  ], "Teens: onze (11), doze (12), treze (13)… Tens: vinte (20), trinta (30), quarenta (40), cinquenta (50), sessenta (60), setenta (70), oitenta (80), noventa (90), cem (100). Join tens and units with “e”: quarenta e cinco (45), noventa e nove (99). Use them for age (tenho 30 anos), prices and numbers."),
+
   mk("a1-06", "start", "❓", "Perguntas rápidas", "Ask simple questions when you need help.", "Question words", "“Onde” means where, “quanto” means how much, and “quando” means when.", "One good question can replace twenty memorised phrases.", ["questions", "survival"], [
     { pt: "Onde fica o banheiro?", en: "Where is the bathroom?" },
     { pt: "Quanto custa?", en: "How much does it cost?" },
@@ -161,6 +169,22 @@ export const LESSONS = [
     { pt: "Que horas fecha?", en: "What time does it close?" },
     { pt: "Às oito horas.", en: "At eight o'clock." },
   ]),
+  mk("a1-dates", "city", "📅", "Dias e datas", "Talk about days, months and dates.", "Days & dates", "Days: segunda… domingo (week starts Monday). “On a day” uses no/na: no sábado.", "Brazilian weeks start on Monday — segunda is the first weekday.", ["time", "conversation"], [
+    { pt: "Hoje é segunda-feira.", en: "Today is Monday." },
+    { pt: "Amanhã é terça.", en: "Tomorrow is Tuesday." },
+    { pt: "Meu aniversário é em maio.", en: "My birthday is in May." },
+    { pt: "Vejo você no sábado.", en: "See you on Saturday." },
+    { pt: "Que dia é hoje?", en: "What day is it today?" },
+  ], "Days: segunda(-feira), terça, quarta, quinta, sexta, sábado, domingo — the “-feira” is usually dropped in speech. Months are lowercase: janeiro, fevereiro… “Em maio” = in May; “no sábado / na segunda” = on Saturday/Monday."),
+
+  mk("a1-time2", "city", "🕐", "Horas e minutos", "Tell the time precisely.", "Telling the time", "“São X horas” for most hours, but “É uma hora” for one. Use e meia (:30), e quinze (:15).", "Listen for numbers — they fly by in time expressions.", ["time", "numbers"], [
+    { pt: "São duas e meia.", en: "It's half past two." },
+    { pt: "É uma e quinze.", en: "It's a quarter past one." },
+    { pt: "São quinze para as três.", en: "It's a quarter to three." },
+    { pt: "Meio-dia e meia.", en: "Half past twelve (noon)." },
+    { pt: "Às oito em ponto.", en: "At eight on the dot." },
+  ], "Telling time: “São + X horas” for most hours, but “É uma hora” (singular) for one o'clock. Minutes: e quinze (:15), e meia (:30); “quinze para as três” = quarter to three. Special words: meio-dia (noon), meia-noite (midnight), em ponto (on the dot). At a time: às oito."),
+
   mk("a1-22", "city", "🆘", "Preciso de ajuda", "Ask for help calmly.", "Need + help", "“Preciso de...” means I need. It is very useful and easy to extend.", "Emergency language should be simple, direct and practised out loud.", ["survival", "travel"], [
     { pt: "Preciso de ajuda.", en: "I need help." },
     { pt: "Estou perdido.", en: "I am lost." },
