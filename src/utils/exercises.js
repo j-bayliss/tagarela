@@ -12,7 +12,7 @@ const cleanTok = (w) => w.replace(/[.,!?;:]/g, "");
 
 // Builds a lesson's question set. Pure (aside from shuffle's randomness), so it
 // lives outside the React component and can be unit-tested directly.
-export function makeExercises(lesson, reviewPool = [], skillStats = {}, audioOff = false) {
+export function makeExercises(lesson, reviewPool = [], skillStats = {}, audioOff = false, typingMode = "auto") {
   const phrases = (lesson.phrases || []).filter((p) => p && p.pt && p.en);
   const tags = lesson.skillTags;
   const tagSet = new Set(tags || []);
@@ -106,6 +106,19 @@ export function makeExercises(lesson, reviewPool = [], skillStats = {}, audioOff
     return { type: "cloze2", title: "Fill the gaps", prompt, answers: [a1, a2], full: p.pt, translation: p.en, tags, say: p.pt, review: { pt: p.pt, en: p.en } };
   };
 
+  // Free-typing whole phrases is the hardest recall. By default reserve it for
+  // B1+ and scaffold lower levels with word tiles; the learner can override.
+  const unitId = lesson.unit || "";
+  const isUpper = unitId.startsWith("b1") || unitId.startsWith("b2") || unitId.startsWith("c1");
+  const canType = typingMode === "typing" ? true : typingMode === "tiles" ? false : isUpper;
+  // Productive recall: free typing if allowed, otherwise scaffolded (tiles, or
+  // listen-and-type for single words).
+  const recall = (p) => {
+    if (canType) return produce(p);
+    if (multiWord(p)) return order(p);
+    return audioOff ? order(p) : dictation(p);
+  };
+
   // Adapt difficulty to how well these skills are known: new learners get
   // gentler, more scaffolded questions; mastered skills get harder, more
   // productive ones. Tiers from the lesson's skill accuracy so far.
@@ -123,21 +136,21 @@ export function makeExercises(lesson, reviewPool = [], skillStats = {}, audioOff
     else if (tier === "strong") ex.push(choice(p, "Listen & choose", true));
     else if (tier === "new") ex.push(choice(p));
     else ex.push(i % 2 === 0 ? choice(p) : choice(p, "Listen & choose", true));
-    // 2) production: scaffolded tiles when new, free recall when strong
+    // 2) production: tiles/gap when typing isn't enabled; free recall when it is
     if (multiWord(p)) {
-      if (tier === "strong") ex.push(i % 2 === 0 ? produce(p) : blank(p));
+      if (!canType) ex.push(i % 2 === 0 ? order(p) : blank(p));
+      else if (tier === "strong") ex.push(i % 2 === 0 ? produce(p) : blank(p));
       else if (tier === "new") ex.push(order(p));
       else ex.push(i % 2 === 0 ? order(p) : blank(p));
     } else {
-      // single-word: dictation needs audio, so use free recall when muted
-      ex.push(audioOff ? produce(p) : tier === "new" ? dictation(p) : produce(p));
+      ex.push(recall(p));
     }
   });
 
-  // Delayed free-recall production: phrases met earlier now produced from
-  // scratch (strongest retrieval). More of them once a skill is solid.
+  // Delayed recall: phrases met earlier, produced again (strongest retrieval),
+  // scaffolded with tiles when typing isn't enabled. More once a skill is solid.
   const produceCount = tier === "new" ? 1 : tier === "strong" ? 2 : (phrases.length >= 4 ? 2 : 1);
-  shuffle(phrases).slice(0, produceCount).forEach((p) => ex.push(produce(p)));
+  shuffle(phrases).slice(0, produceCount).forEach((p) => ex.push(recall(p)));
 
   // Shorter lessons get a mixed recall extra for closure.
   if (phrases.length <= 4 && phrases[0]) ex.push(audioOff ? choice(phrases[0]) : choice(phrases[0], "Listen & choose", true));
@@ -150,7 +163,7 @@ export function makeExercises(lesson, reviewPool = [], skillStats = {}, audioOff
       if (k === 0) {
         ex.push({ type: "choice", title: "Review · meaning", prompt: p.pt, answer: p.en, choices: shuffle([p.en, ...distractors(p.en)]), tags: rTags, say: p.pt, review: { pt: p.pt, en: p.en }, callback: true });
       } else {
-        ex.push({ type: "produce", title: "Review · say it", prompt: p.en, answer: p.pt, full: p.pt, tags: rTags, say: p.pt, review: { pt: p.pt, en: p.en }, callback: true });
+        ex.push({ ...recall(p), tags: rTags, title: "Review · recall", callback: true });
       }
     });
   }
@@ -180,7 +193,6 @@ export function makeExercises(lesson, reviewPool = [], skillStats = {}, audioOff
   }
 
   // B1/B2/C1 lessons get harder, higher-order questions on top.
-  const unitId = lesson.unit || "";
   const level = unitId.startsWith("c1") ? "c1" : unitId.startsWith("b2") ? "b2" : unitId.startsWith("b1") ? "b1" : null;
   if (level) {
     const clozeSource = phrases.find((p) => p.pt.trim().split(/\s+/).length >= 4);

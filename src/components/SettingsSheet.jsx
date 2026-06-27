@@ -1,8 +1,14 @@
 import { useState } from "react";
-import { getApiKey, getAzureSettings, saveApiKey, saveAzureSettings } from "../services/storage";
+import { getApiKey, getAzureSettings, saveApiKey, saveAzureSettings, readJSON, writeJSON } from "../services/storage";
 import { testAnthropicKey } from "../services/anthropic";
 import { speak } from "../utils/language";
 import PlacementQuiz from "./PlacementQuiz";
+
+const TYPING_MODES = [
+  { id: "auto", label: "Auto", note: "type from B1" },
+  { id: "tiles", label: "Word tiles", note: "no typing" },
+  { id: "typing", label: "Type", note: "always" },
+];
 
 const BR_VOICES = [
   { id: "pt-BR-FranciscaNeural", label: "Francisca ♀" },
@@ -27,6 +33,7 @@ export default function SettingsSheet({ onboarding, setOnboarding, onClose }) {
   const [dailyTarget, setDailyTarget] = useState(onboarding?.dailyTarget || 10);
   const [theme, setTheme] = useState(onboarding?.theme || "system");
   const [startLevel, setStartLevel] = useState(onboarding?.startLevel || "A1");
+  const [typingMode, setTypingMode] = useState(() => readJSON("tagarela:typing", "auto"));
   const [quizOpen, setQuizOpen] = useState(false);
   const [status, setStatus] = useState("");
   const [showAnthropic, setShowAnthropic] = useState(false);
@@ -40,6 +47,7 @@ export default function SettingsSheet({ onboarding, setOnboarding, onClose }) {
     saveApiKey(apiKey);
     saveAzureSettings({ ...azure, locale: "pt-BR" });
     setOnboarding((cur) => ({ ...(cur || {}), dailyTarget, theme, startLevel, variant: "pt-BR" }));
+    writeJSON("tagarela:typing", typingMode);
     setSaved({ anthropic: Boolean(apiKey.trim()), azure: isAzureSaved(azure) });
     setStatus("Settings saved.");
   };
@@ -93,6 +101,19 @@ export default function SettingsSheet({ onboarding, setOnboarding, onClose }) {
               </button>
             ))}
           </div>
+        </div>
+
+        <div className="tg-card">
+          <div className="tg-label">Answer style</div>
+          <div className="tg-choice-grid">
+            {TYPING_MODES.map((m) => (
+              <button key={m.id} className={`tg-choice compact ${typingMode === m.id ? "selected" : ""}`} onClick={() => setTypingMode(m.id)}>
+                <b>{m.label}</b>
+                <small>{m.note}</small>
+              </button>
+            ))}
+          </div>
+          <p className="tg-small-note">How you answer production questions: tap word tiles or type the Portuguese. “Auto” uses tiles for A1–A2 and switches to typing from B1.</p>
         </div>
 
         <div className="tg-card">

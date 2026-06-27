@@ -314,7 +314,7 @@ function LessonRunner({ lesson, onBack, onComplete, onSave, onActivity, reviewPo
   const current = queue[idx];
 
   const toggleQuiet = () => { const v = !quiet; setQuiet(v); writeJSON("tagarela:quietMode", v); buzz(6); };
-  const start = () => { buzz(12); setExercises(makeExercises(lesson, reviewPool, skillStats, quiet)); setStarted(true); };
+  const start = () => { buzz(12); setExercises(makeExercises(lesson, reviewPool, skillStats, quiet, readJSON("tagarela:typing", "auto"))); setStarted(true); };
 
   const handleAnswer = (result) => {
     // distinct patterns: single soft pulse = correct, double knock = wrong

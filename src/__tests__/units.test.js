@@ -178,4 +178,16 @@ describe("makeExercises", () => {
     const ex = makeExercises(lesson, [], {}, false);
     ex.filter((e) => e.type === "cloze2").forEach((e) => expect(e.answers).toHaveLength(2));
   });
+
+  it("never asks free-typing in word-tiles mode", () => {
+    const ex = makeExercises(lesson, [], {}, false, "tiles");
+    expect(ex.some((e) => e.type === "produce")).toBe(false);
+  });
+
+  it("auto mode scaffolds A1 (no free-typing) but allows it at B1+", () => {
+    const a1 = LESSONS.find((l) => l.unit === "start");
+    const b1 = LESSONS.find((l) => (l.unit || "").startsWith("b1"));
+    if (a1) expect(makeExercises(a1, [], {}, false, "auto").some((e) => e.type === "produce")).toBe(false);
+    if (b1) expect(makeExercises(b1, [], {}, false, "typing").some((e) => e.type === "produce")).toBe(true);
+  });
 });
